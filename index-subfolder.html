@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>Life Logger</title>
+    <link rel="manifest" href="/llogg/manifest.json">
+    <link rel="stylesheet" href="/llogg/styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Main Navigation -->
+        <nav id="main-nav" class="nav-bar">
+            <button id="nav-log" class="nav-btn active">Log</button>
+            <button id="nav-view" class="nav-btn">View</button>
+            <button id="nav-settings" class="nav-btn">Settings</button>
+        </nav>
+
+        <!-- Log Page (Default) -->
+        <main id="page-log" class="page active">
+            <section id="type-selection" class="selection-section">
+                <div id="type-tiles" class="tiles-container"></div>
+                <div id="type-management-container"></div>
+            </section>
+
+            <section id="detail-selection" class="selection-section hidden">
+                <div class="action-bar">
+                    <button id="btn-back-to-type" class="btn-secondary">← Back</button>
+                    <button id="btn-commit-log" class="btn-primary" disabled>Commit Log</button>
+                </div>
+                <div id="detail-list" class="detail-list"></div>
+            </section>
+        </main>
+
+        <!-- View Page -->
+        <main id="page-view" class="page">
+            <h1>View Data</h1>
+
+            <section class="filter-section">
+                <h2>Filters</h2>
+
+                <div class="filter-group">
+                    <label>Types:</label>
+                    <div id="filter-types" class="filter-checkboxes"></div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Time Span:</label>
+                    <select id="filter-timespan-unit">
+                        <option value="hours">Hours</option>
+                        <option value="days" selected>Days</option>
+                        <option value="weeks">Weeks</option>
+                        <option value="months">Months</option>
+                    </select>
+                    <input type="number" id="filter-timespan-value" value="7" min="1">
+                </div>
+
+                <div class="filter-group">
+                    <label>Chart Type:</label>
+                    <select id="chart-type">
+                        <option value="bar" selected>Bar Chart</option>
+                        <option value="line">Line Chart</option>
+                        <option value="pie">Pie Chart</option>
+                    </select>
+                </div>
+
+                <button id="btn-apply-filters" class="btn-primary">Apply</button>
+            </section>
+
+            <section id="chart-section" class="chart-container">
+                <svg id="chart-svg" width="100%" height="400"></svg>
+            </section>
+
+            <section id="entries-list" class="entries-section">
+                <h2>Recent Entries</h2>
+                <div id="entries-container"></div>
+            </section>
+        </main>
+
+        <!-- Settings Page -->
+        <main id="page-settings" class="page">
+            <h1>Settings</h1>
+
+            <section class="settings-section">
+                <button id="btn-manage-definitions" class="btn-primary">Manage Entry Definitions</button>
+                <button id="btn-export-csv" class="btn-secondary">Export Data (CSV)</button>
+                <button id="btn-import-csv" class="btn-secondary">Import Data (CSV)</button>
+                <input type="file" id="input-import-csv" accept=".csv" style="display: none;">
+            </section>
+
+            <section id="manage-definitions" class="settings-section hidden">
+                <h2>Manage Definitions</h2>
+                <button id="btn-back-settings" class="btn-secondary">← Back</button>
+
+                <div class="tab-buttons">
+                    <button id="tab-types" class="tab-btn active">Types</button>
+                    <button id="tab-details" class="tab-btn">Details</button>
+                </div>
+
+                <!-- Types Management -->
+                <div id="types-management" class="management-section">
+                    <h3>Types</h3>
+                    <div class="add-new">
+                        <input type="text" id="input-new-type-name" placeholder="Type name" maxlength="50">
+                        <input type="text" id="input-new-type-char" placeholder="Icon (1-2 chars)" maxlength="2">
+                        <input type="color" id="input-new-type-color" value="#3498db">
+                        <button id="btn-add-type" class="btn-primary">Add Type</button>
+                    </div>
+                    <div id="types-list" class="items-list"></div>
+                </div>
+
+                <!-- Details Management -->
+                <div id="details-management" class="management-section hidden">
+                    <h3>Details</h3>
+                    <div class="add-new">
+                        <select id="select-type-for-detail">
+                            <option value="">Select Type first...</option>
+                        </select>
+                        <input type="text" id="input-new-detail-name" placeholder="Detail name" maxlength="50">
+                        <input type="text" id="input-new-detail-char" placeholder="Icon (1-2 chars)" maxlength="2">
+                        <input type="color" id="input-new-detail-color" value="#2ecc71">
+                        <input type="text" id="input-new-detail-unit" placeholder="Unit (optional)" maxlength="20">
+                        <button id="btn-add-detail" class="btn-primary">Add Detail</button>
+                    </div>
+                    <div id="details-list" class="items-list"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Timestamp Adjustment Dialog -->
+    <div id="timestamp-dialog" class="dialog-overlay hidden">
+        <div class="dialog-box">
+            <h2>Adjust Timestamp</h2>
+            <div class="dialog-content">
+                <p style="color: var(--color-text-dim); margin-bottom: var(--spacing-md);">
+                    Add or subtract time from the current timestamp for this entry.
+                </p>
+
+                <div class="timestamp-options">
+                    <div class="timestamp-section">
+                        <div class="timestamp-sign-toggle">
+                            <button id="btn-timestamp-sign" class="btn-timestamp-sign" data-sign="-1">
+                                <span class="sign-icon">−</span> Subtract
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="timestamp-section">
+                        <div class="timestamp-buttons">
+                            <button class="btn-timestamp" data-value="300000">5 min</button>
+                            <button class="btn-timestamp" data-value="900000">15 min</button>
+                            <button class="btn-timestamp" data-value="1800000">30 min</button>
+                            <button class="btn-timestamp" data-value="3600000">1 hour</button>
+                            <button class="btn-timestamp" data-value="7200000">2 hours</button>
+                            <button class="btn-timestamp" data-value="21600000">6 hours</button>
+                            <button class="btn-timestamp" data-value="86400000">1 day</button>
+                        </div>
+                    </div>
+
+                    <div class="timestamp-section">
+                        <div class="timestamp-buttons">
+                            <button class="btn-timestamp btn-timestamp-now" id="btn-timestamp-now">Reset to Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="timestamp-preview" class="timestamp-preview"></div>
+            </div>
+            <div class="dialog-actions">
+                <button id="btn-timestamp-cancel" class="btn-secondary">Cancel</button>
+                <button id="btn-timestamp-apply" class="btn-primary">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Type Dialog -->
+    <div id="add-type-dialog" class="dialog-overlay hidden">
+        <div class="dialog-box">
+            <h2>Add New Type</h2>
+            <div class="dialog-content">
+                <div class="form-group">
+                    <label for="new-type-name">Name *</label>
+                    <input type="text" id="new-type-name" placeholder="e.g., Exercise, Medication, Study" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="new-type-icon">Icon (Optional)</label>
+                    <input type="text" id="new-type-icon" placeholder="1-2 characters or emoji" maxlength="2">
+                </div>
+                <div class="form-group">
+                    <label for="new-type-color">Color</label>
+                    <input type="color" id="new-type-color" value="#3498db">
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button id="btn-add-type-cancel" class="btn-secondary">Cancel</button>
+                <button id="btn-add-type-save" class="btn-primary">Create Type</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Type Dialog -->
+    <div id="delete-type-dialog" class="dialog-overlay hidden">
+        <div class="dialog-box">
+            <h2>Delete Type</h2>
+            <div class="dialog-content">
+                <div class="form-group">
+                    <label for="select-type-to-delete">Select Type to Delete</label>
+                    <select id="select-type-to-delete" class="type-select">
+                        <option value="">Choose a type...</option>
+                    </select>
+                </div>
+                <div id="delete-type-details" class="hidden">
+                    <p class="warning-text">⚠️ This type contains <strong id="detail-count">0</strong> detail items.</p>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="delete-details-checkbox">
+                            Also delete all detail items and their logged entries (history)
+                        </label>
+                    </div>
+                    <div id="reassign-section" class="form-group">
+                        <label for="reassign-type-select">Or reassign detail items to another type:</label>
+                        <select id="reassign-type-select" class="type-select">
+                            <option value="">Keep items (reassign manually later)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button id="btn-delete-type-cancel" class="btn-secondary">Cancel</button>
+                <button id="btn-delete-type-confirm" class="btn-primary" disabled>Delete Type</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Detail Dialog -->
+    <div id="add-detail-dialog" class="dialog-overlay hidden">
+        <div class="dialog-box">
+            <h2 id="dialog-title">Add New Detail</h2>
+            <div class="dialog-content">
+                <div class="form-group">
+                    <label for="dialog-detail-name">Name *</label>
+                    <input type="text" id="dialog-detail-name" placeholder="Enter detail name" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="dialog-detail-unit">Unit (Optional)</label>
+                    <input type="text" id="dialog-detail-unit" placeholder="e.g., minutes, slices, kcal" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label for="dialog-detail-icon">Icon (Optional)</label>
+                    <input type="text" id="dialog-detail-icon" placeholder="1-2 characters or emoji" maxlength="2">
+                </div>
+                <div class="form-group">
+                    <label for="dialog-detail-color">Color</label>
+                    <input type="color" id="dialog-detail-color" value="#3498db">
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button id="btn-dialog-cancel" class="btn-secondary">Cancel</button>
+                <button id="btn-dialog-save" class="btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Move Details Dialog -->
+    <div id="move-details-dialog" class="dialog-overlay hidden">
+        <div class="dialog-box">
+            <h2>Move Details to Another Type</h2>
+            <div class="dialog-content">
+                <p id="move-details-count" style="color: var(--color-text-dim); margin-bottom: var(--spacing-md);"></p>
+                <div class="form-group">
+                    <label for="select-target-type">Select Target Type</label>
+                    <select id="select-target-type" class="type-select">
+                        <option value="">Choose a type...</option>
+                    </select>
+                </div>
+                <p class="warning-text">
+                    ⚠️ All logged entries (history) for these details will be preserved and remain linked to the details in their new type.
+                </p>
+            </div>
+            <div class="dialog-actions">
+                <button id="btn-move-cancel" class="btn-secondary">Cancel</button>
+                <button id="btn-move-confirm" class="btn-primary" disabled>Move Details</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/llogg/src/main.js"></script>
+    <script>
+        // Register Service Worker for PWA (Subfolder version)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/llogg/sw.js', { scope: '/llogg/' })
+                    .then(reg => console.log('Service Worker registered for /llogg/'))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>

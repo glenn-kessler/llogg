@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<!--
+    TEST: Simple Debug Tool (No ES6 Modules)
+    TESTS: JavaScript execution, IndexedDB, Service Worker, basic file accessibility
+    PURPOSE: Diagnose issues without module dependencies - works even if module loading fails
+    RUN: Open in browser at http://localhost:8000/TEST_debug_simple.html or on deployed server
+    NOTES: This test does NOT use ES6 modules, so it will work even if module loading is broken
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Logger - Simple Debug (No Modules)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 20px;
+            font-size: 14px;
+        }
+        .box {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        .ok { border-left-color: #27ae60; }
+        .error { border-left-color: #e74c3c; }
+        h2 { color: #3498db; }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px 5px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Life Logger - Simple Debug</h1>
+    <p>Diagnose-Tool für Android</p>
+
+    <button onclick="checkAll()">✅ Alle Tests starten</button>
+    <button onclick="location.href='index.html'">🏠 Zurück zur App</button>
+
+    <div id="results"></div>
+
+    <script>
+        function log(msg, type = 'ok') {
+            const div = document.createElement('div');
+            div.className = 'box ' + type;
+            div.innerHTML = msg;
+            document.getElementById('results').appendChild(div);
+        }
+
+        function checkAll() {
+            document.getElementById('results').innerHTML = '<h2>Test-Ergebnisse:</h2>';
+
+            // Test 1: JavaScript läuft
+            log('✅ JavaScript: Funktioniert', 'ok');
+
+            // Test 2: IndexedDB
+            if ('indexedDB' in window) {
+                log('✅ IndexedDB: Verfügbar', 'ok');
+
+                // Versuche DB zu öffnen
+                const request = indexedDB.open('TestDB', 1);
+                request.onsuccess = () => {
+                    log('✅ IndexedDB: Kann Datenbank öffnen', 'ok');
+                    indexedDB.deleteDatabase('TestDB');
+                };
+                request.onerror = (e) => {
+                    log('❌ IndexedDB Fehler: ' + e.target.error, 'error');
+                };
+            } else {
+                log('❌ IndexedDB: NICHT verfügbar', 'error');
+            }
+
+            // Test 3: Service Worker
+            if ('serviceWorker' in navigator) {
+                log('✅ Service Worker: Unterstützt', 'ok');
+
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                    if (regs.length > 0) {
+                        log('✅ Service Worker: ' + regs.length + ' registriert', 'ok');
+                        regs.forEach(reg => {
+                            log('  → Scope: ' + reg.scope, 'ok');
+                        });
+                    } else {
+                        log('⚠️ Service Worker: Keine registriert', 'error');
+                    }
+                });
+            } else {
+                log('❌ Service Worker: NICHT unterstützt', 'error');
+            }
+
+            // Test 4: Dateien prüfen
+            const files = [
+                'index.html',
+                'styles.css',
+                'src/main.js',
+                'src/lib/db.js'
+            ];
+
+            log('<h3>Dateien prüfen:</h3>', 'ok');
+
+            files.forEach(file => {
+                fetch(file)
+                    .then(response => {
+                        if (response.ok) {
+                            log('✅ ' + file + ': OK (' + response.status + ')', 'ok');
+                        } else {
+                            log('❌ ' + file + ': Fehler ' + response.status, 'error');
+                        }
+                    })
+                    .catch(err => {
+                        log('❌ ' + file + ': ' + err.message, 'error');
+                    });
+            });
+
+            // Test 5: Browser Info
+            log('<h3>Browser Info:</h3>', 'ok');
+            log('User Agent: ' + navigator.userAgent, 'ok');
+            log('Location: ' + window.location.href, 'ok');
+            log('Standalone: ' + (window.navigator.standalone ? 'JA (als App)' : 'NEIN (im Browser)'), 'ok');
+
+            // Test 6: Console Check
+            log('<h3>Öffne Browser-Console (F12) für mehr Details</h3>', 'ok');
+            console.log('=== Life Logger Debug Info ===');
+            console.log('Location:', window.location);
+            console.log('IndexedDB:', 'indexedDB' in window);
+            console.log('Service Worker:', 'serviceWorker' in navigator);
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            checkAll();
+        });
+
+        // Fehler abfangen
+        window.addEventListener('error', (e) => {
+            log('❌ JavaScript Fehler: ' + e.message + ' (Zeile ' + e.lineno + ')', 'error');
+        });
+    </script>
+</body>
+</html>

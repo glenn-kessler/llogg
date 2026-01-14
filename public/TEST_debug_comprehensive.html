@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<!--
+    TEST: Comprehensive Debug Tool
+    TESTS: ES6 module loading, IndexedDB availability, Service Worker registration, file accessibility
+    PURPOSE: Diagnose deployment and module loading issues
+    RUN: Open in browser at http://localhost:8000/TEST_debug_comprehensive.html
+    NOTES: Tests module imports - may fail if modules not loading correctly
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Logger - Comprehensive Debug</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            font-size: 12px;
+        }
+        .status { margin: 10px 0; padding: 10px; background: #2a2a2a; }
+        .ok { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warn { color: #ffaa00; }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        #log {
+            background: #000;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Life Logger Debug</h1>
+    <p>Debug-Tool für https://glenn-kessler.de/llogg/</p>
+
+    <div id="checks"></div>
+
+    <button onclick="runTests()">Tests ausführen</button>
+    <button onclick="testClick()">Test Mood Click</button>
+    <button onclick="clearDB()">IndexedDB löschen</button>
+
+    <h2>Console Log:</h2>
+    <div id="log"></div>
+
+    <script>
+        const log = (msg, type = 'ok') => {
+            const logEl = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logEl.innerHTML += `<div class="${type}">[${time}] ${msg}</div>`;
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(msg);
+        };
+
+        // Override console methods
+        const originalLog = console.log;
+        const originalError = console.error;
+        console.log = (...args) => { log(args.join(' '), 'ok'); originalLog(...args); };
+        console.error = (...args) => { log(args.join(' '), 'error'); originalError(...args); };
+
+        async function runTests() {
+            const checksEl = document.getElementById('checks');
+            checksEl.innerHTML = '<h2>Checks:</h2>';
+
+            // Check 1: ES6 Modules Support
+            try {
+                checksEl.innerHTML += `<div class="status ok">✅ ES6 Modules: Supported</div>`;
+            } catch(e) {
+                checksEl.innerHTML += `<div class="status error">❌ ES6 Modules: ${e.message}</div>`;
+            }
+
+            // Check 2: IndexedDB Support
+            if ('indexedDB' in window) {
+                checksEl.innerHTML += `<div class="status ok">✅ IndexedDB: Available</div>`;
+
+                // Try to open DB
+                try {
+                    const dbRequest = indexedDB.open('LifeLoggerDB', 1);
+                    dbRequest.onsuccess = () => {
+                        checksEl.innerHTML += `<div class="status ok">✅ IndexedDB: Can open database</div>`;
+                        log('IndexedDB opened successfully');
+                    };
+                    dbRequest.onerror = (e) => {
+                        checksEl.innerHTML += `<div class="status error">❌ IndexedDB: Error opening - ${e.target.error}</div>`;
+                        log(`IndexedDB error: ${e.target.error}`, 'error');
+                    };
+                } catch(e) {
+                    checksEl.innerHTML += `<div class="status error">❌ IndexedDB: ${e.message}</div>`;
+                }
+            } else {
+                checksEl.innerHTML += `<div class="status error">❌ IndexedDB: Not available</div>`;
+            }
+
+            // Check 3: Service Worker
+            if ('serviceWorker' in navigator) {
+                checksEl.innerHTML += `<div class="status ok">✅ Service Worker: Supported</div>`;
+
+                const regs = await navigator.serviceWorker.getRegistrations();
+                if (regs.length > 0) {
+                    checksEl.innerHTML += `<div class="status ok">✅ Service Worker: ${regs.length} registered</div>`;
+                    regs.forEach(reg => {
+                        checksEl.innerHTML += `<div class="status warn">  → Scope: ${reg.scope}</div>`;
+                    });
+                } else {
+                    checksEl.innerHTML += `<div class="status warn">⚠️ Service Worker: None registered</div>`;
+                }
+            } else {
+                checksEl.innerHTML += `<div class="status error">❌ Service Worker: Not supported</div>`;
+            }
+
+            // Check 4: Module Loading
+            try {
+                const response = await fetch('./src/main.js');
+                if (response.ok) {
+                    checksEl.innerHTML += `<div class="status ok">✅ main.js: Loads (${response.status})</div>`;
+                } else {
+                    checksEl.innerHTML += `<div class="status error">❌ main.js: ${response.status}</div>`;
+                }
+            } catch(e) {
+                checksEl.innerHTML += `<div class="status error">❌ main.js: ${e.message}</div>`;
+            }
+
+            // Check 5: Files exist
+            const files = [
+                'src/lib/db.js',
+                'src/lib/dataService.js',
+                'src/lib/csvService.js',
+                'src/components/charts.js'
+            ];
+
+            for (const file of files) {
+                try {
+                    const response = await fetch(`./${file}`);
+                    if (response.ok) {
+                        checksEl.innerHTML += `<div class="status ok">✅ ${file}: OK</div>`;
+                    } else {
+                        checksEl.innerHTML += `<div class="status error">❌ ${file}: ${response.status}</div>`;
+                    }
+                } catch(e) {
+                    checksEl.innerHTML += `<div class="status error">❌ ${file}: ${e.message}</div>`;
+                }
+            }
+        }
+
+        async function testClick() {
+            log('Testing mood tile click simulation...');
+
+            // Try to import and init
+            try {
+                log('Attempting to import modules...');
+                const { initDB, addDummyData } = await import('./src/lib/db.js');
+                log('✅ Modules imported successfully', 'ok');
+
+                log('Initializing database...');
+                const db = await initDB();
+                log('✅ Database initialized', 'ok');
+
+                log('Adding dummy data...');
+                await addDummyData(db);
+                log('✅ Dummy data added', 'ok');
+
+                log('Test completed successfully!', 'ok');
+            } catch(e) {
+                log(`❌ Error: ${e.message}`, 'error');
+                log(`Stack: ${e.stack}`, 'error');
+            }
+        }
+
+        async function clearDB() {
+            log('Deleting IndexedDB...');
+            try {
+                await indexedDB.deleteDatabase('LifeLoggerDB');
+                log('✅ Database deleted. Reload page to reinitialize.', 'ok');
+            } catch(e) {
+                log(`❌ Error: ${e.message}`, 'error');
+            }
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            log('Debug page loaded');
+            log(`Location: ${window.location.href}`);
+            log(`Base: ${window.location.pathname}`);
+            runTests();
+        });
+
+        // Catch all errors
+        window.addEventListener('error', (e) => {
+            log(`❌ Global Error: ${e.message} at ${e.filename}:${e.lineno}`, 'error');
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            log(`❌ Unhandled Promise: ${e.reason}`, 'error');
+        });
+    </script>
+</body>
+</html>
