@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Worker Status</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a1a; color: #fff; padding: 20px; }
+        .status { padding: 15px; margin: 10px 0; border-radius: 5px; background: #2a2a2a; }
+        .good { color: #27ae60; }
+        .bad { color: #e74c3c; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 5px 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Service Worker Status</h1>
+    <button onclick="checkStatus()">Check Status</button>
+    <button onclick="window.close()">Close</button>
+    <div id="results"></div>
+    <script>
+        async function checkStatus() {
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+
+            if (!('serviceWorker' in navigator)) {
+                results.innerHTML = '<div class="status bad">Service Workers not supported</div>';
+                return;
+            }
+
+            results.innerHTML += '<div class="status good">✓ Service Workers supported</div>';
+
+            try {
+                const regs = await navigator.serviceWorker.getRegistrations();
+                if (regs.length === 0) {
+                    results.innerHTML += '<div class="status bad">No service workers registered</div>';
+                } else {
+                    results.innerHTML += `<div class="status good">✓ ${regs.length} service worker(s) registered</div>`;
+                    regs.forEach((reg, i) => {
+                        results.innerHTML += `<div class="status">
+                            <strong>Worker ${i + 1}:</strong><br>
+                            Scope: ${reg.scope}<br>
+                            State: ${reg.active ? reg.active.state : 'inactive'}<br>
+                            Script: ${reg.active ? reg.active.scriptURL : 'none'}
+                        </div>`;
+                    });
+                }
+            } catch (e) {
+                results.innerHTML += `<div class="status bad">Error: ${e.message}</div>`;
+            }
+        }
+
+        window.addEventListener('load', checkStatus);
+    </script>
+</body>
+</html>

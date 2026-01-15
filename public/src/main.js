@@ -292,10 +292,19 @@ function createTypeTile(type) {
   // Long-press detection
   let pressTimer;
   let pressStarted = false;
+  let startX = 0;
+  let startY = 0;
+  const MOVE_THRESHOLD = 10; // pixels - only cancel if moved more than this
 
   const startPress = (e) => {
     e.preventDefault();
     pressStarted = true;
+
+    // Record starting position
+    const touch = e.touches ? e.touches[0] : e;
+    startX = touch.clientX;
+    startY = touch.clientY;
+
     pressTimer = setTimeout(() => {
       if (pressStarted) {
         showTypeInfo(type, tile);
@@ -314,11 +323,18 @@ function createTypeTile(type) {
     pressStarted = false;
   };
 
-  const cancelPress = () => {
-    if (pressTimer) {
-      clearTimeout(pressTimer);
+  const cancelPress = (e) => {
+    // Only cancel if finger moved significantly
+    const touch = e.touches ? e.touches[0] : e;
+    const deltaX = Math.abs(touch.clientX - startX);
+    const deltaY = Math.abs(touch.clientY - startY);
+
+    if (deltaX > MOVE_THRESHOLD || deltaY > MOVE_THRESHOLD) {
+      if (pressTimer) {
+        clearTimeout(pressTimer);
+      }
+      pressStarted = false;
     }
-    pressStarted = false;
   };
 
   // Touch events
@@ -1359,6 +1375,34 @@ async function handleStoreConfig() {
 
 function setupViewPage() {
   document.getElementById('btn-apply-filters').addEventListener('click', applyFilters);
+
+  // Aggregation level toggle
+  document.querySelectorAll('input[name="agg-level"]').forEach(radio => {
+    radio.addEventListener('change', toggleAggregationLevel);
+  });
+
+  // Select/Deselect all details buttons
+  document.getElementById('btn-select-all-details').addEventListener('click', () => {
+    document.querySelectorAll('#filter-details input[type="checkbox"]').forEach(cb => cb.checked = true);
+  });
+
+  document.getElementById('btn-deselect-all-details').addEventListener('click', () => {
+    document.querySelectorAll('#filter-details input[type="checkbox"]').forEach(cb => cb.checked = false);
+  });
+}
+
+function toggleAggregationLevel() {
+  const aggLevel = document.querySelector('input[name="agg-level"]:checked').value;
+  const typesGroup = document.getElementById('filter-types-group');
+  const detailsGroup = document.getElementById('filter-details-group');
+
+  if (aggLevel === 'type') {
+    typesGroup.style.display = 'block';
+    detailsGroup.style.display = 'none';
+  } else {
+    typesGroup.style.display = 'none';
+    detailsGroup.style.display = 'block';
+  }
 }
 
 async function loadViewPage() {
@@ -1386,15 +1430,87 @@ async function loadViewPage() {
     filterContainer.appendChild(wrapper);
   });
 
+  // Populate detail filter checkboxes
+  await populateDetailFilters();
+
   // Apply initial filters
   await applyFilters();
 }
 
+async function populateDetailFilters() {
+  const filterContainer = document.getElementById('filter-details');
+  filterContainer.innerHTML = '';
+
+  // Get all details from all types
+  const allDetails = await dataService.getDetails();
+
+  // Group by type for better organization
+  const detailsByType = {};
+  allDetails.forEach(detail => {
+    if (!detailsByType[detail.typeId]) {
+      detailsByType[detail.typeId] = [];
+    }
+    detailsByType[detail.typeId].push(detail);
+  });
+
+  // Render grouped by type
+  state.types.forEach(type => {
+    const details = detailsByType[type.id] || [];
+    if (details.length === 0) return;
+
+    // Type header
+    const typeHeader = document.createElement('div');
+    typeHeader.style.cssText = 'font-weight: bold; margin-top: 10px; margin-bottom: 5px; color: ' + type.color;
+    typeHeader.textContent = type.name;
+    filterContainer.appendChild(typeHeader);
+
+    // Details for this type
+    details.forEach(detail => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'filter-checkbox';
+      wrapper.style.marginLeft = '15px';
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = `filter-detail-${detail.id}`;
+      checkbox.value = detail.id;
+      checkbox.checked = false; // Start with none selected
+
+      const label = document.createElement('label');
+      label.htmlFor = `filter-detail-${detail.id}`;
+      label.textContent = `${detail.charIcon} ${detail.name}`;
+      label.style.color = detail.color;
+
+      wrapper.appendChild(checkbox);
+      wrapper.appendChild(label);
+      filterContainer.appendChild(wrapper);
+    });
+  });
+}
+
 async function applyFilters() {
   try {
-    // Get selected type IDs
-    const typeCheckboxes = document.querySelectorAll('#filter-types input[type="checkbox"]:checked');
-    const typeIds = Array.from(typeCheckboxes).map(cb => parseInt(cb.value));
+    const aggLevel = document.querySelector('input[name="agg-level"]:checked').value;
+
+    // Get selected IDs based on aggregation level
+    let typeIds = [];
+    let detailIds = [];
+
+    if (aggLevel === 'type') {
+      const typeCheckboxes = document.querySelectorAll('#filter-types input[type="checkbox"]:checked');
+      typeIds = Array.from(typeCheckboxes).map(cb => parseInt(cb.value));
+    } else {
+      const detailCheckboxes = document.querySelectorAll('#filter-details input[type="checkbox"]:checked');
+      detailIds = Array.from(detailCheckboxes).map(cb => parseInt(cb.value));
+
+      // If no details selected, show message and return
+      if (detailIds.length === 0) {
+        const svg = document.getElementById('chart-svg');
+        svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#95a5a6">Please select at least one detail to display</text>';
+        document.getElementById('entries-container').innerHTML = '<p style="color: #95a5a6;">No details selected</p>';
+        return;
+      }
+    }
 
     // Get time span
     const timespanValue = parseInt(document.getElementById('filter-timespan-value').value);
@@ -1421,16 +1537,22 @@ async function applyFilters() {
 
     // Fetch filtered entries
     const entries = await dataService.getEntriesFiltered({
-      typeIds,
+      typeIds: typeIds.length > 0 ? typeIds : undefined,
       startTime: startTime.toISOString(),
       endTime: now.toISOString()
     });
 
+    // Filter by detail IDs if detail aggregation selected
+    let filteredEntries = entries;
+    if (aggLevel === 'detail' && detailIds.length > 0) {
+      filteredEntries = entries.filter(entry => detailIds.includes(entry.detailId));
+    }
+
     // Render chart
-    await renderChart(entries, typeIds);
+    await renderChart(filteredEntries, aggLevel, aggLevel === 'type' ? typeIds : detailIds);
 
     // Render entries list
-    renderEntriesList(entries);
+    renderEntriesList(filteredEntries);
 
   } catch (error) {
     console.error('Failed to apply filters:', error);
@@ -1438,26 +1560,48 @@ async function applyFilters() {
   }
 }
 
-async function renderChart(entries, typeIds) {
+async function renderChart(entries, aggLevel, selectedIds) {
   const chartType = document.getElementById('chart-type').value;
   const svg = document.getElementById('chart-svg');
 
-  // Aggregate data by type
+  // Aggregate data based on aggregation level
   const aggregated = {};
 
-  for (const entry of entries) {
-    if (!aggregated[entry.typeId]) {
-      const type = state.types.find(t => t.id === entry.typeId);
-      aggregated[entry.typeId] = {
-        label: type?.name || 'Unknown',
-        value: 0,
-        color: type?.color || '#95a5a6'
-      };
+  if (aggLevel === 'type') {
+    // Aggregate by type
+    for (const entry of entries) {
+      if (!aggregated[entry.typeId]) {
+        const type = state.types.find(t => t.id === entry.typeId);
+        aggregated[entry.typeId] = {
+          label: type?.name || 'Unknown',
+          value: 0,
+          color: type?.color || '#95a5a6'
+        };
+      }
+      aggregated[entry.typeId].value += entry.count;
     }
-    aggregated[entry.typeId].value += entry.count;
+  } else {
+    // Aggregate by detail
+    for (const entry of entries) {
+      if (!aggregated[entry.detailId]) {
+        const detail = await dataService.getDetail(entry.detailId);
+        aggregated[entry.detailId] = {
+          label: detail?.name || 'Unknown',
+          value: 0,
+          color: detail?.color || '#95a5a6'
+        };
+      }
+      aggregated[entry.detailId].value += entry.count;
+    }
   }
 
   const chartData = Object.values(aggregated);
+
+  // If no data, show message
+  if (chartData.length === 0) {
+    svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#95a5a6">No data available for the selected filters</text>';
+    return;
+  }
 
   // Render based on chart type
   switch (chartType) {

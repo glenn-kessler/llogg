@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Logger - Diagnostics</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 20px;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #3498db; font-size: 28px; margin-bottom: 10px; }
+        h2 { color: #2ecc71; font-size: 20px; margin-top: 30px; border-bottom: 2px solid #2ecc71; padding-bottom: 5px; }
+        h3 { color: #e67e22; font-size: 16px; margin-top: 20px; }
+        .device-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .device-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .device-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+        .device-btn.selected {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            font-weight: bold;
+        }
+        .test-section {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+        .test-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 8px 8px 8px 0;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-block;
+        }
+        .test-btn:hover { background: #2980b9; }
+        .test-btn:active { background: #1c5985; }
+        .browser-link {
+            background: #e74c3c;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 5px 5px 5px 0;
+            border-radius: 5px;
+            font-size: 13px;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+        .browser-link:hover { background: #c0392b; }
+        .info-box {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #ecf0f1;
+        }
+        .warning-box {
+            background: rgba(230, 126, 34, 0.1);
+            border: 1px solid #e67e22;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #ecf0f1;
+        }
+        .hidden { display: none !important; }
+        .home-link {
+            background: #95a5a6;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        .home-link:hover { background: #7f8c8d; }
+        code {
+            background: #000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 Life Logger Diagnostics</h1>
+        <p style="color: #95a5a6;">Comprehensive testing and troubleshooting tool</p>
+
+        <a href="index.html" class="home-link">← Back to App</a>
+
+        <!-- Step 1: Device Selection -->
+        <div id="device-selection">
+            <h2>Step 1: Select Your Device Type</h2>
+            <div class="device-selector">
+                <button class="device-btn" data-device="android" onclick="selectDevice('android')">
+                    📱 Android
+                </button>
+                <button class="device-btn" data-device="ios" onclick="selectDevice('ios')">
+                    🍎 iOS
+                </button>
+                <button class="device-btn" data-device="windows" onclick="selectDevice('windows')">
+                    🪟 Windows
+                </button>
+                <button class="device-btn" data-device="linux" onclick="selectDevice('linux')">
+                    🐧 Linux
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Browser Settings Links -->
+        <div id="browser-settings" class="hidden">
+            <h2>Step 2: Browser Settings & Tools</h2>
+            <div class="info-box">
+                <strong>Before testing:</strong> If you're experiencing issues, clear your browser cache and unregister service workers.
+            </div>
+
+            <div id="settings-android" class="hidden">
+                <h3>Android Chrome Settings</h3>
+                <a href="chrome://serviceworker-internals/" class="browser-link">Service Workers</a>
+                <a href="chrome://inspect/#service-workers" class="browser-link">Inspect Workers</a>
+                <a href="chrome://flags/" class="browser-link">Chrome Flags</a>
+                <p style="color: #95a5a6; margin-top: 10px;">
+                    To clear cache: Settings → Apps → Chrome → Storage & Cache → Clear Storage
+                </p>
+            </div>
+
+            <div id="settings-ios" class="hidden">
+                <h3>iOS Safari Settings</h3>
+                <p style="color: #95a5a6;">
+                    Settings → Safari → Clear History and Website Data<br>
+                    Settings → Safari → Advanced → Website Data → Remove All
+                </p>
+                <div class="warning-box">
+                    <strong>Note:</strong> iOS Safari has limited service worker support. Some PWA features may not work.
+                </div>
+            </div>
+
+            <div id="settings-windows" class="hidden">
+                <h3>Windows Browser Settings</h3>
+                <p><strong>Chrome/Edge:</strong></p>
+                <a href="chrome://serviceworker-internals/" class="browser-link">Service Workers</a>
+                <a href="chrome://inspect/#service-workers" class="browser-link">Inspect Workers</a>
+                <a href="chrome://settings/content/all" class="browser-link">Site Permissions</a>
+                <p style="color: #95a5a6; margin-top: 10px;">
+                    Press <code>F12</code> to open DevTools for detailed debugging
+                </p>
+            </div>
+
+            <div id="settings-linux" class="hidden">
+                <h3>Linux Browser Settings</h3>
+                <p><strong>Chrome/Chromium/Firefox:</strong></p>
+                <a href="chrome://serviceworker-internals/" class="browser-link">Service Workers (Chrome)</a>
+                <a href="about:serviceworkers" class="browser-link">Service Workers (Firefox)</a>
+                <a href="about:debugging#/runtime/this-firefox" class="browser-link">Debug (Firefox)</a>
+                <p style="color: #95a5a6; margin-top: 10px;">
+                    Press <code>F12</code> or <code>Ctrl+Shift+I</code> to open DevTools
+                </p>
+            </div>
+        </div>
+
+        <!-- Step 3: Available Tests -->
+        <div id="test-menu" class="hidden">
+            <h2>Step 3: Run Diagnostic Tests</h2>
+
+            <div class="test-section">
+                <h3>🔧 Basic Functionality Tests</h3>
+                <p style="color: #95a5a6;">Test core browser features and compatibility</p>
+                <button class="test-btn" onclick="openTest('basic')">Basic Feature Detection</button>
+                <button class="test-btn" onclick="openTest('files')">File Accessibility Test</button>
+                <button class="test-btn" onclick="openTest('database')">IndexedDB Test</button>
+            </div>
+
+            <div class="test-section">
+                <h3>🎯 Touch & Click Tests</h3>
+                <p style="color: #95a5a6;">Verify touch events and click handling</p>
+                <button class="test-btn" onclick="openTest('click')">Click/Touch Event Test</button>
+                <button class="test-btn" onclick="openTest('events')">Event Logging Test</button>
+            </div>
+
+            <div class="test-section">
+                <h3>⚙️ Service Worker Tests</h3>
+                <p style="color: #95a5a6;">Test PWA functionality and caching</p>
+                <button class="test-btn" onclick="openTest('sw-status')">Service Worker Status</button>
+                <button class="test-btn" onclick="openTest('sw-cache')">Cache Test</button>
+            </div>
+
+            <div class="test-section">
+                <h3>🧪 Integration Tests</h3>
+                <p style="color: #95a5a6;">Test full app functionality</p>
+                <button class="test-btn" onclick="openTest('modules')">Module Loading Test</button>
+                <button class="test-btn" onclick="openTest('data')">Data Operations Test</button>
+            </div>
+
+            <div class="test-section">
+                <h3>📊 Performance Tests</h3>
+                <p style="color: #95a5a6;">Check app performance and responsiveness</p>
+                <button class="test-btn" onclick="openTest('performance')">Page Load Performance</button>
+                <button class="test-btn" onclick="openTest('memory')">Memory Usage</button>
+            </div>
+
+            <div class="info-box" style="margin-top: 30px;">
+                <strong>💡 Troubleshooting Tips:</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                    <li>If a test hangs, close the test tab and try again</li>
+                    <li>Clear browser cache if tests show stale data</li>
+                    <li>Unregister old service workers before testing PWA features</li>
+                    <li>Check browser console (F12) for detailed error messages</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Device Info -->
+        <div id="device-info" class="hidden">
+            <h2>Device Information</h2>
+            <div class="test-section">
+                <p><strong>User Agent:</strong> <span id="ua"></span></p>
+                <p><strong>Screen:</strong> <span id="screen"></span></p>
+                <p><strong>Viewport:</strong> <span id="viewport"></span></p>
+                <p><strong>Online:</strong> <span id="online"></span></p>
+                <p><strong>Service Worker Support:</strong> <span id="sw-support"></span></p>
+                <p><strong>IndexedDB Support:</strong> <span id="idb-support"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedDevice = null;
+
+        function selectDevice(device) {
+            selectedDevice = device;
+
+            // Update button states
+            document.querySelectorAll('.device-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`[data-device="${device}"]`).classList.add('selected');
+
+            // Show browser settings for selected device
+            document.getElementById('browser-settings').classList.remove('hidden');
+            document.querySelectorAll('[id^="settings-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`settings-${device}`).classList.remove('hidden');
+
+            // Show test menu
+            document.getElementById('test-menu').classList.remove('hidden');
+
+            // Show device info
+            document.getElementById('device-info').classList.remove('hidden');
+            populateDeviceInfo();
+
+            // Scroll to tests
+            document.getElementById('browser-settings').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function populateDeviceInfo() {
+            document.getElementById('ua').textContent = navigator.userAgent;
+            document.getElementById('screen').textContent = `${screen.width}x${screen.height}`;
+            document.getElementById('viewport').textContent = `${window.innerWidth}x${window.innerHeight}`;
+            document.getElementById('online').textContent = navigator.onLine ? 'Yes' : 'No';
+            document.getElementById('sw-support').textContent = 'serviceWorker' in navigator ? 'Yes ✓' : 'No ✗';
+            document.getElementById('idb-support').textContent = 'indexedDB' in window ? 'Yes ✓' : 'No ✗';
+        }
+
+        function openTest(testType) {
+            const testUrl = `tests/test-${testType}.html?device=${selectedDevice || 'unknown'}`;
+            window.open(testUrl, `test-${testType}`, 'width=800,height=600');
+        }
+
+        // Auto-detect device type
+        window.addEventListener('load', () => {
+            const ua = navigator.userAgent.toLowerCase();
+            let detectedDevice = null;
+
+            if (/android/.test(ua)) {
+                detectedDevice = 'android';
+            } else if (/iphone|ipad|ipod/.test(ua)) {
+                detectedDevice = 'ios';
+            } else if (/windows/.test(ua)) {
+                detectedDevice = 'windows';
+            } else if (/linux/.test(ua)) {
+                detectedDevice = 'linux';
+            }
+
+            if (detectedDevice) {
+                console.log('Auto-detected device:', detectedDevice);
+                // Don't auto-select, but could highlight the suggestion
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Feature Detection</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a1a; color: #fff; padding: 20px; }
+        .result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .pass { background: #27ae60; }
+        .fail { background: #e74c3c; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 5px 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Basic Feature Detection</h1>
+    <button onclick="runTests()">Run Tests</button>
+    <button onclick="window.close()">Close</button>
+    <div id="results"></div>
+    <script>
+        function runTests() {
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+
+            const tests = [
+                { name: 'JavaScript', check: () => true },
+                { name: 'localStorage', check: () => 'localStorage' in window },
+                { name: 'sessionStorage', check: () => 'sessionStorage' in window },
+                { name: 'IndexedDB', check: () => 'indexedDB' in window },
+                { name: 'Service Worker', check: () => 'serviceWorker' in navigator },
+                { name: 'Cache API', check: () => 'caches' in window },
+                { name: 'Fetch API', check: () => 'fetch' in window },
+                { name: 'ES6 Modules', check: () => 'noModule' in document.createElement('script') },
+                { name: 'Promises', check: () => 'Promise' in window },
+                { name: 'async/await', check: () => {
+                    try { eval('(async () => {})'); return true; } catch(e) { return false; }
+                }}
+            ];
+
+            tests.forEach(test => {
+                const div = document.createElement('div');
+                div.className = 'result ' + (test.check() ? 'pass' : 'fail');
+                div.textContent = `${test.name}: ${test.check() ? '✓ PASS' : '✗ FAIL'}`;
+                results.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>

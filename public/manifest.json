@@ -2,7 +2,7 @@
   "name": "Life Logger",
   "short_name": "LifeLog",
   "description": "Personal data tracking and logging application",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#3498db",

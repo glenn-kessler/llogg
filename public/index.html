@@ -41,8 +41,29 @@
                 <h2>Filters</h2>
 
                 <div class="filter-group">
+                    <label>Aggregation Level:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <label style="cursor: pointer;">
+                            <input type="radio" name="agg-level" value="type" checked> By Type
+                        </label>
+                        <label style="cursor: pointer;">
+                            <input type="radio" name="agg-level" value="detail"> By Detail
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-group" id="filter-types-group">
                     <label>Types:</label>
                     <div id="filter-types" class="filter-checkboxes"></div>
+                </div>
+
+                <div class="filter-group" id="filter-details-group" style="display: none;">
+                    <label>Details:</label>
+                    <div style="margin-bottom: 10px;">
+                        <button id="btn-select-all-details" class="btn-secondary" style="padding: 5px 10px; font-size: 12px;">Select All</button>
+                        <button id="btn-deselect-all-details" class="btn-secondary" style="padding: 5px 10px; font-size: 12px;">Deselect All</button>
+                    </div>
+                    <div id="filter-details" class="filter-checkboxes"></div>
                 </div>
 
                 <div class="filter-group">
@@ -291,7 +312,7 @@
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('./sw.js')
                     .then(reg => console.log('Service Worker registered'))
                     .catch(err => console.log('Service Worker registration failed:', err));
             });

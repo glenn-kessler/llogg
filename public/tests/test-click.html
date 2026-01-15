@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click/Touch Event Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a1a; color: #fff; padding: 20px; }
+        .test-area { background: #3498db; color: white; padding: 60px; margin: 20px 0; text-align: center; border-radius: 10px; font-size: 24px; cursor: pointer; user-select: none; }
+        .log { background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto; }
+        button { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 5px 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Click/Touch Event Test</h1>
+    <button onclick="clearLog()">Clear Log</button>
+    <button onclick="window.close()">Close</button>
+    <div class="test-area" id="testArea">👆 Click/Touch Here</div>
+    <h3>Event Log:</h3>
+    <div class="log" id="log"></div>
+    <script>
+        const logEl = document.getElementById('log');
+        const testArea = document.getElementById('testArea');
+        let eventCount = 0;
+
+        function log(msg) {
+            eventCount++;
+            const time = new Date().toLocaleTimeString();
+            logEl.innerHTML = `[${eventCount}] [${time}] ${msg}<br>` + logEl.innerHTML;
+        }
+
+        function clearLog() {
+            logEl.innerHTML = '';
+            eventCount = 0;
+        }
+
+        testArea.addEventListener('touchstart', (e) => { log('👆 touchstart'); e.preventDefault(); });
+        testArea.addEventListener('touchmove', (e) => { log('🚫 touchmove'); });
+        testArea.addEventListener('touchend', (e) => { log('👇 touchend'); });
+        testArea.addEventListener('mousedown', (e) => { log('🖱️ mousedown'); });
+        testArea.addEventListener('mouseup', (e) => { log('🖱️ mouseup'); });
+        testArea.addEventListener('click', (e) => { log('✓ click event!'); testArea.textContent = `✓ Clicked ${eventCount} times`; });
+
+        log('Test loaded. Click/touch the blue area above.');
+    </script>
+</body>
+</html>

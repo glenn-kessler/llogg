@@ -1,0 +1,111 @@
+/home/glenn/html/llogg
+.:
+insgesamt 116
+-rw-r--r--. 1 glenn glenn  6475 13. Jan 11:19 generate-icons.html
+-rwxrwxrwx. 1 glenn glenn  6934 13. Jan 14:24 icon-192.png
+-rwxrwxrwx. 1 glenn glenn 18361 13. Jan 14:24 icon-512.png
+-rw-r--r--. 1 glenn glenn   974 13. Jan 11:18 icon.svg
+-rw-r--r--. 1 glenn glenn 14300 13. Jan 09:20 index.html
+-rw-r--r--. 1 glenn glenn   464 12. Jan 17:23 manifest.json
+drwxr-xr-x. 5 glenn glenn    65 13. Jan 09:20 src
+-rw-r--r--. 1 glenn glenn 24837 13. Jan 09:20 styles.css
+-rw-r--r--. 1 glenn glenn  1375 12. Jan 17:38 sw.js
+-rw-r--r--. 1 glenn glenn  6469 14. Jan 09:27 TEST_automated.html
+-rw-r--r--. 1 glenn glenn  8005 14. Jan 09:28 TEST_debug_comprehensive.html
+-rw-r--r--. 1 glenn glenn  5428 14. Jan 09:28 TEST_debug_simple.html
+
+./src:
+insgesamt 56
+drwxr-xr-x. 2 glenn glenn    23 12. Jan 17:52 components
+drwxr-xr-x. 2 glenn glenn    62 12. Jan 22:12 lib
+-rw-r--r--. 1 glenn glenn 55241 13. Jan 09:20 main.js
+drwxr-xr-x. 2 glenn glenn     6 12. Jan 17:52 workers
+
+./src/components:
+insgesamt 12
+-rw-r--r--. 1 glenn glenn 11176 12. Jan 17:52 charts.js
+
+./src/lib:
+insgesamt 28
+-rw-r--r--. 1 glenn glenn  5288 12. Jan 18:25 csvService.js
+-rw-r--r--. 1 glenn glenn 12042 12. Jan 22:12 dataService.js
+-rw-r--r--. 1 glenn glenn  6230 12. Jan 17:58 db.js
+
+./src/workers:
+insgesamt 0
+
+
+ON ANDROID PHONE
+Via App-Info
+I forced chrome execution to stop. 
+Then I went to Speicher und Cache, deleting memory contents as well as the cache.
+Thereafter I restarted Chrome, opened incognito tabs and visited the following links...
+chrome://serviceworker-internals/
+https://glenn-kessler.de/llogg/TEST_automated.html
+https://glenn-kessler.de/llogg/TEST_debug_comprehensive.html
+https://glenn-kessler.de/llogg/TEST_debug_simple.html
+
+IN CHROM PRIVATE TAB
+
+chrome://serviceworker-internals/
+ServiceWorker
+[✔️] Open Dev Tool window and pause Javascript execution on ServiceWorker startup for debugging
+
+https://glenn-kessler.de/llogg/TEST_automated.html
+Life Logger - Test Suite
+[10:01:45] === Starting Test Suite ===
+[10:01:45] ✓ Test 1: All modules imported successfully
+[10:01:45] Test 2: Initializing database...
+[10:01:45] ✓ Database initialized: LifeLoggerDB
+[10:01:45] Test 3: Adding dummy data...
+[10:01:45] ✓ Dummy data added
+[10:01:45] Test 4: Loading types...
+[10:01:45] ✓ Loaded 4 types: Mood, Activity, Food, Sleep
+[10:01:45] Test 5: Loading details for type "Mood"...
+[10:01:45] ✓ Loaded 7 details: Happy, Sad, Neutral, Angry, Frightened, Energetic, Tired
+[10:01:45] === All Auto-Tests Passed! ===
+[10:01:47] Manual Test: DB Init...
+[10:01:47] ✓ DB Name: LifeLoggerDB, Version: 1
+[10:01:48] Manual Test: Loading types...
+[10:01:48] - Mood (😊) [#3498db]
+[10:01:48] - Activity (🏃) [#2ecc71]
+[10:01:48] - Food (🍽️) [#e74c3c]
+[10:01:48] - Sleep (😴) [#9b59b6]
+[10:01:48] ✓ Total: 4 types
+[10:01:49] Manual Test: Creating test entry...
+[10:01:49] ✓ Entry created with ID: 1
+[10:01:49] Type: Mood, Detail: Happy, Count: 5
+[10:01:49] ✓ Total entries in DB: 1
+[10:01:50] Manual Test: Exporting CSV...
+[10:01:50] ✓ CSV generated with 2 lines (including header)
+[10:01:50] First 3 lines:
+[10:01:50] id;timestamp;type_name;detail_name;count;unit
+[10:01:50] 1;2026-01-15T09:01:49.116Z;Mood;Happy;5;
+Manual Tests
+1. Test DB Init 2. Load Types 3. Create Entry 4. Test CSV Export
+
+
+https://glenn-kessler.de/llogg/TEST_debug_comprehensive.html
+never finishes loading
+
+https://glenn-kessler.de/llogg/TEST_debug_simple.html
+Life Logger - Simple Debug
+Diagnose-Tool für Android
+
+✅ Alle Tests starten 🏠 Zurück zur App
+Test-Ergebnisse:
+✅ JavaScript: Funktioniert
+✅ IndexedDB: Verfügbar
+✅ Service Worker: Unterstützt
+Dateien prüfen:
+Browser Info:
+User Agent: Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Mobile Safari/537.36
+Location: https://glenn-kessler.de/llogg/TEST_debug_simple.html
+Standalone: NEIN (im Browser)
+Öffne Browser-Console (F12) für mehr Details
+⚠️ Service Worker: Keine registriert
+✅ index.html: OK (200)
+✅ styles.css: OK (200)
+✅ src/main.js: OK (200)
+✅ src/lib/db.js: OK (200)
+
