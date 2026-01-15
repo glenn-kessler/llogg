@@ -307,6 +307,36 @@
         </div>
     </div>
 
+    <!-- Edit Detail Icon/Color Dialog -->
+    <div id="edit-detail-dialog" class="dialog-overlay hidden">
+        <div class="dialog-box">
+            <h2>Edit Detail Appearance</h2>
+            <div class="dialog-content">
+                <div class="form-group">
+                    <label for="edit-detail-name-display">Detail Name</label>
+                    <input type="text" id="edit-detail-name-display" disabled style="background: #2a2a2a; color: #95a5a6;">
+                </div>
+                <div class="form-group">
+                    <label for="edit-detail-icon">Icon *</label>
+                    <input type="text" id="edit-detail-icon" placeholder="1-2 characters or emoji" maxlength="2">
+                    <small style="color: #95a5a6; display: block; margin-top: 5px;">Enter an emoji or 1-2 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="edit-detail-color">Color</label>
+                    <input type="color" id="edit-detail-color" value="#3498db">
+                </div>
+                <div class="form-group" style="text-align: center; padding: 20px; background: #2a2a2a; border-radius: 5px;">
+                    <div style="font-size: 14px; color: #95a5a6; margin-bottom: 10px;">Preview:</div>
+                    <div id="edit-detail-preview" style="font-size: 48px;">😊</div>
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button id="btn-edit-detail-cancel" class="btn-secondary">Cancel</button>
+                <button id="btn-edit-detail-save" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="src/main.js"></script>
     <script>
         // Register Service Worker for PWA

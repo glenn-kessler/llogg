@@ -3,7 +3,7 @@
  * Provides offline capability and caching
  */
 
-const CACHE_NAME = 'life-logger-v6';
+const CACHE_NAME = 'life-logger-v7';
 const ASSETS = [
   './',
   './index.html',
@@ -18,7 +18,7 @@ const ASSETS = [
 
 // Install event - cache assets
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker v6...');
+  console.log('[SW] Installing service worker v7...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -44,7 +44,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker v6...');
+  console.log('[SW] Activating service worker v7...');
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {

@@ -30,7 +30,8 @@ const state = {
   timestampAdjustDetailId: null, // Track which detail's timestamp is being adjusted
   timestampSign: -1, // Current sign: -1 for subtract, 1 for add
   markedForDeletion: new Set(), // Track detail IDs marked for deletion
-  checkedDetails: new Set() // Track detail IDs checked for bulk actions
+  checkedDetails: new Set(), // Track detail IDs checked for bulk actions
+  editingDetail: null // Track which detail is being edited for icon/color
 };
 
 // ============================================================================
@@ -142,6 +143,12 @@ function setupLogPage() {
   document.getElementById('btn-move-cancel').addEventListener('click', hideMoveDetailsDialog);
   document.getElementById('btn-move-confirm').addEventListener('click', handleConfirmMoveDetails);
   document.getElementById('select-target-type').addEventListener('change', handleTargetTypeSelection);
+
+  // Edit Detail Dialog buttons
+  document.getElementById('btn-edit-detail-cancel').addEventListener('click', hideEditDetailDialog);
+  document.getElementById('btn-edit-detail-save').addEventListener('click', handleSaveEditDetail);
+  document.getElementById('edit-detail-icon').addEventListener('input', updateEditDetailPreview);
+  document.getElementById('edit-detail-color').addEventListener('input', updateEditDetailPreview);
 
   // Timestamp Dialog buttons
   document.getElementById('btn-timestamp-cancel').addEventListener('click', hideTimestampDialog);
@@ -563,6 +570,16 @@ function createDetailRow(detail) {
   icon.style.backgroundColor = detail.color;
   icon.style.color = 'white';
   icon.textContent = detail.charIcon;
+
+  // In config mode, make icon clickable to edit
+  if (state.configMode) {
+    icon.style.cursor = 'pointer';
+    icon.title = 'Click to edit icon and color';
+    icon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showEditDetailDialog(detail);
+    });
+  }
 
   // Info (Name only)
   const info = document.createElement('div');
@@ -1111,6 +1128,75 @@ async function handleConfirmMoveDetails() {
   } catch (error) {
     console.error('Failed to move details:', error);
     alert('Failed to move details. Please try again.');
+  }
+}
+
+// ============================================================================
+// Edit Detail Icon/Color Dialog
+// ============================================================================
+
+function showEditDetailDialog(detail) {
+  state.editingDetail = detail;
+
+  const dialog = document.getElementById('edit-detail-dialog');
+  document.getElementById('edit-detail-name-display').value = detail.name;
+  document.getElementById('edit-detail-icon').value = detail.charIcon;
+  document.getElementById('edit-detail-color').value = detail.color;
+
+  updateEditDetailPreview();
+  dialog.classList.remove('hidden');
+}
+
+function hideEditDetailDialog() {
+  const dialog = document.getElementById('edit-detail-dialog');
+  dialog.classList.add('hidden');
+  state.editingDetail = null;
+}
+
+function updateEditDetailPreview() {
+  const icon = document.getElementById('edit-detail-icon').value || '😊';
+  const color = document.getElementById('edit-detail-color').value;
+  const preview = document.getElementById('edit-detail-preview');
+
+  preview.textContent = icon;
+  preview.style.color = color;
+}
+
+async function handleSaveEditDetail() {
+  if (!state.editingDetail) return;
+
+  const icon = document.getElementById('edit-detail-icon').value.trim();
+  const color = document.getElementById('edit-detail-color').value;
+
+  if (!icon) {
+    alert('Please enter an icon');
+    return;
+  }
+
+  try {
+    // Update detail in database
+    await dataService.updateDetail(state.editingDetail.id, {
+      charIcon: icon,
+      color: color
+    });
+
+    // Update local state
+    const detail = state.details.find(d => d.id === state.editingDetail.id);
+    if (detail) {
+      detail.charIcon = icon;
+      detail.color = color;
+    }
+
+    // Hide dialog
+    hideEditDetailDialog();
+
+    // Re-render details to show changes
+    renderDetailList();
+
+    alert('Detail appearance updated successfully!');
+  } catch (error) {
+    console.error('Failed to update detail:', error);
+    alert('Failed to update detail. Please try again.');
   }
 }
 
