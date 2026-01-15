@@ -1,6 +1,6 @@
-## Finalisierte Anforderungen (Baseline 1.2 - Implementierte Version)
+## Finalisierte Anforderungen (Baseline 1.3 - Implementierte Version)
 
-**Letzte Aktualisierung:** 2026-01-13
+**Letzte Aktualisierung:** 2026-01-15
 **Status:** MVP vollständig implementiert und getestet
 
 Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementierungsdetails:
@@ -59,6 +59,14 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | **F-3.10** | **Einstellungen & Benutzeroberfläche** | Das System soll im Konfigurationsmodus einen orangefarbenen "⚙️ CONFIG MODE" Banner am unteren Bildschirmrand anzeigen (sticky positioning). | ✅ IMPLEMENTIERT |
 | **F-3.11** | **Einstellungen & Benutzeroberfläche** | Das System soll im Konfigurationsmodus Drag-Handles für jede Detail-Zeile anzeigen zur manuellen Neuanordnung. | ✅ IMPLEMENTIERT |
 | **F-3.12** | **Einstellungen & Benutzeroberfläche** | Das System soll die Detail-Reihenfolge pro Typ separat speichern in der Config-DB. | ✅ IMPLEMENTIERT |
+| **F-3.13** | **Einstellungen & Benutzeroberfläche** | Das System soll dem Benutzer ermöglichen, Icon und Farbe eines Details durch Klicken auf das Icon im Konfigurationsmodus zu bearbeiten. | ✅ IMPLEMENTIERT |
+| **F-3.13.1** | **Einstellungen & Benutzeroberfläche** | Das System soll einen Edit-Dialog mit Icon-Eingabefeld, Farbwähler und Live-Vorschau anzeigen wenn auf ein Detail-Icon im Konfigurationsmodus geklickt wird. | ✅ IMPLEMENTIERT |
+| **F-3.13.2** | **Einstellungen & Benutzeroberfläche** | Das System soll die Änderungen an Icon und Farbe sofort in der UI reflektieren nach dem Speichern, ohne dass alle Log-Einträge verloren gehen. | ✅ IMPLEMENTIERT |
+| --- | --- | --- | --- |
+| **F-4.0** | **Datenüberprüfung & Visualisierung** | **Ziel:** Das System soll dem Benutzer flexible Optionen zur Aggregation und Visualisierung von Daten bieten. | ✅ IMPLEMENTIERT |
+| **F-4.0.1** | **Datenüberprüfung & Visualisierung** | Das System soll dem Benutzer ermöglichen, zwischen Typ-basierter und Detail-basierter Aggregation in Diagrammen zu wählen. | ✅ IMPLEMENTIERT |
+| **F-4.0.2** | **Datenüberprüfung & Visualisierung** | Das System soll bei Detail-basierter Aggregation eine Checkboxen-Liste aller verfügbaren Details anzeigen, gruppiert nach Typ. | ✅ IMPLEMENTIERT |
+| **F-4.0.3** | **Datenüberprüfung & Visualisierung** | Das System soll "Select All" und "Deselect All" Buttons für Detail-Auswahl bereitstellen. | ✅ IMPLEMENTIERT |
 | --- | --- | --- | --- |
 | **F-4.1** | **Datenüberprüfung & Visualisierung** | Das System soll eine Zusammenfassungsvorschau aller erfassten Eintragseigenschaften (Typ, Details, Count, Zeit, ggf. GPS/Wetter, Gesundheitsdaten) vor Finalisierung und Speicherung anzeigen. | ❌ ENTFERNT (Benutzerpräferenz) |
 | F-4.2 | Datenüberprüfung & Visualisierung | Das System soll einen '**View**' Button zur Navigation zur Datenüberprüfungs-/Auswahlseite (F-1.1) anzeigen. | ✅ IMPLEMENTIERT (Navigations-Tab) |
@@ -255,6 +263,10 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 - Test: Detail-Verschiebung zwischen Typen
 - Test: Detail-Löschung mit Bestätigung
 - Test: Typ-Management-Buttons Fixed Positioning
+- Test: Detail Icon/Farbe Bearbeitung im Konfigurationsmodus
+- Test: Edit-Dialog mit Live-Vorschau
+- Test: Detail-basierte Diagramm-Aggregation
+- Test: Android Touch-Event-Optimierung (10px Bewegungs-Schwellwert)
 
 ### Ausstehende Tests ⏳
 - Test: Performance mit 10.000+ Einträgen
@@ -268,6 +280,21 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 ---
 
 ## Änderungsprotokoll
+
+### Version 1.3 (2026-01-15)
+- Funktion: Implementiert Edit-Dialog für Detail Icon und Farbe im Konfigurationsmodus
+- Funktion: Implementiert Live-Vorschau im Edit-Dialog
+- Funktion: Implementiert klickbare Detail-Icons im Konfigurationsmodus
+- Funktion: Implementiert Detail-basierte Diagramm-Aggregation
+- Funktion: Implementiert Radio-Button-Auswahl zwischen Typ/Detail-Aggregation
+- Funktion: Implementiert Select All/Deselect All Buttons für Detail-Auswahl
+- Funktion: Implementiert gruppierte Detail-Checkboxen nach Typ
+- Bugfix: Behoben Android Touch-Events die Klicks abbrechen (10px Bewegungs-Schwellwert)
+- Bugfix: Behoben Service Worker Pfad-Probleme in Subfolder-Deployment (absolute → relative Pfade)
+- Bugfix: Behoben Service Worker Cache-Blockierung durch Promise.allSettled
+- Verbesserung: Service Worker v7 mit network-first Strategie für kritische Dateien
+- Verbesserung: Vereinheitlichte Diagnostik-Oberfläche mit Geräte-spezifischen Anleitungen
+- Verbesserung: TEST_ Dateien konsolidiert in diagnostic.html mit isolierten Tests
 
 ### Version 1.2 (2026-01-13)
 - Funktion: Implementiert Zeitstempel-Anpassungs-Dialog mit inkrementellen Intervallen
