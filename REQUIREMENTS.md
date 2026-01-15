@@ -5,101 +5,101 @@
 
 Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementierungsdetails:
 
-| ID | Kategorie | Anforderungstext | Status |
+| Done | ID | Kategorie | Anforderungstext |
 | :--- | :--- | :--- | :--- |
-| **F-1.0** | **Kerndateneingabe & Speicherung** | **Ziel:** Das System soll dem Benutzer ermöglichen, persönliche Datenpunkte in Listenformat zu erfassen und zu speichern für spätere Überprüfung und Analyse. | ✅ IMPLEMENTIERT |
-| F-1.1 | Kerndateneingabe & Speicherung | Das System soll dem Benutzer eine Liste aller zuvor erfassten Einträge auf einer dedizierten Überprüfungsseite anzeigen. | ✅ IMPLEMENTIERT (View-Seite) |
-| F-1.2 | Kerndateneingabe & Speicherung | Das System soll dem Benutzer einen Mechanismus zur Auswahl des **Typs** eines Eintrags bereitstellen (z.B. neuen Typ erstellen oder aus erstellten Typen wählen: Stimmung, Aktivität). Dies soll die **Standardansicht für einen neuen Eintrag** sein. | ✅ IMPLEMENTIERT (Kachel-basiert) |
-| **F-1.2.1** | **Kerndateneingabe & Speicherung** | Das System soll die Ansicht für neue Einträge (Auswahl von Typ/Details) als **Liste oder Kacheln** darstellen. | ✅ IMPLEMENTIERT (Typen als Kacheln mit "Add [Typ]" Buttons) |
-| **F-1.2.2** | **Kerndateneingabe & Speicherung** | Das System soll die Typ/Details-Ansichten **sortierbar** machen nach Name, zuletzt verwendet, oder Anzahl der Einträge. | ⏳ VERSCHOBEN (Statische Reihenfolge aktuell) |
-| **F-1.2.3** | **Kerndateneingabe & Speicherung** | Das System soll unter jeder Typ-Kachel einen "Add [Typname]" Button anzeigen für schnellen Zugriff. Sowohl Kachel-Klick als auch Button-Klick sollen die Details-Auswahl öffnen. | ✅ IMPLEMENTIERT |
-| **F-1.2.4** | **Kerndateneingabe & Speicherung** | Das System soll bei langem Drücken (>1 Sekunde) auf eine Typ-Kachel ein Info-Popup anzeigen, das zeigt wann dieser Typ zuletzt verwendet wurde (Format: Xs/Xm/Xh/Xd oder NEVER). | ✅ IMPLEMENTIERT |
-| **F-1.2.5** | **Kerndateneingabe & Speicherung** | Das System soll die Buttons zum Hinzufügen/Löschen von Typen am unteren Bildschirmrand fixiert anzeigen (oberhalb der Navigationsleiste). | ✅ IMPLEMENTIERT (Fixed Positioning bei 60px vom unteren Rand) |
-| F-1.3 | Kerndateneingabe & Speicherung | Das System soll dem Benutzer einen Mechanismus zur Auswahl der **Details** des Eintrags aus einer zweiten **Listen/Kachel-Auswahl** bereitstellen, die dynamisch gefiltert/aktualisiert wird basierend auf der Auswahl in der **Typ-Liste/Kachel**. *Typ* und *Details* haben eine 1:n-Beziehung. | ✅ IMPLEMENTIERT (Detail-Zeilen mit Inline-Zählern) |
-| **F-1.3.1** | **Kerndateneingabe & Speicherung** | Das System soll Details als Zeilen darstellen mit: Icon (links), Name (links-mitte), Zähler-Controls (Mitte), Einheiten-Eingabe (rechts). Zähler-Controls in der Mitte für optimale Daumen-Erreichbarkeit auf Mobilgeräten. | ✅ IMPLEMENTIERT |
-| **F-1.3.2** | **Kerndateneingabe & Speicherung** | Das System soll die gleichzeitige Auswahl und Zählung mehrerer Details ermöglichen. Benutzer kann Zähler für mehrere Details inkrementieren vor dem Commit. | ✅ IMPLEMENTIERT (Batch Commit) |
-| **F-1.3.3** | **Kerndateneingabe & Speicherung** | Das System soll im Konfigurationsmodus Checkboxen für jedes Detail anzeigen zur Auswahl mehrerer Items für Bulk-Operationen (Verschieben, Löschen). | ✅ IMPLEMENTIERT |
-| **F-1.3.4** | **Kerndateneingabe & Speicherung** | Das System soll einen "Move [Typname]" Button im Konfigurationsmodus anzeigen (Typname dynamisch ermittelt), der aktiviert wird wenn mindestens ein Detail ausgewählt ist. | ✅ IMPLEMENTIERT |
-| **F-1.3.5** | **Kerndateneingabe & Speicherung** | Das System soll einen "Delete Checked" Button im Konfigurationsmodus anzeigen, der aktiviert wird wenn mindestens ein Detail ausgewählt ist und alle ausgewählten Details nach Bestätigung löscht. | ✅ IMPLEMENTIERT |
-| F-1.4 | Kerndateneingabe & Speicherung | Das System soll dem Benutzer ermöglichen, die verfügbaren Optionen für sowohl die Typ-Liste als auch die Details-Liste zu erweitern/ändern/löschen über eine **dedizierte Konfigurationsseite (siehe F-3.7)**. | ✅ IMPLEMENTIERT (Eintrags-Definitionen verwalten) |
-| **F-1.4.1** | **Kerndateneingabe & Speicherung** | Das System soll dem Benutzer ermöglichen, eine optionale **Maßeinheit** (z.B. Minuten, km, Wiederholungen) für jede Detail-Option zu definieren. **WICHTIG:** Einheiten werden **pro Eintrag** gespeichert, nicht pro Detail. Die Einheit des Details dient nur als Platzhalter/Vorschlag. | ✅ IMPLEMENTIERT (Benutzerdefinierte Einheiten-Eingabe pro Eintrag) |
-| **F-1.4.1.1** | **Kerndateneingabe & Speicherung** | Das System soll für jede Detail-Zeile ein Einheiten-Eingabefeld anzeigen, das dem Benutzer erlaubt eine benutzerdefinierte Einheit für diesen spezifischen Eintrag einzugeben. Verschiedene Einträge desselben Details können verschiedene Einheiten haben (z.B. Brot: "Scheiben" vs "Gramm" vs "kcal"). | ✅ IMPLEMENTIERT |
-| **F-1.4.1.2** | **Kerndateneingabe & Speicherung** | Das System soll die Einheiten-Eingabefelder nur anzeigen wenn das Detail eine Einheit definiert hat, andernfalls wird das Feld ausgeblendet. | ✅ IMPLEMENTIERT |
-| **F-1.4.1.3** | **Kerndateneingabe & Speicherung** | Das System soll im Konfigurationsmodus die Einheiten-Eingabefelder editierbar machen zur Änderung der Standard-Einheit eines Details. | ✅ IMPLEMENTIERT |
-| F-1.4.2| Kerndateneingabe & Speicherung | Das System soll dem Benutzer ermöglichen, einen Eintrag in Bearbeitung abzubrechen. Der Bildschirm soll danach die initiale Ansicht für einen neuen Eintrag durch Auswahl des Typs anzeigen. | ✅ IMPLEMENTIERT (Zurück-Button setzt zurück und kehrt zur Typ-Ansicht zurück) |
-| F-1.5 | Kerndateneingabe & Speicherung | Das System soll für jeden Eintrag eine Eigenschaft namens "**count**" speichern, die eine positive ganze Zahl ($\geq 1$) sein muss. Der Standardwert ist 1, den der Benutzer ändern kann. Der Count repräsentiert die **Häufigkeit oder Dauer** bezogen auf die in F-1.4.1 definierte Einheit. | ✅ IMPLEMENTIERT (+/- Buttons, startet bei 0) |
-| **F-1.6** | **Kerndateneingabe & Speicherung** | Das System soll die Daten primär in einem **browser-zugänglichen Datenspeicher, speziell IndexedDB** speichern. Die Implementierung muss auf **hohe Interoperabilität** zwischen Chrome, Firefox und Safari optimiert sein. | ✅ IMPLEMENTIERT (Native IndexedDB API, kein Wrapper) |
-| **F-1.6.1** | **Kerndateneingabe & Speicherung** | Das System soll für Einträge folgendes Schema verwenden: `id`, `typeId`, `detailId`, `count`, `unit` (benutzerdefiniert pro Eintrag), `timestamp` (ISO 8601). | ✅ IMPLEMENTIERT |
-| F-1.7 | Kerndateneingabe & Speicherung | Das System soll dem Benutzer eine Benutzeroberfläche zum **Download** der lokalen Datendatei im **CSV-Format** und der lokalen Konfigurationsdatei (JSON) für manuellen Transfer zu externem Speicher/Backup bereitstellen. **(MVP Feature: Manueller Export)**. | ✅ IMPLEMENTIERT (CSV-Export mit benutzerdefinierten Einheiten) |
+| Yes | **F-1.0** | **Kerndateneingabe & Speicherung** | **Ziel:** Benutzer erfasst persönliche Datenpunkte in Listenformat zur späteren Überprüfung und Analyse. |
+| Yes | F-1.1 | Kerndateneingabe & Speicherung | Anzeige aller erfassten Einträge auf View-Seite. |
+| Yes | F-1.2 | Kerndateneingabe & Speicherung | Auswahl des Eintragstyps (Stimmung, Aktivität, etc.) als Standardansicht für neue Einträge. Kachel-basierte Darstellung. |
+| Yes | **F-1.2.1** | **Kerndateneingabe & Speicherung** | Typ/Details-Ansicht als Kacheln mit "Add [Typ]" Buttons. |
+|  | **F-1.2.2** | **Kerndateneingabe & Speicherung** | Typ/Details-Ansichten sortierbar nach Name, zuletzt verwendet oder Anzahl. |
+| Yes | **F-1.2.3** | **Kerndateneingabe & Speicherung** | "Add [Typname]" Button unter jeder Kachel für schnellen Zugriff. |
+| Yes | **F-1.2.4** | **Kerndateneingabe & Speicherung** | Long-Press (>1s) auf Typ-Kachel zeigt Info-Popup mit letzter Verwendung (Format: Xs/Xm/Xh/Xd oder NEVER). |
+| Yes | **F-1.2.5** | **Kerndateneingabe & Speicherung** | Typ-Management-Buttons fixiert am unteren Bildschirmrand (60px über Navigationsleiste). |
+| Yes | F-1.3 | Kerndateneingabe & Speicherung | Auswahl der Detail-Optionen mittels Liste/Kacheln, dynamisch gefiltert nach Typ (1:n-Beziehung). Detail-Zeilen mit Inline-Zählern. |
+| Yes | **F-1.3.1** | **Kerndateneingabe & Speicherung** | Detail-Zeilen: Icon (links), Name, Zähler-Controls (Mitte für Daumen-Erreichbarkeit), Einheiten-Eingabe (rechts). |
+| Yes | **F-1.3.2** | **Kerndateneingabe & Speicherung** | Gleichzeitige Auswahl mehrerer Details mit Batch-Commit. |
+| Yes | **F-1.3.3** | **Kerndateneingabe & Speicherung** | Checkboxen im Konfigurationsmodus für Bulk-Operationen (Verschieben, Löschen). |
+| Yes | **F-1.3.4** | **Kerndateneingabe & Speicherung** | "Move [Typname]" Button im Konfigurationsmodus, aktiviert bei Auswahl. |
+| Yes | **F-1.3.5** | **Kerndateneingabe & Speicherung** | "Delete Checked" Button im Konfigurationsmodus, löscht ausgewählte Details nach Bestätigung. |
+| Yes | F-1.4 | Kerndateneingabe & Speicherung | Verwaltung von Typ- und Detail-Optionen über dedizierte Konfigurationsseite (siehe F-3.7). |
+| Yes | **F-1.4.1** | **Kerndateneingabe & Speicherung** | Optionale Maßeinheit pro Detail definierbar (z.B. Minuten, km). Einheiten werden **pro Eintrag** gespeichert, Detail-Einheit dient als Platzhalter. |
+| Yes | **F-1.4.1.1** | **Kerndateneingabe & Speicherung** | Benutzerdefiniertes Einheiten-Eingabefeld pro Detail-Zeile. Verschiedene Einträge können unterschiedliche Einheiten nutzen (z.B. Brot: "Scheiben" vs "Gramm" vs "kcal"). |
+| Yes | **F-1.4.1.2** | **Kerndateneingabe & Speicherung** | Einheiten-Eingabefeld nur sichtbar wenn Detail eine Einheit definiert hat. |
+| Yes | **F-1.4.1.3** | **Kerndateneingabe & Speicherung** | Editierbare Standard-Einheit im Konfigurationsmodus. |
+| Yes | F-1.4.2| Kerndateneingabe & Speicherung | Abbrechen eines Eintrags via Zurück-Button, kehrt zur Typ-Ansicht zurück. |
+| Yes | F-1.5 | Kerndateneingabe & Speicherung | Count-Eigenschaft (positive ganze Zahl ≥1, Standard: 1) repräsentiert Häufigkeit/Dauer. Implementiert mit +/- Buttons (Start bei 0). |
+| Yes | **F-1.6** | **Kerndateneingabe & Speicherung** | Datenspeicherung in IndexedDB mit hoher Browser-Interoperabilität (Chrome, Firefox, Safari). Native API ohne Wrapper. |
+| Yes | **F-1.6.1** | **Kerndateneingabe & Speicherung** | Entry-Schema: `id`, `typeId`, `detailId`, `count`, `unit` (pro Eintrag), `timestamp` (ISO 8601). |
+| Yes | F-1.7 | Kerndateneingabe & Speicherung | Download-UI für Datendatei (CSV) und Konfiguration (JSON) zum manuellen Backup. |
 | --- | --- | --- | --- |
-| **F-2.1** | **Automatischer Kontext & Anreicherung** | Das System soll automatisch die **Zeit der Eingabe** bei Erstellung aufzeichnen, auf die Sekunde genau. | ✅ IMPLEMENTIERT (ISO 8601 Format) |
-| **F-2.1.1** | **Automatischer Kontext & Anreicherung** | Das System soll dem Benutzer ermöglichen, den Zeitstempel eines Eintrags anzupassen über einen Uhr-Icon-Button in jeder Detail-Zeile. | ✅ IMPLEMENTIERT |
-| **F-2.1.2** | **Automatischer Kontext & Anreicherung** | Das System soll einen Zeitstempel-Anpassungs-Dialog anzeigen mit vordefinierten Zeitintervallen (5 min, 15 min, 30 min, 1h, 2h, 6h, 1 Tag). | ✅ IMPLEMENTIERT |
-| **F-2.1.3** | **Automatischer Kontext & Anreicherung** | Das System soll im Zeitstempel-Dialog einen Vorzeichen-Umschalt-Button anzeigen (Subtrahieren/Addieren) zur Auswahl ob Zeit abgezogen oder hinzugefügt werden soll. | ✅ IMPLEMENTIERT |
-| **F-2.1.4** | **Automatischer Kontext & Anreicherung** | Das System soll mehrfaches Klicken auf Zeitintervall-Buttons inkrementell verarbeiten (z.B. 2x "-5 min" = -10 min). | ✅ IMPLEMENTIERT |
-| **F-2.1.5** | **Automatischer Kontext & Anreicherung** | Das System soll den Uhr-Icon-Button mit einem Glow-Effekt anzeigen wenn der Zeitstempel angepasst wurde, bis der Eintrag committed oder zurückgesetzt wird. | ✅ IMPLEMENTIERT |
-| **F-2.1.6** | **Automatischer Kontext & Anreicherung** | Das System soll einen "Reset to Now" Button im Zeitstempel-Dialog anzeigen um den angepassten Zeitstempel auf die aktuelle Zeit zurückzusetzen. | ✅ IMPLEMENTIERT |
-| F-2.2 | Automatischer Kontext & Anreicherung | Das System soll optional automatisch GPS-Koordinaten (präzise auf $\approx 10$ Meter) erfassen wenn ein Eintrag erstellt wird. **(Ausgeschlossen vom MVP)**. | ⏳ NICHT IMPLEMENTIERT |
-| F-2.3 | Automatischer Kontext & Anreicherung | Das System soll optional, wenn Standortdaten (F-2.2) erfolgreich erfasst wurden, versuchen assoziierte Wetterdaten vom DWD über Bright Sky **Third-Party-API** abzurufen. **(Ausgeschlossen vom MVP)**. | ⏳ NICHT IMPLEMENTIERT |
-| F-2.4 | Automatischer Kontext & Anreicherung | Das System soll Wetterdaten (F-2.3) trennen in Temperatur, Luftfeuchtigkeit, Windgeschwindigkeit und Luftdruck, unter Verwendung folgender **Standard-Einheiten**: Temperatur in **Celsius (°C)**, Windgeschwindigkeit in **Meter pro Sekunde (m/s)**, Luftdruck in **Hektopascal (hPa)**. Vom Benutzer wählbare alternative Einheiten sollen in der Konfiguration gespeichert werden. **(Ausgeschlossen vom MVP)**. | ⏳ NICHT IMPLEMENTIERT |
-| F-2.5 | Automatischer Kontext & Anreicherung | Das System soll dem Benutzer über einen On-Screen-Prompt signalisieren wenn zusätzliche Daten (GPS/Wetter) im Hintergrund geladen werden. **(Ausgeschlossen vom MVP)**. | ⏳ NICHT IMPLEMENTIERT |
-| F-2.6 | Automatischer Kontext & Anreicherung | Das System soll den Benutzer auffordern, Zugriff auf GPS-Daten über die native Berechtigungsanfrage des Browsers zu gewähren. **(Ausgeschlossen vom MVP)**. | ⏳ NICHT IMPLEMENTIERT |
-| F-2.7 | Automatischer Kontext & Anreicherung | Das System soll optional versuchen, Gesundheitsdaten über Geräte zu erfassen, die mit dem Telefon verbunden sind **über Standard-Betriebssystem-Schnittstellen (z.B. HealthKit/Google Fit)**. **(Ausgeschlossen vom MVP)**. | ⏳ NICHT IMPLEMENTIERT |
+| Yes | **F-2.1** | **Automatischer Kontext & Anreicherung** | Automatische Zeiterfassung bei Eintragserstellung (sekundengenau, ISO 8601). |
+| Yes | **F-2.1.1** | **Automatischer Kontext & Anreicherung** | Zeitstempel-Anpassung via Uhr-Icon-Button in Detail-Zeile. |
+| Yes | **F-2.1.2** | **Automatischer Kontext & Anreicherung** | Zeitstempel-Dialog mit vordefinierten Intervallen (5 min, 15 min, 30 min, 1h, 2h, 6h, 1 Tag). |
+| Yes | **F-2.1.3** | **Automatischer Kontext & Anreicherung** | Vorzeichen-Umschalt-Button im Dialog zur Auswahl Addition/Subtraktion. |
+| Yes | **F-2.1.4** | **Automatischer Kontext & Anreicherung** | Inkrementelle Zeitanpassung bei mehrfachem Klick (z.B. 2x "-5 min" = -10 min). |
+| Yes | **F-2.1.5** | **Automatischer Kontext & Anreicherung** | Glow-Effekt am Uhr-Icon bei angepasstem Zeitstempel bis Commit/Reset. |
+| Yes | **F-2.1.6** | **Automatischer Kontext & Anreicherung** | "Reset to Now" Button im Zeitstempel-Dialog. |
+|  | F-2.2 | Automatischer Kontext & Anreicherung | Automatische GPS-Erfassung (~10m Genauigkeit). MVP ausgeschlossen. |
+|  | F-2.3 | Automatischer Kontext & Anreicherung | Wetterdaten-Abruf vom DWD via Bright Sky API bei erfolgreicher GPS-Erfassung. MVP ausgeschlossen. |
+|  | F-2.4 | Automatischer Kontext & Anreicherung | Wetterdaten aufgeschlüsselt (Temperatur °C, Wind m/s, Luftdruck hPa) mit konfigurierbaren Einheiten. MVP ausgeschlossen. |
+|  | F-2.5 | Automatischer Kontext & Anreicherung | On-Screen-Prompt bei Hintergrund-Laden von GPS/Wetter. MVP ausgeschlossen. |
+|  | F-2.6 | Automatischer Kontext & Anreicherung | Browser-native Berechtigungsanfrage für GPS-Zugriff. MVP ausgeschlossen. |
+|  | F-2.7 | Automatischer Kontext & Anreicherung | Gesundheitsdaten-Erfassung via OS-Schnittstellen (HealthKit/Google Fit). MVP ausgeschlossen. |
 | --- | --- | --- | --- |
-| **F-3.1** | **Einstellungen & Benutzeroberfläche** | Das System soll standardmäßig die zuletzt erfolgreich gewählten **Typ**- und **Details**-Auswahlen verwenden wenn keine expliziten Präferenzen (F-3.2) gespeichert sind. | ✅ IMPLEMENTIERT (Verfolgt zuletzt verwendeten Zeitstempel pro Typ) |
-| F-3.2 | Einstellungen & Benutzeroberfläche | Das System soll dem Benutzer ermöglichen, explizit bevorzugte Standardauswahlen für die Drop-Downs zu definieren und zu speichern, die **Vorrang haben müssen** vor dem dynamischen Vorladen (F-3.1). | ⏳ VERSCHOBEN (Nur zuletzt verwendet) |
-| F-3.3 | Einstellungen & Benutzeroberfläche | Das System soll die Standard-Drop-Down-Auswahlen (F-3.2) in einer lokalen Einstellungsdatei speichern (separater Eintrag im **JSON-Format**). | ✅ IMPLEMENTIERT (Config in IndexedDB gespeichert) |
-| F-3.4 | Einstellungen & Benutzeroberfläche | Das System soll eine **Einstellungs-Unterseite** zur Konfiguration von Benutzerpräferenzen bereitstellen. | ✅ IMPLEMENTIERT |
-| F-3.5 | Einstellungen & Benutzeroberfläche | Das System soll die Einstellungs-Unterseite-Inhalte (Benutzerpräferenzen, Typ/Details-Definitionen) lokal speichern, mit der Option die Einstellungsdatei auf einen Server hochzuladen/herunterzuladen. **(Ausgeschlossen vom MVP)**. | ⏳ NICHT IMPLEMENTIERT |
-| **F-3.6** | **Einstellungen & Benutzeroberfläche** | Das System soll einen deutlich sichtbaren '**Commit Log**' Button in der Aktionsleiste anzeigen (neben dem Zurück-Button) um alle Einträge mit count > 0 zu finalisieren. Button ist deaktiviert (ausgegraut) wenn keine Zähler gesetzt sind. | ✅ IMPLEMENTIERT |
-| **F-3.6.1** | **Einstellungen & Benutzeroberfläche** | Das System soll nach dem Commit direkt zur Typ-Auswahlansicht zurückkehren ohne eine Alert-Nachricht anzuzeigen. Visuelles Feedback wird über Pulsing-Glow-Animation bereitgestellt. | ✅ IMPLEMENTIERT |
-| F-3.7| Einstellungen & Benutzeroberfläche | Das System soll auf der Einstellungs-Seite die Unternavigationsoption: **"Eintrags-Definitionen verwalten"** enthalten um F-1.4 zu erfüllen. | ✅ IMPLEMENTIERT |
-| **F-3.8** | **Einstellungen & Benutzeroberfläche** | Das System soll dem Benutzer ermöglichen, den Konfigurationsmodus durch langes Drücken (>1 Sekunde) auf den Detailbereich zu aktivieren. | ✅ IMPLEMENTIERT |
-| **F-3.9** | **Einstellungen & Benutzeroberfläche** | Das System soll im Konfigurationsmodus einen "Leave Config Mode" Button am oberen Rand der Detail-Liste anzeigen. | ✅ IMPLEMENTIERT |
-| **F-3.10** | **Einstellungen & Benutzeroberfläche** | Das System soll im Konfigurationsmodus einen orangefarbenen "⚙️ CONFIG MODE" Banner am unteren Bildschirmrand anzeigen (sticky positioning). | ✅ IMPLEMENTIERT |
-| **F-3.11** | **Einstellungen & Benutzeroberfläche** | Das System soll im Konfigurationsmodus Drag-Handles für jede Detail-Zeile anzeigen zur manuellen Neuanordnung. | ✅ IMPLEMENTIERT |
-| **F-3.12** | **Einstellungen & Benutzeroberfläche** | Das System soll die Detail-Reihenfolge pro Typ separat speichern in der Config-DB. | ✅ IMPLEMENTIERT |
-| **F-3.13** | **Einstellungen & Benutzeroberfläche** | Das System soll dem Benutzer ermöglichen, Icon und Farbe eines Details durch Klicken auf das Icon im Konfigurationsmodus zu bearbeiten. | ✅ IMPLEMENTIERT |
-| **F-3.13.1** | **Einstellungen & Benutzeroberfläche** | Das System soll einen Edit-Dialog mit Icon-Eingabefeld, Farbwähler und Live-Vorschau anzeigen wenn auf ein Detail-Icon im Konfigurationsmodus geklickt wird. | ✅ IMPLEMENTIERT |
-| **F-3.13.2** | **Einstellungen & Benutzeroberfläche** | Das System soll die Änderungen an Icon und Farbe sofort in der UI reflektieren nach dem Speichern, ohne dass alle Log-Einträge verloren gehen. | ✅ IMPLEMENTIERT |
+| Yes | **F-3.1** | **Einstellungen & Benutzeroberfläche** | Verwendung zuletzt gewählter Typ/Details-Auswahlen als Standard. Zeitstempel-Tracking pro Typ. |
+|  | F-3.2 | Einstellungen & Benutzeroberfläche | Explizite Standard-Präferenzen definierbar mit Vorrang vor dynamischem Vorladen. |
+| Yes | F-3.3 | Einstellungen & Benutzeroberfläche | Konfiguration in IndexedDB gespeichert. |
+| Yes | F-3.4 | Einstellungen & Benutzeroberfläche | Einstellungs-Unterseite für Benutzerpräferenzen. |
+|  | F-3.5 | Einstellungen & Benutzeroberfläche | Server-Upload/-Download der Einstellungsdatei. MVP ausgeschlossen. |
+| Yes | **F-3.6** | **Einstellungen & Benutzeroberfläche** | "Commit Log" Button in Aktionsleiste, deaktiviert wenn keine Zähler gesetzt. |
+| Yes | **F-3.6.1** | **Einstellungen & Benutzeroberfläche** | Nach Commit Rückkehr zur Typ-Ansicht ohne Alert. Visuelles Feedback via Pulsing-Glow. |
+| Yes | F-3.7| Einstellungen & Benutzeroberfläche | "Eintrags-Definitionen verwalten" Option auf Einstellungs-Seite. |
+| Yes | **F-3.8** | **Einstellungen & Benutzeroberfläche** | Konfigurationsmodus via Long-Press (>1s) auf Detailbereich. |
+| Yes | **F-3.9** | **Einstellungen & Benutzeroberfläche** | "Leave Config Mode" Button oben in Detail-Liste. |
+| Yes | **F-3.10** | **Einstellungen & Benutzeroberfläche** | Orange "⚙️ CONFIG MODE" Banner unten (sticky). |
+| Yes | **F-3.11** | **Einstellungen & Benutzeroberfläche** | Drag-Handles für Detail-Neuanordnung im Konfigurationsmodus. |
+| Yes | **F-3.12** | **Einstellungen & Benutzeroberfläche** | Detail-Reihenfolge pro Typ in Config-DB gespeichert. |
+| Yes | **F-3.13** | **Einstellungen & Benutzeroberfläche** | Icon und Farbe von Details editierbar durch Klick auf Icon im Konfigurationsmodus. |
+| Yes | **F-3.13.1** | **Einstellungen & Benutzeroberfläche** | Edit-Dialog mit Icon-Eingabe, Farbwähler und Live-Vorschau. |
+| Yes | **F-3.13.2** | **Einstellungen & Benutzeroberfläche** | Sofortige UI-Aktualisierung nach Speichern ohne Datenverlust. |
 | --- | --- | --- | --- |
-| **F-4.0** | **Datenüberprüfung & Visualisierung** | **Ziel:** Das System soll dem Benutzer flexible Optionen zur Aggregation und Visualisierung von Daten bieten. | ✅ IMPLEMENTIERT |
-| **F-4.0.1** | **Datenüberprüfung & Visualisierung** | Das System soll dem Benutzer ermöglichen, zwischen Typ-basierter und Detail-basierter Aggregation in Diagrammen zu wählen. | ✅ IMPLEMENTIERT |
-| **F-4.0.2** | **Datenüberprüfung & Visualisierung** | Das System soll bei Detail-basierter Aggregation eine Checkboxen-Liste aller verfügbaren Details anzeigen, gruppiert nach Typ. | ✅ IMPLEMENTIERT |
-| **F-4.0.3** | **Datenüberprüfung & Visualisierung** | Das System soll "Select All" und "Deselect All" Buttons für Detail-Auswahl bereitstellen. | ✅ IMPLEMENTIERT |
+| Yes | **F-4.0** | **Datenüberprüfung & Visualisierung** | **Ziel:** Flexible Aggregations- und Visualisierungsoptionen. |
+| Yes | **F-4.0.1** | **Datenüberprüfung & Visualisierung** | Wahl zwischen Typ- und Detail-basierter Aggregation in Diagrammen. |
+| Yes | **F-4.0.2** | **Datenüberprüfung & Visualisierung** | Bei Detail-Aggregation: Checkboxen-Liste aller Details gruppiert nach Typ. |
+| Yes | **F-4.0.3** | **Datenüberprüfung & Visualisierung** | "Select All" und "Deselect All" Buttons für Detail-Auswahl. |
 | --- | --- | --- | --- |
-| **F-4.1** | **Datenüberprüfung & Visualisierung** | Das System soll eine Zusammenfassungsvorschau aller erfassten Eintragseigenschaften (Typ, Details, Count, Zeit, ggf. GPS/Wetter, Gesundheitsdaten) vor Finalisierung und Speicherung anzeigen. | ❌ ENTFERNT (Benutzerpräferenz) |
-| F-4.2 | Datenüberprüfung & Visualisierung | Das System soll einen '**View**' Button zur Navigation zur Datenüberprüfungs-/Auswahlseite (F-1.1) anzeigen. | ✅ IMPLEMENTIERT (Navigations-Tab) |
-| F-4.3 | Datenüberprüfung & Visualisierung | Das System soll auf der View-Auswahlseite dem Benutzer ermöglichen, die Daten nach **einem oder mehreren Eintragstypen** zu filtern. | ✅ IMPLEMENTIERT (Checkboxen) |
-| F-4.4 | Datenüberprüfung & Visualisierung | Das System soll auf der View-Auswahlseite eine spezielle Filteroption zum Anzeigen der "**neuesten**" Einträge enthalten, die standardmäßig auf die letzten 24 Stunden eingestellt ist. | ✅ IMPLEMENTIERT (Zeitspannen-Filter) |
-| F-4.5 | Datenüberprüfung & Visualisierung | Das System soll auf der View-Auswahlseite dem Benutzer ermöglichen, eine Zeitspanne für die zu berücksichtigenden Daten zu definieren. | ✅ IMPLEMENTIERT (Stunden/Tage/Wochen/Monate) |
-| F-4.6 | Datenüberprüfung & Visualisierung | Das System soll die Zeitspannen-Auswahl über ein Drop-Down konfigurierbar machen, das folgende feste Optionen durchläuft: **Minuten, Stunden, Tage, Wochen, Monate und Jahre.** | ✅ IMPLEMENTIERT (ohne Minuten und Jahre) |
-| F-4.7 | Datenüberprüfung & Visualisierung | Das System soll auf der View-Auswahlseite dem Benutzer ermöglichen, einen Darstellungsstil (Diagramm-/Grafikstil) auszuwählen. | ✅ IMPLEMENTIERT (Dropdown-Selektor) |
-| F-4.8 | Datenüberprüfung & Visualisierung | Das System soll als Standard-Darstellungsstil ein Balkendiagramm verwenden (das jede Gruppe als einen Balken über den ausgewählten Zeitraum anzeigt). | ✅ IMPLEMENTIERT (SVG-Balkendiagramm) |
-| F-4.9 | Datenüberprüfung & Visualisierung | Das System soll verfügbare Darstellungsstile bereitstellen inklusive **Liniendiagramm** (Verteilung über Zeit), **Kreisdiagramm** (Verteilung nach Typ). | ✅ IMPLEMENTIERT (SVG-Linien- & Kreisdiagramme) |
-| **F-4.10** | **Datenüberprüfung & Visualisierung** | Das System soll verfügbare Darstellungsstile mit **erweiterten visuellen Optionen** anbieten, inklusive **Hintergrund-Einfärbung** (repräsentiert eine einzeln auswählbare Dimension wie Typ oder Wetter) und/oder **Icons/Piktogramme** (repräsentieren eine oder mehrere auswählbare Dimensionen wie Gesundheitsdaten oder Eintrags-Details). | ⏳ NICHT IMPLEMENTIERT |
-| **F-4.11** | **Datenüberprüfung & Visualisierung** | Das System soll nach dem Commit von Einträgen die aktualisierte Typ-Kachel mit einer pulsierenden blauen Glow-Animation anzeigen (3 Pulse über 3 Sekunden, dann Ausblenden über 5 Sekunden, insgesamt 8 Sekunden). | ✅ IMPLEMENTIERT |
+|  | **F-4.1** | **Datenüberprüfung & Visualisierung** | Zusammenfassungsvorschau vor Finalisierung. Entfernt nach Benutzerpräferenz. |
+| Yes | F-4.2 | Datenüberprüfung & Visualisierung | "View" Navigations-Tab zur Datenüberprüfungsseite. |
+| Yes | F-4.3 | Datenüberprüfung & Visualisierung | Filterung nach einem oder mehreren Typen via Checkboxen. |
+| Yes | F-4.4 | Datenüberprüfung & Visualisierung | Filter für neueste Einträge (Standard: 24h) via Zeitspannen-Filter. |
+| Yes | F-4.5 | Datenüberprüfung & Visualisierung | Zeitspannen-Definition (Stunden/Tage/Wochen/Monate). |
+| Yes | F-4.6 | Datenüberprüfung & Visualisierung | Zeitspannen-Dropdown (ohne Minuten und Jahre im MVP). |
+| Yes | F-4.7 | Datenüberprüfung & Visualisierung | Darstellungsstil-Auswahl via Dropdown. |
+| Yes | F-4.8 | Datenüberprüfung & Visualisierung | Standard: SVG-Balkendiagramm. |
+| Yes | F-4.9 | Datenüberprüfung & Visualisierung | Linien- und Kreisdiagramme als SVG verfügbar. |
+|  | **F-4.10** | **Datenüberprüfung & Visualisierung** | Erweiterte visuelle Optionen (Hintergrund-Einfärbung, Icons/Piktogramme für Dimensionen). |
+| Yes | **F-4.11** | **Datenüberprüfung & Visualisierung** | Pulsierende blaue Glow-Animation auf Typ-Kachel nach Commit (8s gesamt). |
 | --- | --- | --- | --- |
-| **NF-1.1** | **Nicht-funktionale & technische Anforderungen** | Das System soll **voll funktionsfähig** sein in den **neuesten zwei Versionen** folgender Browser: **Chrome, Firefox und Safari** (Desktop und Mobil). Die gewählten **Web APIs (insb. IndexedDB)** müssen **browserübergreifend stabil** funktionieren. | ✅ IMPLEMENTIERT (Vanilla JS, native IndexedDB) |
-| **NF-1.1.1** | **Nicht-funktionale & technische Anforderungen** | Das System soll Vanilla JavaScript ES6 Module ohne Build-Tools oder Bundler verwenden. Aller Code läuft direkt im Browser. | ✅ IMPLEMENTIERT |
-| NF-1.2 | Nicht-funktionale & technische Anforderungen | Das System soll die Benutzeroberfläche vollständig für mobile Browser optimieren (**Responsive Design**). | ✅ IMPLEMENTIERT (Mobile-First CSS) |
-| NF-1.3 | Nicht-funktionale & technische Anforderungen | Das System soll die Benutzeroberfläche **touch-freundlich** gestalten. | ✅ IMPLEMENTIERT (48px Minimum Touch-Targets) |
-| **NF-1.4** | **Nicht-funktionale & technische Anforderungen** | Das System soll den Benutzer-Interaktionsfluss zum Loggen eines **Kern-Eintrags** (Typ, Details, Count) für Mobilgeräte optimieren mit Zähler-Buttons positioniert in der Bildschirmmitte für optimale Daumen-Erreichbarkeit. Einheiten-Eingabe ist rechts positioniert. | ✅ IMPLEMENTIERT |
-| NF-1.4.3| Nicht-funktionale & technische Anforderungen | Das System soll Listen oder Kacheln mit einer **Farbe und ein oder zwei Zeichen** darstellen für einfache Identifikation. | ✅ IMPLEMENTIERT (Farbe + Emoji-Icons) |
-| **NF-1.5** | **Nicht-funktionale & technische Anforderungen** | Das System soll alle Datenabrufe und Visualisierungsgenerierungen (nach Auswahl von Filtern/Zeitspanne) in **nicht mehr als 500 Millisekunden (P95)** für bis zu **10.000 Einträge** durchführen, unter Verwendung von **IndexedDB** und **Web Workers** für asynchrone Verarbeitung um UI-Blockierung zu verhindern. | ⚠️ TEILWEISE (IndexedDB optimiert, Web Workers nicht implementiert) |
-| **NF-1.6** | **Nicht-funktionale & technische Anforderungen** | Das System soll effizient mindestens **100.000 Einträge** verarbeiten können. Die Performance-Metriken (NF-1.5) müssen für **einfache Datenfilterung** erhalten bleiben; komplexere Abfragen dürfen langsamere Ladezeiten aufweisen. | ⏳ NICHT GETESTET (MVP getestet mit <1000 Einträgen) |
-| NF-1.7 | Nicht-funktionale & technische Anforderungen | Das System soll die exportierte/importierte Datendatei im **CSV**-Format bereitstellen. | ✅ IMPLEMENTIERT |
-| **NF-1.7.1** | **Nicht-funktionale & technische Anforderungen** | Das System soll das CSV-Format verwenden: `id;timestamp;type_name;detail_name;count;unit` wobei unit die benutzerdefinierte Einheit aus dem Entry-Record ist. | ✅ IMPLEMENTIERT |
-| NF-1.8 | Nicht-funktionale & technische Anforderungen | Das System soll als CSV-Trennzeichen das **Semikolon (;)** verwenden. | ✅ IMPLEMENTIERT |
-| NF-1.9 | Nicht-funktionale & technische Anforderungen | Das System soll die Datei-Kodierung **UTF-8** verwenden. | ✅ IMPLEMENTIERT (mit BOM für Excel-Kompatibilität) |
-| NF-1.10| Nicht-funktionale & technische Anforderungen| Das System soll lokal gespeicherte Daten und Daten während der Übertragung nicht verschlüsseln (basierend auf Browser/HTTPS-Sicherheit), aber die lokale Speichermethode sollte triviales Lesen der Daten verhindern (z.B. Speicherung im JSON-Format). | ✅ IMPLEMENTIERT (IndexedDB native Sicherheit) |
-| NF-1.11| Nicht-funktionale & technische Anforderungen| Das System soll dem Benutzer ermöglichen, die Namen der Eintragstypen und Details zu ändern **um persönliche Datenverschleierung zu verbessern**. | ✅ IMPLEMENTIERT (Edit-Funktionalität in Definitionen verwalten) |
-| NF-1.12| Nicht-funktionale & technische Anforderungen| Das System soll ein Feature zum **Import** einer lokalen Datendatei im Format spezifiziert durch NF-1.7/1.8/1.9 bereitstellen. | ✅ IMPLEMENTIERT (CSV-Import mit Fehlerbehandlung) |
-| **NF-1.13** | **Nicht-funktionale & technische Anforderungen** | Das System soll als Progressive Web App (PWA) installierbar sein mit Offline-Funktionalität über Service Worker. | ✅ IMPLEMENTIERT (manifest.json + sw.js) |
+| Yes | **NF-1.1** | **Nicht-funktionale & technische Anforderungen** | Volle Funktionsfähigkeit in Chrome, Firefox, Safari (Desktop + Mobil, jeweils neueste 2 Versionen). Vanilla JS, native IndexedDB. |
+| Yes | **NF-1.1.1** | **Nicht-funktionale & technische Anforderungen** | Vanilla JavaScript ES6 Module ohne Build-Tools. Code läuft direkt im Browser. |
+| Yes | NF-1.2 | Nicht-funktionale & technische Anforderungen | Mobile-First Responsive Design. |
+| Yes | NF-1.3 | Nicht-funktionale & technische Anforderungen | Touch-freundliche UI (48px Minimum Touch-Targets). |
+| Yes | **NF-1.4** | **Nicht-funktionale & technische Anforderungen** | Mobil-optimierter Interaktionsfluss: Zähler-Buttons mittig für Daumen-Erreichbarkeit, Einheiten-Eingabe rechts. |
+| Yes | NF-1.4.3| Nicht-funktionale & technische Anforderungen | Listen/Kacheln mit Farbe + 1-2 Zeichen (Emoji-Icons) für einfache Identifikation. |
+|  | **NF-1.5** | **Nicht-funktionale & technische Anforderungen** | Datenabrufe/Visualisierung ≤500ms (P95) für ≤10.000 Einträge via IndexedDB + Web Workers. Teilweise implementiert (nur IndexedDB). |
+|  | **NF-1.6** | **Nicht-funktionale & technische Anforderungen** | Effiziente Verarbeitung von ≥100.000 Einträgen. MVP mit <1000 Einträgen getestet. |
+| Yes | NF-1.7 | Nicht-funktionale & technische Anforderungen | Export/Import im CSV-Format. |
+| Yes | **NF-1.7.1** | **Nicht-funktionale & technische Anforderungen** | CSV-Format: `id;timestamp;type_name;detail_name;count;unit`. |
+| Yes | NF-1.8 | Nicht-funktionale & technische Anforderungen | CSV-Trennzeichen: Semikolon (;). |
+| Yes | NF-1.9 | Nicht-funktionale & technische Anforderungen | Datei-Kodierung: UTF-8 mit BOM (Excel-Kompatibilität). |
+| Yes | NF-1.10| Nicht-funktionale & technische Anforderungen| Keine Verschlüsselung (Browser/HTTPS-Sicherheit), IndexedDB native Sicherheit verhindert triviales Lesen. |
+| Yes | NF-1.11| Nicht-funktionale & technische Anforderungen| Änderbare Namen für Typen/Details zur Datenverschleierung. |
+| Yes | NF-1.12| Nicht-funktionale & technische Anforderungen| CSV-Import mit Fehlerbehandlung. |
+| Yes | **NF-1.13** | **Nicht-funktionale & technische Anforderungen** | PWA-installierbar mit Offline-Funktionalität (manifest.json + Service Worker). |
 | --- | --- | --- | --- |
-| NF-2.1 | Geschäftliche & Projekt-Einschränkungen | Das System soll ein Minimum Viable Product (MVP) liefern, das **Kern-Logging (F-1.1 bis F-1.6), Basis-Viewing (F-4.2, F-4.3, F-4.5), CSV-Export/Import (F-1.7, NF-1.7-1.9), Zeit-Auto-Erfassung (F-2.1) und Basis-Einstellungen (F-3.1, F-3.4, F-3.6)** innerhalb von 2 Monaten abdeckt. | ✅ ABGESCHLOSSEN (2026-01-13) |
-| NF-2.2 | Geschäftliche & Projekt-Einschränkungen | Das System soll die Architektur so gestalten, dass sie ein einmaliges Kauf-Geschäftsmodell ermöglicht wenn öffentlich veröffentlicht (z.B. volle Funktion anbieten, keine Werbung). | ✅ ARCHITEKTUR UNTERSTÜTZT |
-| NF-2.3 | Geschäftliche & Projekt-Einschränkungen | Das System soll das System-Design so gestalten, dass es die Möglichkeit berücksichtigt, eine kleine Gruppe externer Benutzer zu unterstützen (nicht nur den einzelnen initialen Benutzer). | ✅ ARCHITEKTUR UNTERSTÜTZT |
+| Yes | NF-2.1 | Geschäftliche & Projekt-Einschränkungen | MVP abgeschlossen (2026-01-13): Kern-Logging, Viewing, CSV-Export/Import, Zeit-Erfassung, Einstellungen. |
+| Yes | NF-2.2 | Geschäftliche & Projekt-Einschränkungen | Architektur unterstützt einmaliges Kauf-Geschäftsmodell. |
+| Yes | NF-2.3 | Geschäftliche & Projekt-Einschränkungen | Design berücksichtigt kleine externe Benutzergruppe. |
 
 ---
 
