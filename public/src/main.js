@@ -1210,8 +1210,8 @@ function showTimestampDialog(detailId) {
   state.timestampOffset = 0; // Reset to now
   state.timestampSign = -1; // Default to subtract
 
-  // F-2.1.1 Extension: If counter is 0, set it to 1
-  if (state.detailCounts[detailId] === 0) {
+  // F-2.1.1 Extension: If counter is 0 or undefined, set it to 1
+  if (!state.detailCounts[detailId] || state.detailCounts[detailId] === 0) {
     state.detailCounts[detailId] = 1;
     updateDetailCount(detailId);
     updateCommitButton();
