@@ -1210,13 +1210,6 @@ function showTimestampDialog(detailId) {
   state.timestampOffset = 0; // Reset to now
   state.timestampSign = -1; // Default to subtract
 
-  // F-2.1.1 Extension: If counter is 0 or undefined, set it to 1
-  if (!state.detailCounts[detailId] || state.detailCounts[detailId] === 0) {
-    state.detailCounts[detailId] = 1;
-    updateDetailCount(detailId);
-    updateCommitButton();
-  }
-
   const dialog = document.getElementById('timestamp-dialog');
 
   // Reset sign button
@@ -1302,6 +1295,14 @@ function formatOffset(ms) {
 }
 
 function applyTimestampOffset() {
+  // F-2.1.1 Extension: If counter is 0 or undefined, set it to 1
+  const detailId = state.timestampAdjustDetailId;
+  if (detailId && (!state.detailCounts[detailId] || state.detailCounts[detailId] === 0)) {
+    state.detailCounts[detailId] = 1;
+    updateDetailCount(detailId);
+    updateCommitButton();
+  }
+
   // The offset is already stored in state.timestampOffset
   // It will be applied when committing entries
   hideTimestampDialog();
