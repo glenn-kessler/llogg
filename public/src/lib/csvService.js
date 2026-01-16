@@ -1,7 +1,7 @@
 /**
  * CSV Import/Export Service
- * Requirements: F-1.7, C-2.0, C-3.0, NF-1.7, NF-1.8, NF-1.9
- * CSV Format: id;timestamp;type_name;detail_name;count;unit
+ * Requirements: F-1.7, F-2.2, C-2.0, C-3.0, NF-1.7, NF-1.8, NF-1.9
+ * CSV Format: id;timestamp;type_name;detail_name;count;unit;latitude;longitude;accuracy
  */
 
 import { getEntries, getTypes, getDetails, createEntry, getType, getDetail } from './dataService.js';
@@ -22,8 +22,8 @@ export async function exportToCSV() {
   const detailMap = {};
   details.forEach(d => { detailMap[d.id] = d; });
 
-  // CSV Header (NF-1.7)
-  let csv = 'id;timestamp;type_name;detail_name;count;unit\n';
+  // CSV Header (NF-1.7, F-2.2)
+  let csv = 'id;timestamp;type_name;detail_name;count;unit;latitude;longitude;accuracy\n';
 
   // Add entries
   entries.forEach(entry => {
@@ -38,7 +38,10 @@ export async function exportToCSV() {
       escapeCsvField(type.name),
       escapeCsvField(detail.name),
       entry.count,
-      escapeCsvField(entry.unit || '') // Use unit from entry, not detail
+      escapeCsvField(entry.unit || ''), // Use unit from entry, not detail
+      entry.latitude || '', // GPS latitude (F-2.2)
+      entry.longitude || '', // GPS longitude (F-2.2)
+      entry.accuracy || '' // GPS accuracy in meters (F-2.2)
     ].join(';'); // Semicolon delimiter (NF-1.8)
 
     csv += row + '\n';
@@ -90,7 +93,7 @@ export async function importFromCSV(csvContent) {
   // Validate header
   const header = lines[0].toLowerCase();
   if (!header.includes('timestamp') || !header.includes('type_name') || !header.includes('detail_name')) {
-    throw new Error('Invalid CSV format. Expected columns: id;timestamp;type_name;detail_name;count;unit');
+    throw new Error('Invalid CSV format. Expected columns: id;timestamp;type_name;detail_name;count;unit;latitude;longitude;accuracy');
   }
 
   const imported = [];
@@ -106,7 +109,7 @@ export async function importFromCSV(csvContent) {
         continue;
       }
 
-      const [id, timestamp, typeName, detailName, count, unit] = row;
+      const [id, timestamp, typeName, detailName, count, unit, latitude, longitude, accuracy] = row;
 
       // Find matching type and detail
       const type = typeByName[typeName.toLowerCase()];
@@ -135,12 +138,21 @@ export async function importFromCSV(csvContent) {
         continue;
       }
 
-      // Create entry (will use provided timestamp from CSV)
+      // Parse location data if present
+      const lat = latitude && latitude.trim() ? parseFloat(latitude) : null;
+      const lon = longitude && longitude.trim() ? parseFloat(longitude) : null;
+      const acc = accuracy && accuracy.trim() ? parseFloat(accuracy) : null;
+
+      // Create entry with location data (F-2.2)
       // Note: We override the automatic timestamp for import
       const entryId = await createEntry({
         typeId: type.id,
         detailId: detail.id,
-        count: countNum
+        count: countNum,
+        unit: unit || '',
+        latitude: lat,
+        longitude: lon,
+        accuracy: acc
       });
 
       imported.push(entryId);
