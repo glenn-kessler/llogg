@@ -1,4 +1,4 @@
-## Finalisierte Anforderungen (Baseline 1.4 - Implementierte Version)
+## Finalisierte Anforderungen (Baseline 1.6 - Implementierte Version)
 
 **Letzte Aktualisierung:** 2026-01-16
 **Status:** MVP vollständig implementiert und getestet
@@ -82,11 +82,14 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-4.12    | Datenüberprüfung & Visualisierung            | Automatische Schrittgröße basierend auf Zeitspanne (1 Tag → 1h Schritte, 7 Tage → 1 Tag Schritte, etc.).                                                                 |
 | Yes  | F-4.12.1  | Datenüberprüfung & Visualisierung            | Manuelle Schrittgröße-Auswahl (1h, 6h, 1 Tag, 1 Woche, 1 Monat) mit Auto-Modus-Toggle.                                                                                   |
 | Yes  | F-4.12.2  | Datenüberprüfung & Visualisierung            | Zeitachsen-Beschriftung zeigt Wochentags-Abkürzungen bei Tages-Schritten (Mon, Tue, etc.).                                                                               |
-| Yes  | F-4.13    | Datenüberprüfung & Visualisierung            | Achsenausrichtung umschaltbar (Zeit horizontal/vertikal, Daten vertikal/horizontal).                                                                                      |
-| Yes  | F-4.14    | Datenüberprüfung & Visualisierung            | Diagramm-Position oben auf View-Seite (vor Filtern).                                                                                                                     |
-| Yes  | F-4.15    | Datenüberprüfung & Visualisierung            | Gruppierte Balkendiagramme für mehrere Items pro Zeitschritt.                                                                                                            |
-| Yes  | F-4.16    | Datenüberprüfung & Visualisierung            | Multi-Linien-Diagramme mit farblich distinkten Linien pro Item.                                                                                                          |
-| Yes  | F-4.17    | Datenüberprüfung & Visualisierung            | View-Einstellungen in LocalStorage gespeichert (Chart-Typ, Schrittgröße, Ausrichtung, Aggregation, Zeitspanne).                                                          |
+| Yes  | F-4.13    | Datenüberprüfung & Visualisierung            | Counter-Achsen-Modus umschaltbar via Button-Toggle (Y-Achse: zeitbasiert, X-Achse: item-basiert).                                                                        |
+| Yes  | F-4.13.1  | Datenüberprüfung & Visualisierung            | Y-Achsen-Modus (Default): Counter auf Y-Achse, Zeit-Labels auf X-Achse, zeitbasierte Aggregation mit Schrittgröße.                                                       |
+| Yes  | F-4.13.2  | Datenüberprüfung & Visualisierung            | X-Achsen-Modus: Counter auf X-Achse, Item-Namen auf Y-Achse, Gesamt-Aggregation ohne Zeit-Dimension.                                                                     |
+| Yes  | F-4.14    | Datenüberprüfung & Visualisierung            | Filter-Änderungen werden sofort angewendet ohne Apply-Button (instant updates).                                                                                          |
+| Yes  | F-4.15    | Datenüberprüfung & Visualisierung            | Diagramm-Position oben auf View-Seite (vor Filtern).                                                                                                                     |
+| Yes  | F-4.16    | Datenüberprüfung & Visualisierung            | Gruppierte Balkendiagramme für mehrere Items pro Zeitschritt.                                                                                                            |
+| Yes  | F-4.17    | Datenüberprüfung & Visualisierung            | Multi-Linien-Diagramme mit farblich distinkten Linien pro Item.                                                                                                          |
+| Yes  | F-4.18    | Datenüberprüfung & Visualisierung            | View-Einstellungen in LocalStorage gespeichert (Chart-Typ, Schrittgröße, Achsen-Modus, Aggregation, Zeitspanne).                                                         |
 | ---  | ---       | ---                                          | ---                                                                                                                                                                      |
 | Yes  | NF-1.1    | Nicht-funktionale & technische Anforderungen | Volle Funktionsfähigkeit in Chrome, Firefox, Safari (Desktop + Mobil, jeweils neueste 2 Versionen). Vanilla JS, native IndexedDB.                                        |
 | Yes  | NF-1.1.1  | Nicht-funktionale & technische Anforderungen | Vanilla JavaScript ES6 Module ohne Build-Tools. Code läuft direkt im Browser.                                                                                            |
@@ -289,6 +292,17 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.6 (2026-01-16)
+- Funktion: Implementiert Counter-Achsen-Modus-Umschaltung (Y-Achse vs X-Achse)
+- Funktion: Implementiert Y-Achsen-Modus mit zeitbasierter Aggregation (Counter vertikal, Zeit horizontal)
+- Funktion: Implementiert X-Achsen-Modus mit item-basierter Aggregation (Counter horizontal, Items vertikal, keine Zeit)
+- Funktion: Implementiert aggregateByItems() für zeitlose Gesamt-Aggregation
+- Verbesserung: Apply-Button entfernt - alle Filter-Änderungen werden sofort angewendet (instant updates)
+- Verbesserung: Event-Listener auf allen Filter-Controls für sofortige Aktualisierung
+- Verbesserung: Achsen-Toggle als Button statt Dropdown für bessere Bedienbarkeit
+- Verbesserung: Achsen-Modus in LocalStorage persistiert
+- UX: Sofortiges visuelles Feedback bei allen View-Einstellungsänderungen
+
 ### Version 1.4 (2026-01-16)
 - Funktion: Implementiert zeitbasierte Schrittgrößen für Diagramme (1h, 6h, 1 Tag, 1 Woche, 1 Monat)
 - Funktion: Implementiert automatische Schrittgröße basierend auf Zeitspanne
@@ -352,5 +366,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-16
-**Version:** 1.4
+**Version:** 1.6
 **Status:** MVP Komplett & Produktionsbereit

@@ -1460,29 +1460,62 @@ async function handleStoreConfig() {
 // ============================================================================
 
 function setupViewPage() {
-  document.getElementById('btn-apply-filters').addEventListener('click', applyFilters);
-
-  // Aggregation level toggle
+  // Aggregation level toggle - apply instantly
   document.querySelectorAll('input[name="agg-level"]').forEach(radio => {
-    radio.addEventListener('change', toggleAggregationLevel);
+    radio.addEventListener('change', () => {
+      toggleAggregationLevel();
+      applyFilters();
+    });
   });
+
+  // Chart type change - apply instantly
+  document.getElementById('chart-type').addEventListener('change', applyFilters);
+
+  // Timespan changes - apply instantly
+  document.getElementById('filter-timespan-unit').addEventListener('change', applyFilters);
+  document.getElementById('filter-timespan-value').addEventListener('input', applyFilters);
+
+  // Auto step size toggle - apply instantly
+  document.getElementById('auto-step-size').addEventListener('change', (e) => {
+    document.getElementById('manual-step-group').style.display = e.target.checked ? 'none' : 'block';
+    applyFilters();
+  });
+
+  // Manual step size change - apply instantly
+  document.getElementById('manual-step-size').addEventListener('change', applyFilters);
+
+  // Axis toggle button
+  document.getElementById('btn-axis-toggle').addEventListener('click', toggleAxisMode);
 
   // Select/Deselect all details buttons
   document.getElementById('btn-select-all-details').addEventListener('click', () => {
     document.querySelectorAll('#filter-details input[type="checkbox"]').forEach(cb => cb.checked = true);
+    applyFilters();
   });
 
   document.getElementById('btn-deselect-all-details').addEventListener('click', () => {
     document.querySelectorAll('#filter-details input[type="checkbox"]').forEach(cb => cb.checked = false);
-  });
-
-  // Auto step size toggle
-  document.getElementById('auto-step-size').addEventListener('change', (e) => {
-    document.getElementById('manual-step-group').style.display = e.target.checked ? 'none' : 'block';
+    applyFilters();
   });
 
   // Load saved view preferences from localStorage
   loadViewPreferences();
+}
+
+function toggleAxisMode() {
+  const btn = document.getElementById('btn-axis-toggle');
+  const currentAxis = btn.getAttribute('data-axis');
+
+  if (currentAxis === 'y') {
+    btn.setAttribute('data-axis', 'x');
+    btn.textContent = 'X-Axis (Item-based)';
+  } else {
+    btn.setAttribute('data-axis', 'y');
+    btn.textContent = 'Y-Axis (Time-based)';
+  }
+
+  // Apply changes immediately
+  applyFilters();
 }
 
 function toggleAggregationLevel() {
@@ -1513,6 +1546,7 @@ async function loadViewPage() {
     checkbox.id = `filter-type-${type.id}`;
     checkbox.value = type.id;
     checkbox.checked = true;
+    checkbox.addEventListener('change', applyFilters); // Apply instantly
 
     const label = document.createElement('label');
     label.htmlFor = `filter-type-${type.id}`;
@@ -1569,6 +1603,7 @@ async function populateDetailFilters() {
       checkbox.id = `filter-detail-${detail.id}`;
       checkbox.value = detail.id;
       checkbox.checked = false; // Start with none selected
+      checkbox.addEventListener('change', applyFilters); // Apply instantly
 
       const label = document.createElement('label');
       label.htmlFor = `filter-detail-${detail.id}`;
@@ -1657,55 +1692,69 @@ async function applyFilters() {
 async function renderChart(entries, aggLevel, selectedIds, startTime, endTime) {
   const chartType = document.getElementById('chart-type').value;
   const svg = document.getElementById('chart-svg');
-  const orientation = document.getElementById('axis-orientation').value;
 
-  // Determine step size
-  const autoStepSize = document.getElementById('auto-step-size').checked;
-  const timespanValue = parseInt(document.getElementById('filter-timespan-value').value);
-  const timespanUnit = document.getElementById('filter-timespan-unit').value;
-
-  let stepSize;
-  if (autoStepSize) {
-    stepSize = calculateAutoStepSize(timespanValue, timespanUnit);
-  } else {
-    stepSize = document.getElementById('manual-step-size').value;
-  }
+  // Get axis mode (Y or X)
+  const axisMode = document.getElementById('btn-axis-toggle').getAttribute('data-axis');
 
   // Save preferences
   saveViewPreferences();
 
-  // Aggregate by time steps
-  const timeAggregatedData = await aggregateByTimeSteps(
-    entries,
-    startTime,
-    endTime,
-    stepSize,
-    aggLevel,
-    selectedIds,
-    state.types,
-    dataService.getDetail
-  );
+  let chartData;
+
+  if (axisMode === 'y') {
+    // Y-AXIS MODE: Time-based aggregation (counter on Y-axis)
+    // Time labels on X-axis, aggregated data on Y-axis
+
+    const autoStepSize = document.getElementById('auto-step-size').checked;
+    const timespanValue = parseInt(document.getElementById('filter-timespan-value').value);
+    const timespanUnit = document.getElementById('filter-timespan-unit').value;
+
+    let stepSize;
+    if (autoStepSize) {
+      stepSize = calculateAutoStepSize(timespanValue, timespanUnit);
+    } else {
+      stepSize = document.getElementById('manual-step-size').value;
+    }
+
+    // Aggregate by time steps
+    chartData = await aggregateByTimeSteps(
+      entries,
+      startTime,
+      endTime,
+      stepSize,
+      aggLevel,
+      selectedIds,
+      state.types,
+      dataService.getDetail
+    );
+
+  } else {
+    // X-AXIS MODE: Item-based aggregation (counter on X-axis)
+    // Item names on Y-axis, total counts on X-axis (NO TIME)
+
+    chartData = await aggregateByItems(entries, aggLevel, selectedIds, state.types, dataService.getDetail);
+  }
 
   // If no data, show message
-  if (timeAggregatedData.length === 0) {
+  if (!chartData || chartData.length === 0) {
     svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#95a5a6">No data available for the selected filters</text>';
     return;
   }
 
   // Render based on chart type
-  const options = { orientation };
+  const options = { axisMode };
 
   switch (chartType) {
     case 'bar':
-      renderGroupedBarChart(svg, timeAggregatedData, options);
+      renderGroupedBarChart(svg, chartData, options);
       break;
     case 'line':
-      renderMultiLineChart(svg, timeAggregatedData, options);
+      renderMultiLineChart(svg, chartData, options);
       break;
     case 'pie':
-      // For pie chart, aggregate all data across time
+      // For pie chart, aggregate all data
       const pieData = {};
-      timeAggregatedData.forEach(step => {
+      chartData.forEach(step => {
         step.items.forEach(item => {
           if (!pieData[item.name]) {
             pieData[item.name] = { label: item.name, value: 0, color: item.color };
@@ -1718,12 +1767,54 @@ async function renderChart(entries, aggLevel, selectedIds, startTime, endTime) {
   }
 }
 
+/**
+ * Aggregate entries by items (no time dimension)
+ * Used for X-axis mode where counter is on X-axis
+ */
+async function aggregateByItems(entries, aggLevel, selectedIds, types, getDetailFn) {
+  const items = {};
+
+  if (aggLevel === 'type') {
+    // Aggregate by type
+    for (const entry of entries) {
+      if (!items[entry.typeId]) {
+        const type = types.find(t => t.id === entry.typeId);
+        items[entry.typeId] = {
+          name: type?.name || 'Unknown',
+          value: 0,
+          color: type?.color || '#95a5a6'
+        };
+      }
+      items[entry.typeId].value += entry.count;
+    }
+  } else {
+    // Aggregate by detail
+    for (const entry of entries) {
+      if (!items[entry.detailId]) {
+        const detail = await getDetailFn(entry.detailId);
+        items[entry.detailId] = {
+          name: detail?.name || 'Unknown',
+          value: 0,
+          color: detail?.color || '#95a5a6'
+        };
+      }
+      items[entry.detailId].value += entry.count;
+    }
+  }
+
+  // Return in same format as time-aggregated data for consistent rendering
+  return [{
+    label: 'Total',
+    items: Object.values(items)
+  }];
+}
+
 function saveViewPreferences() {
   const prefs = {
     chartType: document.getElementById('chart-type').value,
     autoStepSize: document.getElementById('auto-step-size').checked,
     manualStepSize: document.getElementById('manual-step-size').value,
-    axisOrientation: document.getElementById('axis-orientation').value,
+    axisMode: document.getElementById('btn-axis-toggle').getAttribute('data-axis'),
     aggLevel: document.querySelector('input[name="agg-level"]:checked').value,
     timespanUnit: document.getElementById('filter-timespan-unit').value,
     timespanValue: document.getElementById('filter-timespan-value').value
@@ -1740,7 +1831,18 @@ function loadViewPreferences() {
     if (prefs.chartType) document.getElementById('chart-type').value = prefs.chartType;
     if (prefs.autoStepSize !== undefined) document.getElementById('auto-step-size').checked = prefs.autoStepSize;
     if (prefs.manualStepSize) document.getElementById('manual-step-size').value = prefs.manualStepSize;
-    if (prefs.axisOrientation) document.getElementById('axis-orientation').value = prefs.axisOrientation;
+
+    // Load axis mode
+    const axisBtn = document.getElementById('btn-axis-toggle');
+    if (prefs.axisMode) {
+      axisBtn.setAttribute('data-axis', prefs.axisMode);
+      if (prefs.axisMode === 'x') {
+        axisBtn.textContent = 'X-Axis (Item-based)';
+      } else {
+        axisBtn.textContent = 'Y-Axis (Time-based)';
+      }
+    }
+
     if (prefs.aggLevel) {
       const radio = document.querySelector(`input[name="agg-level"][value="${prefs.aggLevel}"]`);
       if (radio) radio.checked = true;
