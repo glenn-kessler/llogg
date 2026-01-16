@@ -248,7 +248,7 @@ export async function deleteDetail(id) {
  * @param {Object} entry - { typeId, detailId, count, unit }
  * @returns {Promise<number>} - ID of created entry
  */
-export async function createEntry({ typeId, detailId, count, unit }) {
+export async function createEntry({ typeId, detailId, count, unit, latitude, longitude, accuracy }) {
   // Validate count (F-1.5 - must be positive integer >= 1)
   if (!count || count < 1) {
     throw new Error('Count must be a positive integer >= 1');
@@ -265,6 +265,15 @@ export async function createEntry({ typeId, detailId, count, unit }) {
     timestamp: new Date().toISOString()
   };
 
+  // Add GPS coordinates if provided (F-2.2)
+  if (latitude != null && longitude != null) {
+    entry.latitude = latitude;
+    entry.longitude = longitude;
+    if (accuracy != null) {
+      entry.accuracy = accuracy;
+    }
+  }
+
   const request = store.add(entry);
 
   return new Promise((resolve, reject) => {
@@ -278,7 +287,7 @@ export async function createEntry({ typeId, detailId, count, unit }) {
  * @param {Object} entry - { typeId, detailId, count, unit, timestamp }
  * @returns {Promise<number>} - ID of created entry
  */
-export async function createEntryWithTimestamp({ typeId, detailId, count, unit, timestamp }) {
+export async function createEntryWithTimestamp({ typeId, detailId, count, unit, timestamp, latitude, longitude, accuracy }) {
   // Validate count (F-1.5 - must be positive integer >= 1)
   if (!count || count < 1) {
     throw new Error('Count must be a positive integer >= 1');
@@ -293,6 +302,15 @@ export async function createEntryWithTimestamp({ typeId, detailId, count, unit, 
     unit: unit || '', // Custom unit per entry
     timestamp: timestamp || new Date().toISOString()
   };
+
+  // Add GPS coordinates if provided (F-2.2)
+  if (latitude != null && longitude != null) {
+    entry.latitude = latitude;
+    entry.longitude = longitude;
+    if (accuracy != null) {
+      entry.accuracy = accuracy;
+    }
+  }
 
   const request = store.add(entry);
 

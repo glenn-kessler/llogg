@@ -1,4 +1,4 @@
-## Finalisierte Anforderungen (Baseline 1.6.1 - Implementierte Version)
+## Finalisierte Anforderungen (Baseline 1.6.3 - Implementierte Version)
 
 **Letzte Aktualisierung:** 2026-01-16
 **Status:** MVP vollständig implementiert und getestet
@@ -39,7 +39,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-2.1.4   | Automatischer Kontext & Anreicherung         | Inkrementelle Zeitanpassung bei mehrfachem Klick (z.B. 2x "-5 min" = -10 min).                                                                                           |
 | Yes  | F-2.1.5   | Automatischer Kontext & Anreicherung         | Glow-Effekt am Uhr-Icon bei angepasstem Zeitstempel bis Commit/Reset.                                                                                                    |
 | Yes  | F-2.1.6   | Automatischer Kontext & Anreicherung         | "Reset to Now" Button im Zeitstempel-Dialog.                                                                                                                             |
-|      | F-2.2     | Automatischer Kontext & Anreicherung         | Automatische GPS-Erfassung (~10m Genauigkeit). MVP ausgeschlossen.                                                                                                       |
+| Yes  | F-2.2     | Automatischer Kontext & Anreicherung         | Automatische GPS-Erfassung (Latitude, Longitude, Accuracy) bei Entry-Erstellung mit 5s Timeout und 1min Cache. Speicherung in Entry-Objekt und CSV-Export.             |
 |      | F-2.3     | Automatischer Kontext & Anreicherung         | Wetterdaten-Abruf vom DWD via Bright Sky API bei erfolgreicher GPS-Erfassung. MVP ausgeschlossen.                                                                        |
 |      | F-2.4     | Automatischer Kontext & Anreicherung         | Wetterdaten aufgeschlüsselt (Temperatur °C, Wind m/s, Luftdruck hPa) mit konfigurierbaren Einheiten. MVP ausgeschlossen.                                                 |
 |      | F-2.5     | Automatischer Kontext & Anreicherung         | On-Screen-Prompt bei Hintergrund-Laden von GPS/Wetter. MVP ausgeschlossen.                                                                                               |
@@ -295,9 +295,15 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.6.3 (2026-01-16)
+- Fix: F-2.2 GPS-Erfassung implementiert - GPS-Koordinaten werden nun bei Entry-Erstellung automatisch erfasst
+- Funktion: GPS-Daten (latitude, longitude, accuracy) werden in IndexedDB und CSV-Export gespeichert
+- Technisch: navigator.geolocation mit 5s Timeout, 1min Cache, graceful degradation bei fehlender GPS-Berechtigung
+
 ### Version 1.6.2 (2026-01-16)
-- Verbesserung: F-2.1.1 erweitert - Zeitstempel-Dialog setzt Counter automatisch auf 1 wenn Counter=0
+- Verbesserung: F-2.1.1 erweitert - Zeitstempel-Anpassung setzt Counter automatisch auf 1 wenn Counter=0
 - UX: Verhindert versehentliches Erstellen von Einträgen mit Count=0 bei Zeitstempel-Anpassung
+- Fix: Counter-Anpassung erfolgt nur beim Apply der Zeitstempel-Änderung, nicht beim Öffnen des Dialogs
 
 ### Version 1.6.1 (2026-01-16)
 - Funktion: Implementiert About-Seite mit Version und Key Features
