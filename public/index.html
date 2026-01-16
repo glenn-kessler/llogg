@@ -15,6 +15,7 @@
             <button id="nav-log" class="nav-btn active">Log</button>
             <button id="nav-view" class="nav-btn">View</button>
             <button id="nav-settings" class="nav-btn">Settings</button>
+            <button id="nav-about" class="nav-btn">About</button>
         </nav>
 
         <!-- Log Page (Default) -->
@@ -166,6 +167,71 @@
                     </div>
                     <div id="details-list" class="items-list"></div>
                 </div>
+            </section>
+        </main>
+
+        <!-- About Page -->
+        <main id="page-about" class="page">
+            <h1>About Life Logger</h1>
+
+            <section class="about-section">
+                <h2>Version 1.6</h2>
+                <p style="color: var(--color-text-dim); margin-bottom: var(--spacing-lg);">
+                    Personal life tracking application for logging daily activities, moods, and events.
+                </p>
+            </section>
+
+            <section class="about-section">
+                <h2>Key Features</h2>
+
+                <div class="changelog">
+                    <h3>Core Functionality</h3>
+                    <ul>
+                        <li>Quick logging with customizable types and details</li>
+                        <li>Automatic timestamp capture with adjustment options</li>
+                        <li>Automatic GPS location tracking (~10m accuracy)</li>
+                        <li>IP-based location fallback when GPS unavailable</li>
+                        <li>IndexedDB storage for offline-first functionality</li>
+                        <li>PWA support for mobile installation</li>
+                    </ul>
+
+                    <h3>Visualization & Analysis</h3>
+                    <ul>
+                        <li>Time-based aggregation with flexible step sizes (1h, 6h, 1 day, 1 week, 1 month)</li>
+                        <li>Dual-axis chart modes: Y-axis (time-based) and X-axis (item-based)</li>
+                        <li>Multiple chart types: Bar, Line, Pie</li>
+                        <li>Grouped bar charts for multiple items per time step</li>
+                        <li>Multi-line charts with distinct colors per item</li>
+                        <li>Instant filter updates without Apply button</li>
+                        <li>Customizable time spans and aggregation levels</li>
+                    </ul>
+
+                    <h3>Data Management</h3>
+                    <ul>
+                        <li>CSV export/import with full data preservation</li>
+                        <li>Location data included in CSV exports</li>
+                        <li>Bulk operations: Move and delete multiple details</li>
+                        <li>Drag-and-drop reordering of details</li>
+                        <li>Custom icons and colors for types and details</li>
+                        <li>Custom units per entry (flexible measurement)</li>
+                    </ul>
+
+                    <h3>User Experience</h3>
+                    <ul>
+                        <li>Mobile-first responsive design</li>
+                        <li>Touch-optimized UI (48px minimum targets)</li>
+                        <li>Last-used preferences automatically restored</li>
+                        <li>LocalStorage persistence for view settings</li>
+                        <li>Configuration mode for advanced editing</li>
+                        <li>Visual feedback with pulsing animations</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <p style="color: var(--color-text-dim); font-size: 14px; text-align: center; margin-top: var(--spacing-xl);">
+                    Built with Vanilla JavaScript • No external dependencies • Privacy-first
+                </p>
             </section>
         </main>
     </div>

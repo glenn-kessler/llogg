@@ -81,6 +81,7 @@ function setupNavigation() {
   document.getElementById('nav-log').addEventListener('click', () => showPage('log'));
   document.getElementById('nav-view').addEventListener('click', () => showPage('view'));
   document.getElementById('nav-settings').addEventListener('click', () => showPage('settings'));
+  document.getElementById('nav-about').addEventListener('click', () => showPage('about'));
 }
 
 function showPage(pageName) {

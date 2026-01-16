@@ -1,4 +1,4 @@
-## Finalisierte Anforderungen (Baseline 1.6 - Implementierte Version)
+## Finalisierte Anforderungen (Baseline 1.6.1 - Implementierte Version)
 
 **Letzte Aktualisierung:** 2026-01-16
 **Status:** MVP vollständig implementiert und getestet
@@ -62,6 +62,9 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-3.13    | Einstellungen & Benutzeroberfläche           | Icon und Farbe von Details editierbar durch Klick auf Icon im Konfigurationsmodus.                                                                                       |
 | Yes  | F-3.13.1  | Einstellungen & Benutzeroberfläche           | Edit-Dialog mit Icon-Eingabe, Farbwähler und Live-Vorschau.                                                                                                              |
 | Yes  | F-3.13.2  | Einstellungen & Benutzeroberfläche           | Sofortige UI-Aktualisierung nach Speichern ohne Datenverlust.                                                                                                            |
+| Yes  | F-3.14    | Einstellungen & Benutzeroberfläche           | About-Seite mit Versionsnummer und Key Features in Changelog-Stil.                                                                                                       |
+| Yes  | F-3.14.1  | Einstellungen & Benutzeroberfläche           | Version prominent am Anfang der About-Seite angezeigt.                                                                                                                   |
+| Yes  | F-3.14.2  | Einstellungen & Benutzeroberfläche           | Key Features gruppiert nach Kategorien (Core, Visualization, Data Management, UX).                                                                                       |
 | ---  | ---       | ---                                          | ---                                                                                                                                                                      |
 | Yes  | F-4.0     | Datenüberprüfung & Visualisierung            | Ziel: Flexible Aggregations- und Visualisierungsoptionen.                                                                                                                |
 | Yes  | F-4.0.1   | Datenüberprüfung & Visualisierung            | Wahl zwischen Typ- und Detail-basierter Aggregation in Diagrammen.                                                                                                       |
@@ -292,6 +295,14 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.6.1 (2026-01-16)
+- Funktion: Implementiert About-Seite mit Version und Key Features
+- Funktion: About-Seite zeigt aktuelle Version (1.6) prominent an
+- Funktion: Key Features in changelog-ähnlichem Stil gruppiert (Core, Visualization, Data Management, UX)
+- Verbesserung: Navigation erweitert um About-Tab
+- Fix: CSV-Export enthält nun GPS-Location-Daten (latitude, longitude, accuracy)
+- Fix: CSV-Import verarbeitet Location-Spalten korrekt
+
 ### Version 1.6 (2026-01-16)
 - Funktion: Implementiert Counter-Achsen-Modus-Umschaltung (Y-Achse vs X-Achse)
 - Funktion: Implementiert Y-Achsen-Modus mit zeitbasierter Aggregation (Counter vertikal, Zeit horizontal)
@@ -369,5 +380,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-16
-**Version:** 1.6
+**Version:** 1.6.1
 **Status:** MVP Komplett & Produktionsbereit
