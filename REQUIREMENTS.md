@@ -297,10 +297,13 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 - Funktion: Implementiert Y-Achsen-Modus mit zeitbasierter Aggregation (Counter vertikal, Zeit horizontal)
 - Funktion: Implementiert X-Achsen-Modus mit item-basierter Aggregation (Counter horizontal, Items vertikal, keine Zeit)
 - Funktion: Implementiert aggregateByItems() für zeitlose Gesamt-Aggregation
+- Funktion: Implementiert renderHorizontalBarChart() für horizontale Balkendiagramme im X-Modus
+- Funktion: Linien-Diagramme nur im Y-Modus verfügbar (erfordert Zeit-Dimension)
 - Verbesserung: Apply-Button entfernt - alle Filter-Änderungen werden sofort angewendet (instant updates)
 - Verbesserung: Event-Listener auf allen Filter-Controls für sofortige Aktualisierung
 - Verbesserung: Achsen-Toggle als Button statt Dropdown für bessere Bedienbarkeit
 - Verbesserung: Achsen-Modus in LocalStorage persistiert
+- Verbesserung: Automatische Chart-Typ-Auswahl basierend auf Achsen-Modus (vertikal vs horizontal)
 - UX: Sofortiges visuelles Feedback bei allen View-Einstellungsänderungen
 
 ### Version 1.4 (2026-01-16)

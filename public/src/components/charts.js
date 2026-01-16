@@ -575,6 +575,95 @@ function renderEmptyState(svg, message) {
 }
 
 /**
+ * Render Horizontal Bar Chart for item-based aggregation (X=counter mode)
+ * @param {SVGElement} svg
+ * @param {Array} data - [{label, items: [{name, value, color}]}]
+ * @param {Object} options
+ */
+export function renderHorizontalBarChart(svg, data, options = {}) {
+  if (!data || data.length === 0 || !data[0] || !data[0].items) {
+    renderEmptyState(svg, 'No data available');
+    return;
+  }
+
+  const items = data[0].items; // X-mode has single group with all items
+
+  const width = svg.clientWidth || 600;
+  const height = svg.clientHeight || 400;
+  const padding = { top: 40, right: 80, bottom: 40, left: 120 };
+
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+
+  svg.innerHTML = '';
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+  // Find max value
+  const maxValue = Math.max(...items.map(item => item.value), 1);
+
+  // Bar height
+  const barHeight = chartHeight / items.length * 0.7;
+  const barSpacing = chartHeight / items.length;
+
+  // Draw horizontal bars
+  items.forEach((item, index) => {
+    const barWidth = (item.value / maxValue) * chartWidth;
+    const x = padding.left;
+    const y = padding.top + (index * barSpacing) + (barSpacing - barHeight) / 2;
+
+    // Bar
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', barWidth);
+    rect.setAttribute('height', barHeight);
+    rect.setAttribute('fill', item.color);
+    rect.setAttribute('rx', 2);
+    svg.appendChild(rect);
+
+    // Value label at end of bar
+    const valueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    valueText.setAttribute('x', x + barWidth + 5);
+    valueText.setAttribute('y', y + barHeight / 2 + 4);
+    valueText.setAttribute('text-anchor', 'start');
+    valueText.setAttribute('fill', '#ecf0f1');
+    valueText.setAttribute('font-size', '12');
+    valueText.textContent = item.value;
+    svg.appendChild(valueText);
+
+    // Y-axis label (item name)
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', padding.left - 10);
+    label.setAttribute('y', y + barHeight / 2 + 4);
+    label.setAttribute('text-anchor', 'end');
+    label.setAttribute('fill', '#bdc3c7');
+    label.setAttribute('font-size', '12');
+    label.textContent = truncateLabel(item.name, 15);
+    svg.appendChild(label);
+  });
+
+  // Y-axis
+  const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  yAxis.setAttribute('x1', padding.left);
+  yAxis.setAttribute('y1', padding.top);
+  yAxis.setAttribute('x2', padding.left);
+  yAxis.setAttribute('y2', height - padding.bottom);
+  yAxis.setAttribute('stroke', '#95a5a6');
+  yAxis.setAttribute('stroke-width', 2);
+  svg.appendChild(yAxis);
+
+  // X-axis
+  const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  xAxis.setAttribute('x1', padding.left);
+  xAxis.setAttribute('y1', height - padding.bottom);
+  xAxis.setAttribute('x2', width - padding.right);
+  xAxis.setAttribute('y2', height - padding.bottom);
+  xAxis.setAttribute('stroke', '#95a5a6');
+  xAxis.setAttribute('stroke-width', 2);
+  svg.appendChild(xAxis);
+}
+
+/**
  * Truncate label to max length
  * @param {string} label
  * @param {number} maxLength

@@ -6,7 +6,7 @@
 import { initDB, addDummyData, isInitialized } from './lib/db.js';
 import * as dataService from './lib/dataService.js';
 import { exportToCSV, downloadCSV, importFromCSV } from './lib/csvService.js';
-import { renderBarChart, renderLineChart, renderPieChart, renderGroupedBarChart, renderMultiLineChart, calculateAutoStepSize, aggregateByTimeSteps } from './components/charts.js';
+import { renderBarChart, renderLineChart, renderPieChart, renderGroupedBarChart, renderMultiLineChart, renderHorizontalBarChart, calculateAutoStepSize, aggregateByTimeSteps } from './components/charts.js';
 
 // ============================================================================
 // App State
@@ -1741,15 +1741,26 @@ async function renderChart(entries, aggLevel, selectedIds, startTime, endTime) {
     return;
   }
 
-  // Render based on chart type
+  // Render based on chart type and axis mode
   const options = { axisMode };
 
   switch (chartType) {
     case 'bar':
-      renderGroupedBarChart(svg, chartData, options);
+      if (axisMode === 'y') {
+        // Y-axis mode: vertical bars with time on X-axis
+        renderGroupedBarChart(svg, chartData, options);
+      } else {
+        // X-axis mode: horizontal bars with items on Y-axis
+        renderHorizontalBarChart(svg, chartData, options);
+      }
       break;
     case 'line':
-      renderMultiLineChart(svg, chartData, options);
+      if (axisMode === 'y') {
+        renderMultiLineChart(svg, chartData, options);
+      } else {
+        // Line chart doesn't make sense without time dimension
+        svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#95a5a6">Line chart requires Y-axis (time-based) mode</text>';
+      }
       break;
     case 'pie':
       // For pie chart, aggregate all data
