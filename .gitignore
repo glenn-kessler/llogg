@@ -32,3 +32,6 @@ coverage/
 *.tmp
 tmp/
 temp/
+
+# descriptive file for next task
+current_task.md
