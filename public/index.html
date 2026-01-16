@@ -37,6 +37,10 @@
         <main id="page-view" class="page">
             <h1>View Data</h1>
 
+            <section id="chart-section" class="chart-container">
+                <svg id="chart-svg" width="100%" height="400"></svg>
+            </section>
+
             <section class="filter-section">
                 <h2>Filters</h2>
 
@@ -86,11 +90,32 @@
                     </select>
                 </div>
 
-                <button id="btn-apply-filters" class="btn-primary">Apply</button>
-            </section>
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" id="auto-step-size" checked> Auto Step Size
+                    </label>
+                </div>
 
-            <section id="chart-section" class="chart-container">
-                <svg id="chart-svg" width="100%" height="400"></svg>
+                <div class="filter-group" id="manual-step-group" style="display: none;">
+                    <label>Step Size:</label>
+                    <select id="manual-step-size">
+                        <option value="hour">1 Hour</option>
+                        <option value="6hours">6 Hours</option>
+                        <option value="day">1 Day</option>
+                        <option value="week">1 Week</option>
+                        <option value="month">1 Month</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Axis Orientation:</label>
+                    <select id="axis-orientation">
+                        <option value="vertical" selected>Time Horizontal, Data Vertical</option>
+                        <option value="horizontal">Time Vertical, Data Horizontal</option>
+                    </select>
+                </div>
+
+                <button id="btn-apply-filters" class="btn-primary">Apply</button>
             </section>
 
             <section id="entries-list" class="entries-section">

@@ -6,7 +6,7 @@
 import { initDB, addDummyData, isInitialized } from './lib/db.js';
 import * as dataService from './lib/dataService.js';
 import { exportToCSV, downloadCSV, importFromCSV } from './lib/csvService.js';
-import { renderBarChart, renderLineChart, renderPieChart } from './components/charts.js';
+import { renderBarChart, renderLineChart, renderPieChart, renderGroupedBarChart, renderMultiLineChart, calculateAutoStepSize, aggregateByTimeSteps } from './components/charts.js';
 
 // ============================================================================
 // App State
@@ -1475,6 +1475,14 @@ function setupViewPage() {
   document.getElementById('btn-deselect-all-details').addEventListener('click', () => {
     document.querySelectorAll('#filter-details input[type="checkbox"]').forEach(cb => cb.checked = false);
   });
+
+  // Auto step size toggle
+  document.getElementById('auto-step-size').addEventListener('change', (e) => {
+    document.getElementById('manual-step-group').style.display = e.target.checked ? 'none' : 'block';
+  });
+
+  // Load saved view preferences from localStorage
+  loadViewPreferences();
 }
 
 function toggleAggregationLevel() {
@@ -1635,7 +1643,7 @@ async function applyFilters() {
     }
 
     // Render chart
-    await renderChart(filteredEntries, aggLevel, aggLevel === 'type' ? typeIds : detailIds);
+    await renderChart(filteredEntries, aggLevel, aggLevel === 'type' ? typeIds : detailIds, startTime, now);
 
     // Render entries list
     renderEntriesList(filteredEntries);
@@ -1646,60 +1654,105 @@ async function applyFilters() {
   }
 }
 
-async function renderChart(entries, aggLevel, selectedIds) {
+async function renderChart(entries, aggLevel, selectedIds, startTime, endTime) {
   const chartType = document.getElementById('chart-type').value;
   const svg = document.getElementById('chart-svg');
+  const orientation = document.getElementById('axis-orientation').value;
 
-  // Aggregate data based on aggregation level
-  const aggregated = {};
+  // Determine step size
+  const autoStepSize = document.getElementById('auto-step-size').checked;
+  const timespanValue = parseInt(document.getElementById('filter-timespan-value').value);
+  const timespanUnit = document.getElementById('filter-timespan-unit').value;
 
-  if (aggLevel === 'type') {
-    // Aggregate by type
-    for (const entry of entries) {
-      if (!aggregated[entry.typeId]) {
-        const type = state.types.find(t => t.id === entry.typeId);
-        aggregated[entry.typeId] = {
-          label: type?.name || 'Unknown',
-          value: 0,
-          color: type?.color || '#95a5a6'
-        };
-      }
-      aggregated[entry.typeId].value += entry.count;
-    }
+  let stepSize;
+  if (autoStepSize) {
+    stepSize = calculateAutoStepSize(timespanValue, timespanUnit);
   } else {
-    // Aggregate by detail
-    for (const entry of entries) {
-      if (!aggregated[entry.detailId]) {
-        const detail = await dataService.getDetail(entry.detailId);
-        aggregated[entry.detailId] = {
-          label: detail?.name || 'Unknown',
-          value: 0,
-          color: detail?.color || '#95a5a6'
-        };
-      }
-      aggregated[entry.detailId].value += entry.count;
-    }
+    stepSize = document.getElementById('manual-step-size').value;
   }
 
-  const chartData = Object.values(aggregated);
+  // Save preferences
+  saveViewPreferences();
+
+  // Aggregate by time steps
+  const timeAggregatedData = await aggregateByTimeSteps(
+    entries,
+    startTime,
+    endTime,
+    stepSize,
+    aggLevel,
+    selectedIds,
+    state.types,
+    dataService.getDetail
+  );
 
   // If no data, show message
-  if (chartData.length === 0) {
+  if (timeAggregatedData.length === 0) {
     svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#95a5a6">No data available for the selected filters</text>';
     return;
   }
 
   // Render based on chart type
+  const options = { orientation };
+
   switch (chartType) {
     case 'bar':
-      renderBarChart(svg, chartData);
+      renderGroupedBarChart(svg, timeAggregatedData, options);
       break;
     case 'line':
-      renderLineChart(svg, chartData);
+      renderMultiLineChart(svg, timeAggregatedData, options);
       break;
     case 'pie':
-      renderPieChart(svg, chartData);
+      // For pie chart, aggregate all data across time
+      const pieData = {};
+      timeAggregatedData.forEach(step => {
+        step.items.forEach(item => {
+          if (!pieData[item.name]) {
+            pieData[item.name] = { label: item.name, value: 0, color: item.color };
+          }
+          pieData[item.name].value += item.value;
+        });
+      });
+      renderPieChart(svg, Object.values(pieData));
       break;
+  }
+}
+
+function saveViewPreferences() {
+  const prefs = {
+    chartType: document.getElementById('chart-type').value,
+    autoStepSize: document.getElementById('auto-step-size').checked,
+    manualStepSize: document.getElementById('manual-step-size').value,
+    axisOrientation: document.getElementById('axis-orientation').value,
+    aggLevel: document.querySelector('input[name="agg-level"]:checked').value,
+    timespanUnit: document.getElementById('filter-timespan-unit').value,
+    timespanValue: document.getElementById('filter-timespan-value').value
+  };
+  localStorage.setItem('llogg-view-prefs', JSON.stringify(prefs));
+}
+
+function loadViewPreferences() {
+  const saved = localStorage.getItem('llogg-view-prefs');
+  if (!saved) return;
+
+  try {
+    const prefs = JSON.parse(saved);
+    if (prefs.chartType) document.getElementById('chart-type').value = prefs.chartType;
+    if (prefs.autoStepSize !== undefined) document.getElementById('auto-step-size').checked = prefs.autoStepSize;
+    if (prefs.manualStepSize) document.getElementById('manual-step-size').value = prefs.manualStepSize;
+    if (prefs.axisOrientation) document.getElementById('axis-orientation').value = prefs.axisOrientation;
+    if (prefs.aggLevel) {
+      const radio = document.querySelector(`input[name="agg-level"][value="${prefs.aggLevel}"]`);
+      if (radio) radio.checked = true;
+    }
+    if (prefs.timespanUnit) document.getElementById('filter-timespan-unit').value = prefs.timespanUnit;
+    if (prefs.timespanValue) document.getElementById('filter-timespan-value').value = prefs.timespanValue;
+
+    // Update UI
+    document.getElementById('manual-step-group').style.display = prefs.autoStepSize ? 'none' : 'block';
+    toggleAggregationLevel();
+  } catch (e) {
+    console.error('Failed to load view preferences:', e);
   }
 }
 

@@ -1,14 +1,17 @@
 /**
  * SVG Chart Components (F-4.8, F-4.9)
  * Simple, lightweight charts - bar, line, pie
+ * Enhanced with time-based step sizes and axis orientation
  */
 
 /**
  * Render Bar Chart (F-4.8 - default representation)
  * @param {SVGElement} svg
- * @param {Array} data - [{ label, value, color }]
+ * @param {Array} data - [{ label, value, color }] OR [{ label, items: [{ name, value, color }] }] for grouped
+ * @param {Object} options - { orientation: 'vertical'|'horizontal', stepLabels: [] }
  */
-export function renderBarChart(svg, data) {
+export function renderBarChart(svg, data, options = {}) {
+  const { orientation = 'vertical', stepLabels = null } = options;
   if (!data || data.length === 0) {
     renderEmptyState(svg, 'No data available');
     return;
@@ -80,6 +83,106 @@ export function renderBarChart(svg, data) {
   svg.appendChild(yAxis);
 
   // X-axis
+  const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  xAxis.setAttribute('x1', padding.left);
+  xAxis.setAttribute('y1', height - padding.bottom);
+  xAxis.setAttribute('x2', width - padding.right);
+  xAxis.setAttribute('y2', height - padding.bottom);
+  xAxis.setAttribute('stroke', '#95a5a6');
+  xAxis.setAttribute('stroke-width', 2);
+  svg.appendChild(xAxis);
+}
+
+/**
+ * Render Grouped Bar Chart for time-based data
+ * @param {SVGElement} svg
+ * @param {Array} data - [{label, items: [{name, value, color}]}]
+ * @param {Object} options - { orientation: 'vertical'|'horizontal' }
+ */
+export function renderGroupedBarChart(svg, data, options = {}) {
+  const { orientation = 'vertical' } = options;
+
+  if (!data || data.length === 0) {
+    renderEmptyState(svg, 'No data available');
+    return;
+  }
+
+  const width = svg.clientWidth || 600;
+  const height = svg.clientHeight || 400;
+  const padding = { top: 40, right: 20, bottom: 60, left: 60 };
+
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+
+  svg.innerHTML = '';
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+  // Find max value
+  let maxValue = 0;
+  data.forEach(step => {
+    const stepTotal = step.items.reduce((sum, item) => sum + item.value, 0);
+    if (stepTotal > maxValue) maxValue = stepTotal;
+  });
+
+  if (maxValue === 0) maxValue = 1;
+
+  // Calculate bar dimensions
+  const groupWidth = chartWidth / data.length;
+  const barWidth = groupWidth / (Math.max(...data.map(d => d.items.length)) || 1) * 0.8;
+
+  // Draw grouped bars
+  data.forEach((step, stepIndex) => {
+    const groupX = padding.left + (stepIndex * groupWidth);
+
+    step.items.forEach((item, itemIndex) => {
+      const barHeight = (item.value / maxValue) * chartHeight;
+      const x = groupX + (itemIndex * barWidth) + (groupWidth - step.items.length * barWidth) / 2;
+      const y = padding.top + (chartHeight - barHeight);
+
+      // Bar
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', x);
+      rect.setAttribute('y', y);
+      rect.setAttribute('width', barWidth);
+      rect.setAttribute('height', barHeight);
+      rect.setAttribute('fill', item.color);
+      rect.setAttribute('rx', 2);
+      svg.appendChild(rect);
+
+      // Value label (only if bar is tall enough)
+      if (barHeight > 20) {
+        const valueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        valueText.setAttribute('x', x + barWidth / 2);
+        valueText.setAttribute('y', y - 3);
+        valueText.setAttribute('text-anchor', 'middle');
+        valueText.setAttribute('fill', '#ecf0f1');
+        valueText.setAttribute('font-size', '10');
+        valueText.textContent = item.value;
+        svg.appendChild(valueText);
+      }
+    });
+
+    // X-axis label
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', groupX + groupWidth / 2);
+    label.setAttribute('y', height - padding.bottom + 20);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('fill', '#bdc3c7');
+    label.setAttribute('font-size', '11');
+    label.textContent = truncateLabel(step.label, 10);
+    svg.appendChild(label);
+  });
+
+  // Axes
+  const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  yAxis.setAttribute('x1', padding.left);
+  yAxis.setAttribute('y1', padding.top);
+  yAxis.setAttribute('x2', padding.left);
+  yAxis.setAttribute('y2', height - padding.bottom);
+  yAxis.setAttribute('stroke', '#95a5a6');
+  yAxis.setAttribute('stroke-width', 2);
+  svg.appendChild(yAxis);
+
   const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
   xAxis.setAttribute('x1', padding.left);
   xAxis.setAttribute('y1', height - padding.bottom);
@@ -194,6 +297,148 @@ export function renderLineChart(svg, data) {
   xAxis.setAttribute('stroke', '#95a5a6');
   xAxis.setAttribute('stroke-width', 2);
   svg.appendChild(xAxis);
+}
+
+/**
+ * Render Multi-Line Chart for time-based data with multiple series
+ * @param {SVGElement} svg
+ * @param {Array} data - [{label, items: [{name, value, color}]}]
+ * @param {Object} options - { orientation: 'vertical'|'horizontal' }
+ */
+export function renderMultiLineChart(svg, data, options = {}) {
+  if (!data || data.length === 0) {
+    renderEmptyState(svg, 'No data available');
+    return;
+  }
+
+  const width = svg.clientWidth || 600;
+  const height = svg.clientHeight || 400;
+  const padding = { top: 40, right: 20, bottom: 60, left: 60 };
+
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+
+  svg.innerHTML = '';
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+  // Find max value and collect all series
+  let maxValue = 0;
+  const allSeries = new Map(); // name -> {name, color, points: [{x, y, value}]}
+
+  data.forEach((step, stepIndex) => {
+    step.items.forEach(item => {
+      if (item.value > maxValue) maxValue = item.value;
+
+      if (!allSeries.has(item.name)) {
+        allSeries.set(item.name, {
+          name: item.name,
+          color: item.color,
+          points: []
+        });
+      }
+
+      const x = padding.left + (stepIndex / (data.length - 1 || 1)) * chartWidth;
+      const y = padding.top + (chartHeight - (item.value / (maxValue || 1)) * chartHeight);
+
+      allSeries.get(item.name).points.push({ x, y, value: item.value });
+    });
+  });
+
+  // Draw each line series
+  allSeries.forEach(series => {
+    if (series.points.length === 0) return;
+
+    // Build path
+    let pathD = '';
+    series.points.forEach((point, index) => {
+      if (index === 0) {
+        pathD += `M ${point.x} ${point.y}`;
+      } else {
+        pathD += ` L ${point.x} ${point.y}`;
+      }
+    });
+
+    // Draw line
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathD);
+    path.setAttribute('stroke', series.color);
+    path.setAttribute('stroke-width', 2);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(path);
+
+    // Draw points
+    series.points.forEach(point => {
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', point.x);
+      circle.setAttribute('cy', point.y);
+      circle.setAttribute('r', 4);
+      circle.setAttribute('fill', series.color);
+      circle.setAttribute('stroke', '#1a1a1a');
+      circle.setAttribute('stroke-width', 1);
+      svg.appendChild(circle);
+    });
+  });
+
+  // X-axis labels
+  data.forEach((step, index) => {
+    const x = padding.left + (index / (data.length - 1 || 1)) * chartWidth;
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', x);
+    label.setAttribute('y', height - padding.bottom + 20);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('fill', '#bdc3c7');
+    label.setAttribute('font-size', '11');
+    label.textContent = truncateLabel(step.label, 8);
+    svg.appendChild(label);
+  });
+
+  // Axes
+  const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  yAxis.setAttribute('x1', padding.left);
+  yAxis.setAttribute('y1', padding.top);
+  yAxis.setAttribute('x2', padding.left);
+  yAxis.setAttribute('y2', height - padding.bottom);
+  yAxis.setAttribute('stroke', '#95a5a6');
+  yAxis.setAttribute('stroke-width', 2);
+  svg.appendChild(yAxis);
+
+  const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  xAxis.setAttribute('x1', padding.left);
+  xAxis.setAttribute('y1', height - padding.bottom);
+  xAxis.setAttribute('x2', width - padding.right);
+  xAxis.setAttribute('y2', height - padding.bottom);
+  xAxis.setAttribute('stroke', '#95a5a6');
+  xAxis.setAttribute('stroke-width', 2);
+  svg.appendChild(xAxis);
+
+  // Legend
+  const legendX = width - 150;
+  let legendY = padding.top;
+
+  allSeries.forEach((series, index) => {
+    const y = legendY + (index * 20);
+
+    // Color line
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', legendX);
+    line.setAttribute('y1', y + 7);
+    line.setAttribute('x2', legendX + 20);
+    line.setAttribute('y2', y + 7);
+    line.setAttribute('stroke', series.color);
+    line.setAttribute('stroke-width', 3);
+    svg.appendChild(line);
+
+    // Label text
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', legendX + 25);
+    text.setAttribute('y', y + 12);
+    text.setAttribute('fill', '#ecf0f1');
+    text.setAttribute('font-size', '11');
+    text.textContent = truncateLabel(series.name, 12);
+    svg.appendChild(text);
+  });
 }
 
 /**
@@ -338,4 +583,156 @@ function renderEmptyState(svg, message) {
 function truncateLabel(label, maxLength) {
   if (label.length <= maxLength) return label;
   return label.substring(0, maxLength - 1) + '…';
+}
+
+/**
+ * Calculate automatic step size based on timespan
+ * @param {number} timespanValue
+ * @param {string} timespanUnit
+ * @returns {string} - 'hour'|'6hours'|'day'|'week'|'month'
+ */
+export function calculateAutoStepSize(timespanValue, timespanUnit) {
+  // Convert to hours for comparison
+  let totalHours = 0;
+  switch (timespanUnit) {
+    case 'hours':
+      totalHours = timespanValue;
+      break;
+    case 'days':
+      totalHours = timespanValue * 24;
+      break;
+    case 'weeks':
+      totalHours = timespanValue * 24 * 7;
+      break;
+    case 'months':
+      totalHours = timespanValue * 24 * 30; // approximate
+      break;
+  }
+
+  // Decide step size
+  if (totalHours <= 24) return 'hour';           // 1 day or less → 1h steps
+  if (totalHours <= 72) return '6hours';          // 2-3 days → 6h steps
+  if (totalHours <= 30 * 24) return 'day';        // Up to 30 days → 1 day steps
+  if (totalHours <= 90 * 24) return 'week';       // Up to 3 months → 1 week steps
+  return 'month';                                  // More than 3 months → 1 month steps
+}
+
+/**
+ * Aggregate entries by time steps
+ * @param {Array} entries
+ * @param {Date} startTime
+ * @param {Date} endTime
+ * @param {string} stepSize - 'hour'|'6hours'|'day'|'week'|'month'
+ * @param {string} aggLevel - 'type'|'detail'
+ * @param {Array} selectedIds
+ * @param {Array} types
+ * @param {Function} getDetailFn
+ * @returns {Promise<Array>} - [{label, items: [{name, value, color}]}]
+ */
+export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize, aggLevel, selectedIds, types, getDetailFn) {
+  const steps = [];
+  const current = new Date(startTime);
+
+  // Generate time steps
+  while (current < endTime) {
+    const stepStart = new Date(current);
+    const stepEnd = new Date(current);
+
+    switch (stepSize) {
+      case 'hour':
+        stepEnd.setHours(stepEnd.getHours() + 1);
+        break;
+      case '6hours':
+        stepEnd.setHours(stepEnd.getHours() + 6);
+        break;
+      case 'day':
+        stepEnd.setDate(stepEnd.getDate() + 1);
+        break;
+      case 'week':
+        stepEnd.setDate(stepEnd.getDate() + 7);
+        break;
+      case 'month':
+        stepEnd.setMonth(stepEnd.getMonth() + 1);
+        break;
+    }
+
+    steps.push({
+      start: new Date(stepStart),
+      end: new Date(stepEnd),
+      label: formatStepLabel(stepStart, stepSize)
+    });
+
+    current.setTime(stepEnd.getTime());
+  }
+
+  // Aggregate entries into steps
+  const result = [];
+
+  for (const step of steps) {
+    const stepEntries = entries.filter(e => {
+      const entryTime = new Date(e.timestamp);
+      return entryTime >= step.start && entryTime < step.end;
+    });
+
+    const items = {};
+
+    if (aggLevel === 'type') {
+      for (const entry of stepEntries) {
+        if (!items[entry.typeId]) {
+          const type = types.find(t => t.id === entry.typeId);
+          items[entry.typeId] = {
+            name: type?.name || 'Unknown',
+            value: 0,
+            color: type?.color || '#95a5a6'
+          };
+        }
+        items[entry.typeId].value += entry.count;
+      }
+    } else {
+      for (const entry of stepEntries) {
+        if (!items[entry.detailId]) {
+          const detail = await getDetailFn(entry.detailId);
+          items[entry.detailId] = {
+            name: detail?.name || 'Unknown',
+            value: 0,
+            color: detail?.color || '#95a5a6'
+          };
+        }
+        items[entry.detailId].value += entry.count;
+      }
+    }
+
+    result.push({
+      label: step.label,
+      items: Object.values(items)
+    });
+  }
+
+  return result;
+}
+
+/**
+ * Format step label based on step size
+ * @param {Date} date
+ * @param {string} stepSize
+ * @returns {string}
+ */
+function formatStepLabel(date, stepSize) {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  switch (stepSize) {
+    case 'hour':
+      return `${date.getHours()}:00`;
+    case '6hours':
+      return `${date.getHours()}:00`;
+    case 'day':
+      return days[date.getDay()];
+    case 'week':
+      return `${months[date.getMonth()]} ${date.getDate()}`;
+    case 'month':
+      return months[date.getMonth()];
+    default:
+      return date.toLocaleDateString();
+  }
 }

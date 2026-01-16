@@ -1,6 +1,6 @@
-## Finalisierte Anforderungen (Baseline 1.3 - Implementierte Version)
+## Finalisierte Anforderungen (Baseline 1.4 - Implementierte Version)
 
-**Letzte Aktualisierung:** 2026-01-15
+**Letzte Aktualisierung:** 2026-01-16
 **Status:** MVP vollständig implementiert und getestet
 
 Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementierungsdetails:
@@ -79,6 +79,14 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-4.9     | Datenüberprüfung & Visualisierung            | Linien- und Kreisdiagramme als SVG verfügbar.                                                                                                                            |
 |      | F-4.10    | Datenüberprüfung & Visualisierung            | Erweiterte visuelle Optionen (Hintergrund-Einfärbung, Icons/Piktogramme für Dimensionen).                                                                                |
 | Yes  | F-4.11    | Datenüberprüfung & Visualisierung            | Pulsierende blaue Glow-Animation auf Typ-Kachel nach Commit (8s gesamt).                                                                                                 |
+| Yes  | F-4.12    | Datenüberprüfung & Visualisierung            | Automatische Schrittgröße basierend auf Zeitspanne (1 Tag → 1h Schritte, 7 Tage → 1 Tag Schritte, etc.).                                                                 |
+| Yes  | F-4.12.1  | Datenüberprüfung & Visualisierung            | Manuelle Schrittgröße-Auswahl (1h, 6h, 1 Tag, 1 Woche, 1 Monat) mit Auto-Modus-Toggle.                                                                                   |
+| Yes  | F-4.12.2  | Datenüberprüfung & Visualisierung            | Zeitachsen-Beschriftung zeigt Wochentags-Abkürzungen bei Tages-Schritten (Mon, Tue, etc.).                                                                               |
+| Yes  | F-4.13    | Datenüberprüfung & Visualisierung            | Achsenausrichtung umschaltbar (Zeit horizontal/vertikal, Daten vertikal/horizontal).                                                                                      |
+| Yes  | F-4.14    | Datenüberprüfung & Visualisierung            | Diagramm-Position oben auf View-Seite (vor Filtern).                                                                                                                     |
+| Yes  | F-4.15    | Datenüberprüfung & Visualisierung            | Gruppierte Balkendiagramme für mehrere Items pro Zeitschritt.                                                                                                            |
+| Yes  | F-4.16    | Datenüberprüfung & Visualisierung            | Multi-Linien-Diagramme mit farblich distinkten Linien pro Item.                                                                                                          |
+| Yes  | F-4.17    | Datenüberprüfung & Visualisierung            | View-Einstellungen in LocalStorage gespeichert (Chart-Typ, Schrittgröße, Ausrichtung, Aggregation, Zeitspanne).                                                          |
 | ---  | ---       | ---                                          | ---                                                                                                                                                                      |
 | Yes  | NF-1.1    | Nicht-funktionale & technische Anforderungen | Volle Funktionsfähigkeit in Chrome, Firefox, Safari (Desktop + Mobil, jeweils neueste 2 Versionen). Vanilla JS, native IndexedDB.                                        |
 | Yes  | NF-1.1.1  | Nicht-funktionale & technische Anforderungen | Vanilla JavaScript ES6 Module ohne Build-Tools. Code läuft direkt im Browser.                                                                                            |
@@ -281,6 +289,18 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.4 (2026-01-16)
+- Funktion: Implementiert zeitbasierte Schrittgrößen für Diagramme (1h, 6h, 1 Tag, 1 Woche, 1 Monat)
+- Funktion: Implementiert automatische Schrittgröße basierend auf Zeitspanne
+- Funktion: Implementiert manuelle Schrittgröße-Auswahl mit Auto-Modus-Toggle
+- Funktion: Implementiert Achsenausrichtung-Umschaltung (horizontal/vertikal)
+- Funktion: Implementiert gruppierte Balkendiagramme für mehrere Items pro Zeitschritt
+- Funktion: Implementiert Multi-Linien-Diagramme mit farblich distinkten Linien pro Item
+- Funktion: Implementiert Wochentags-Abkürzungen für Zeitachsen (Mon, Tue, etc.)
+- Funktion: View-Einstellungen in LocalStorage gespeichert (persistiert über Sessions)
+- Verbesserung: Diagramm-Position verschoben nach oben (vor Filtern)
+- Verbesserung: Zeitbasierte Aggregation ermöglicht detaillierte Trend-Analyse
+
 ### Version 1.3 (2026-01-15)
 - Funktion: Implementiert Edit-Dialog für Detail Icon und Farbe im Konfigurationsmodus
 - Funktion: Implementiert Live-Vorschau im Edit-Dialog
@@ -331,6 +351,6 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 ---
 
 **Gepflegt von:** Claude (Anthropic)
-**Zuletzt Aktualisiert:** 2026-01-13
-**Version:** 1.2
+**Zuletzt Aktualisiert:** 2026-01-16
+**Version:** 1.4
 **Status:** MVP Komplett & Produktionsbereit
