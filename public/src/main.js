@@ -6,6 +6,7 @@
 import { initDB, addDummyData, isInitialized } from './lib/db.js';
 import * as dataService from './lib/dataService.js';
 import { exportToCSV, downloadCSV, importFromCSV } from './lib/csvService.js';
+import { exportConfig, downloadConfig, importConfig } from './lib/configService.js';
 import { renderBarChart, renderLineChart, renderPieChart, renderGroupedBarChart, renderMultiLineChart, renderHorizontalBarChart, calculateAutoStepSize, aggregateByTimeSteps } from './components/charts.js';
 
 // ============================================================================
@@ -1973,6 +1974,16 @@ function setupSettingsPage() {
 
   document.getElementById('input-import-csv').addEventListener('change', handleImportCSV);
 
+  // Export Config
+  document.getElementById('btn-export-config').addEventListener('click', handleExportConfig);
+
+  // Import Config
+  document.getElementById('btn-import-config').addEventListener('click', () => {
+    document.getElementById('input-import-config').click();
+  });
+
+  document.getElementById('input-import-config').addEventListener('change', handleImportConfig);
+
   // Manage Definitions
   document.getElementById('btn-manage-definitions').addEventListener('click', () => {
     document.getElementById('manage-definitions').classList.remove('hidden');
@@ -2027,6 +2038,55 @@ async function handleImportCSV(event) {
     console.error('Import failed:', error);
     alert('Failed to import data: ' + error.message);
   }
+}
+
+async function handleExportConfig() {
+  try {
+    const config = await exportConfig();
+    const filename = `life-logger-config-${new Date().toISOString().split('T')[0]}.txt`;
+    downloadConfig(config, filename);
+    alert('Configuration exported successfully!');
+  } catch (error) {
+    console.error('Export config failed:', error);
+    alert('Failed to export configuration: ' + error.message);
+  }
+}
+
+async function handleImportConfig(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const content = await file.text();
+    const result = await importConfig(content);
+
+    let message = 'Configuration import completed!\n\n';
+    message += `Types created: ${result.importedTypes}\n`;
+    message += `Types updated: ${result.updatedTypes}\n`;
+    message += `Details created: ${result.importedDetails}\n`;
+    message += `Details updated: ${result.updatedDetails}\n`;
+
+    if (result.errors.length > 0) {
+      message += `\nErrors: ${result.errors.length}`;
+    }
+
+    alert(message);
+
+    if (result.errors.length > 0) {
+      console.log('Import errors:', result.errors);
+    }
+
+    // Reload data and UI
+    await loadTypes();
+    renderTypeTiles();
+
+  } catch (error) {
+    console.error('Import config failed:', error);
+    alert('Failed to import configuration: ' + error.message);
+  }
+
+  // Reset the file input
+  event.target.value = '';
 }
 
 async function loadManageDefinitions() {

@@ -1,4 +1,4 @@
-## Finalisierte Anforderungen (Baseline 1.6.3 - Implementierte Version)
+## Finalisierte Anforderungen (Baseline 1.6.4 - Implementierte Version)
 
 **Letzte Aktualisierung:** 2026-01-16
 **Status:** MVP vollständig implementiert und getestet
@@ -30,7 +30,9 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-1.5     | Kerndateneingabe & Speicherung               | Count-Eigenschaft (positive ganze Zahl ≥1, Standard: 1) repräsentiert Häufigkeit/Dauer. Implementiert mit +/- Buttons (Start bei 0).                                     |
 | Yes  | F-1.6     | Kerndateneingabe & Speicherung               | Datenspeicherung in IndexedDB mit hoher Browser-Interoperabilität (Chrome, Firefox, Safari). Native API ohne Wrapper.                                                    |
 | Yes  | F-1.6.1   | Kerndateneingabe & Speicherung               | Entry-Schema: `id`, `typeId`, `detailId`, `count`, `unit` (pro Eintrag), `timestamp` (ISO 8601).                                                                         |
-| Yes  | F-1.7     | Kerndateneingabe & Speicherung               | Download-UI für Datendatei (CSV) und Konfiguration (JSON) zum manuellen Backup.                                                                                          |
+| Yes  | F-1.7     | Kerndateneingabe & Speicherung               | Download-UI für Datendatei (CSV) und Konfiguration (TXT) zum manuellen Backup.                                                                                          |
+| Yes  | F-1.7.1   | Kerndateneingabe & Speicherung               | Export von Konfiguration (Typen und Details) in menschen-lesbarem Text-Format mit Einrückung.                                                                            |
+| Yes  | F-1.7.2   | Kerndateneingabe & Speicherung               | Import von Konfiguration aus Text-Datei mit automatischer Erkennung und Update bestehender Einträge.                                                                     |
 | ---  | ---       | ---                                          | ---                                                                                                                                                                      |
 | Yes  | F-2.1     | Automatischer Kontext & Anreicherung         | Automatische Zeiterfassung bei Eintragserstellung (sekundengenau, ISO 8601).                                                                                             |
 | Yes  | F-2.1.1   | Automatischer Kontext & Anreicherung         | Zeitstempel-Anpassung via Uhr-Icon-Button in Detail-Zeile. Bei Counter=0 wird automatisch Counter=1 gesetzt.                                                             |
@@ -102,8 +104,9 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | NF-1.4.3  | Nicht-funktionale & technische Anforderungen | Listen/Kacheln mit Farbe + 1-2 Zeichen (Emoji-Icons) für einfache Identifikation.                                                                                        |
 |      | NF-1.5    | Nicht-funktionale & technische Anforderungen | Datenabrufe/Visualisierung ≤500ms (P95) für ≤10.000 Einträge via IndexedDB + Web Workers. Teilweise implementiert (nur IndexedDB).                                       |
 |      | NF-1.6    | Nicht-funktionale & technische Anforderungen | Effiziente Verarbeitung von ≥100.000 Einträgen. MVP mit <1000 Einträgen getestet.                                                                                        |
-| Yes  | NF-1.7    | Nicht-funktionale & technische Anforderungen | Export/Import im CSV-Format.                                                                                                                                             |
+| Yes  | NF-1.7    | Nicht-funktionale & technische Anforderungen | Export/Import im CSV-Format für Daten und TXT-Format für Konfiguration.                                                                                                  |
 | Yes  | NF-1.7.1  | Nicht-funktionale & technische Anforderungen | CSV-Format: `id;timestamp;type_name;detail_name;count;unit`.                                                                                                             |
+| Yes  | NF-1.7.2  | Nicht-funktionale & technische Anforderungen | Config-Format: Menschen-lesbares Text-Format mit hierarchischer Struktur durch Einrückung (2/4/6 Leerzeichen).                                                           |
 | Yes  | NF-1.8    | Nicht-funktionale & technische Anforderungen | CSV-Trennzeichen: Semikolon (;).                                                                                                                                         |
 | Yes  | NF-1.9    | Nicht-funktionale & technische Anforderungen | Datei-Kodierung: UTF-8 mit BOM (Excel-Kompatibilität).                                                                                                                   |
 | Yes  | NF-1.10   | Nicht-funktionale & technische Anforderungen | Keine Verschlüsselung (Browser/HTTPS-Sicherheit), IndexedDB native Sicherheit verhindert triviales Lesen.                                                                |
@@ -295,6 +298,17 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.6.4 (2026-01-16)
+- Funktion: Implementiert Konfiguration-Export in menschen-lesbarem Text-Format
+- Funktion: Konfiguration wird mit hierarchischer Struktur durch Einrückung (2/4/6 Leerzeichen) gespeichert
+- Funktion: Typen-Namen, Icons und Farben in Listenform mit lesbarem Format
+- Funktion: Details gruppiert nach Typen mit Icons, Farben und Einheiten
+- Funktion: Implementiert Konfiguration-Import mit Update bestehender Einträge
+- Funktion: Import erkennt automatisch bestehende Typen/Details und aktualisiert diese
+- Funktion: Neue configService.js für Export/Import-Logik
+- UX: Export/Import-Buttons in Settings-Seite integriert
+- Format: Dateiformat .txt für maximale Lesbarkeit und Editierbarkeit
+
 ### Version 1.6.3 (2026-01-16)
 - Fix: F-2.2 GPS-Erfassung implementiert - GPS-Koordinaten werden nun bei Entry-Erstellung automatisch erfasst
 - Funktion: GPS-Daten (latitude, longitude, accuracy) werden in IndexedDB und CSV-Export gespeichert
@@ -390,5 +404,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-16
-**Version:** 1.6.1
+**Version:** 1.6.4
 **Status:** MVP Komplett & Produktionsbereit

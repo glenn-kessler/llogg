@@ -129,6 +129,9 @@
                 <button id="btn-export-csv" class="btn-secondary">Export Data (CSV)</button>
                 <button id="btn-import-csv" class="btn-secondary">Import Data (CSV)</button>
                 <input type="file" id="input-import-csv" accept=".csv" style="display: none;">
+                <button id="btn-export-config" class="btn-secondary">Export Configuration</button>
+                <button id="btn-import-config" class="btn-secondary">Import Configuration</button>
+                <input type="file" id="input-import-config" accept=".txt" style="display: none;">
             </section>
 
             <section id="manage-definitions" class="settings-section hidden">
@@ -175,7 +178,7 @@
             <h1>About Life Logger</h1>
 
             <section class="about-section">
-                <h2>Version 1.6</h2>
+                <h2>Version 1.6.4</h2>
                 <p style="color: var(--color-text-dim); margin-bottom: var(--spacing-lg);">
                     Personal life tracking application for logging daily activities, moods, and events.
                 </p>
@@ -209,6 +212,8 @@
                     <h3>Data Management</h3>
                     <ul>
                         <li>CSV export/import with full data preservation</li>
+                        <li>Human-readable configuration export/import (types and details)</li>
+                        <li>Configuration saved as indented text format for easy editing</li>
                         <li>Location data included in CSV exports</li>
                         <li>Bulk operations: Move and delete multiple details</li>
                         <li>Drag-and-drop reordering of details</li>
