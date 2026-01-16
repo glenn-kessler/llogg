@@ -33,7 +33,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-1.7     | Kerndateneingabe & Speicherung               | Download-UI für Datendatei (CSV) und Konfiguration (JSON) zum manuellen Backup.                                                                                          |
 | ---  | ---       | ---                                          | ---                                                                                                                                                                      |
 | Yes  | F-2.1     | Automatischer Kontext & Anreicherung         | Automatische Zeiterfassung bei Eintragserstellung (sekundengenau, ISO 8601).                                                                                             |
-| Yes  | F-2.1.1   | Automatischer Kontext & Anreicherung         | Zeitstempel-Anpassung via Uhr-Icon-Button in Detail-Zeile.                                                                                                               |
+| Yes  | F-2.1.1   | Automatischer Kontext & Anreicherung         | Zeitstempel-Anpassung via Uhr-Icon-Button in Detail-Zeile. Bei Counter=0 wird automatisch Counter=1 gesetzt.                                                             |
 | Yes  | F-2.1.2   | Automatischer Kontext & Anreicherung         | Zeitstempel-Dialog mit vordefinierten Intervallen (5 min, 15 min, 30 min, 1h, 2h, 6h, 1 Tag).                                                                            |
 | Yes  | F-2.1.3   | Automatischer Kontext & Anreicherung         | Vorzeichen-Umschalt-Button im Dialog zur Auswahl Addition/Subtraktion.                                                                                                   |
 | Yes  | F-2.1.4   | Automatischer Kontext & Anreicherung         | Inkrementelle Zeitanpassung bei mehrfachem Klick (z.B. 2x "-5 min" = -10 min).                                                                                           |
@@ -294,6 +294,10 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 ---
 
 ## Änderungsprotokoll
+
+### Version 1.6.2 (2026-01-16)
+- Verbesserung: F-2.1.1 erweitert - Zeitstempel-Dialog setzt Counter automatisch auf 1 wenn Counter=0
+- UX: Verhindert versehentliches Erstellen von Einträgen mit Count=0 bei Zeitstempel-Anpassung
 
 ### Version 1.6.1 (2026-01-16)
 - Funktion: Implementiert About-Seite mit Version und Key Features
