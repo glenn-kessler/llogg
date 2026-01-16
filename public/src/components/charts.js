@@ -721,11 +721,12 @@ export function calculateAutoStepSize(timespanValue, timespanUnit) {
 export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize, aggLevel, selectedIds, types, getDetailFn) {
   const steps = [];
   const current = new Date(startTime);
+  const end = new Date(endTime);
 
   // Generate time steps
-  while (current < endTime) {
+  while (current < end) {
     const stepStart = new Date(current);
-    const stepEnd = new Date(current);
+    const stepEnd = new Date(stepStart);
 
     switch (stepSize) {
       case 'hour':
@@ -816,7 +817,8 @@ function formatStepLabel(date, stepSize) {
     case '6hours':
       return `${date.getHours()}:00`;
     case 'day':
-      return days[date.getDay()];
+      // Show date and weekday for clarity (e.g., "Jan 2 Mon")
+      return `${months[date.getMonth()]} ${date.getDate()} ${days[date.getDay()]}`;
     case 'week':
       return `${months[date.getMonth()]} ${date.getDate()}`;
     case 'month':

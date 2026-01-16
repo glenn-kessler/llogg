@@ -1687,9 +1687,10 @@ async function applyFilters() {
     const timespanValue = parseInt(document.getElementById('filter-timespan-value').value);
     const timespanUnit = document.getElementById('filter-timespan-unit').value;
 
-    // Calculate start time
+    // Calculate start time and end time
     const now = new Date();
     const startTime = new Date(now);
+    const endTime = new Date(now);
 
     switch (timespanUnit) {
       case 'hours':
@@ -1697,12 +1698,24 @@ async function applyFilters() {
         break;
       case 'days':
         startTime.setDate(now.getDate() - timespanValue);
+        // Reset to start of day (midnight) for daily aggregation
+        startTime.setHours(0, 0, 0, 0);
+        // Reset endTime to end of current day for proper daily aggregation
+        endTime.setHours(23, 59, 59, 999);
         break;
       case 'weeks':
         startTime.setDate(now.getDate() - (timespanValue * 7));
+        // Reset to start of day (midnight) for weekly aggregation
+        startTime.setHours(0, 0, 0, 0);
+        // Reset endTime to end of current day for proper weekly aggregation
+        endTime.setHours(23, 59, 59, 999);
         break;
       case 'months':
         startTime.setMonth(now.getMonth() - timespanValue);
+        // Reset to start of day (midnight) for monthly aggregation
+        startTime.setHours(0, 0, 0, 0);
+        // Reset endTime to end of current day for proper monthly aggregation
+        endTime.setHours(23, 59, 59, 999);
         break;
     }
 
@@ -1710,7 +1723,7 @@ async function applyFilters() {
     const entries = await dataService.getEntriesFiltered({
       typeIds: typeIds.length > 0 ? typeIds : undefined,
       startTime: startTime.toISOString(),
-      endTime: now.toISOString()
+      endTime: endTime.toISOString()
     });
 
     // Filter by detail IDs if detail aggregation selected
@@ -1720,7 +1733,7 @@ async function applyFilters() {
     }
 
     // Render chart
-    await renderChart(filteredEntries, aggLevel, aggLevel === 'type' ? typeIds : detailIds, startTime, now);
+    await renderChart(filteredEntries, aggLevel, aggLevel === 'type' ? typeIds : detailIds, startTime, endTime);
 
     // Render entries list
     renderEntriesList(filteredEntries);

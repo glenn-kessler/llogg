@@ -298,6 +298,12 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.6.5 (2026-01-16)
+- Bugfix: Zeitspannen-Aggregation startet jetzt konsistent bei Mitternacht (00:00:00) für Tages/Wochen/Monats-Zeiträume
+- Bugfix: Fixed endTime mutation problem in aggregateByTimeSteps durch lokale Date-Kopie
+- Verbesserung: Tages-Labels in Diagrammen zeigen jetzt Datum + Wochentag (z.B. "Jan 2 Mon") für bessere Orientierung
+- Verbesserung: Konsistentere Zeit-Aggregation durch normalisierte Start-Zeitpunkte
+
 ### Version 1.6.4 (2026-01-16)
 - Funktion: Implementiert Konfiguration-Export in menschen-lesbarem Text-Format
 - Funktion: Konfiguration wird mit hierarchischer Struktur durch Einrückung (2/4/6 Leerzeichen) gespeichert
@@ -404,5 +410,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-16
-**Version:** 1.6.4
+**Version:** 1.6.5
 **Status:** MVP Komplett & Produktionsbereit

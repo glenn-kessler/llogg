@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggregation Fix Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #ecf0f1;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 5px;
+        }
+        .pass { color: #2ecc71; }
+        .fail { color: #e74c3c; }
+        pre {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Time Aggregation Fix Test</h1>
+    <p>This test verifies the fix for the daily aggregation bug.</p>
+
+    <div class="test-section">
+        <h2>Test 1: Time Range Calculation (14 days)</h2>
+        <pre id="test1-output"></pre>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Step Generation</h2>
+        <pre id="test2-output"></pre>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Label Uniqueness</h2>
+        <pre id="test3-output"></pre>
+    </div>
+
+    <script type="module">
+        const output1 = document.getElementById('test1-output');
+        const output2 = document.getElementById('test2-output');
+        const output3 = document.getElementById('test3-output');
+
+        // Test 1: Time Range Calculation
+        function testTimeRange() {
+            const now = new Date('2026-01-16T18:30:00+01:00'); // Simulate "now"
+            const timespanValue = 14;
+            const timespanUnit = 'days';
+
+            const startTime = new Date(now);
+            const endTime = new Date(now);
+
+            // Apply the fix
+            startTime.setDate(now.getDate() - timespanValue);
+            startTime.setHours(0, 0, 0, 0);
+            endTime.setHours(23, 59, 59, 999);
+
+            const result = [
+                `Now: ${now.toISOString()}`,
+                `Start Time: ${startTime.toISOString()} (${startTime.toLocaleString()})`,
+                `End Time: ${endTime.toISOString()} (${endTime.toLocaleString()})`,
+                ``,
+                `Expected: Start at Jan 2 00:00:00, End at Jan 16 23:59:59`,
+                `Actual: ${startTime.getMonth() === 0 && startTime.getDate() === 2 && startTime.getHours() === 0 ? '✓' : '✗'} Start is correct`,
+                `Actual: ${endTime.getMonth() === 0 && endTime.getDate() === 16 && endTime.getHours() === 23 ? '✓' : '✗'} End is correct`
+            ].join('\n');
+
+            output1.textContent = result;
+        }
+
+        // Test 2: Step Generation
+        function testStepGeneration() {
+            const startTime = new Date('2026-01-02T00:00:00+01:00');
+            const endTime = new Date('2026-01-16T23:59:59.999+01:00');
+            const stepSize = 'day';
+
+            const steps = [];
+            const current = new Date(startTime);
+            const end = new Date(endTime);
+
+            while (current < end && steps.length < 20) { // Safety limit
+                const stepStart = new Date(current);
+                const stepEnd = new Date(stepStart);
+
+                stepEnd.setDate(stepEnd.getDate() + 1);
+
+                steps.push({
+                    start: new Date(stepStart),
+                    end: new Date(stepEnd),
+                    date: stepStart.getDate()
+                });
+
+                current.setTime(stepEnd.getTime());
+            }
+
+            const result = [
+                `Generated ${steps.length} steps`,
+                `Expected: 15 steps (Jan 2 through Jan 16)`,
+                `Result: ${steps.length === 15 ? '✓ PASS' : '✗ FAIL'}`,
+                ``,
+                `Steps:`,
+                ...steps.map((s, i) => `  ${i + 1}. Jan ${s.date} (${s.start.toISOString().split('T')[0]} to ${s.end.toISOString().split('T')[0]})`)
+            ].join('\n');
+
+            output2.textContent = result;
+        }
+
+        // Test 3: Label Uniqueness
+        function testLabelUniqueness() {
+            const formatStepLabel = (date) => {
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return `${months[date.getMonth()]} ${date.getDate()} ${days[date.getDay()]}`;
+            };
+
+            const labels = [];
+            for (let day = 2; day <= 16; day++) {
+                const date = new Date(`2026-01-${day.toString().padStart(2, '0')}T00:00:00+01:00`);
+                labels.push(formatStepLabel(date));
+            }
+
+            const uniqueLabels = new Set(labels);
+            const result = [
+                `Generated ${labels.length} labels`,
+                `Unique labels: ${uniqueLabels.size}`,
+                `Expected: 15 unique labels`,
+                `Result: ${uniqueLabels.size === 15 ? '✓ PASS' : '✗ FAIL'}`,
+                ``,
+                `Labels:`,
+                ...labels.map((l, i) => `  ${i + 1}. ${l}`)
+            ].join('\n');
+
+            output3.textContent = result;
+        }
+
+        // Run tests
+        testTimeRange();
+        testStepGeneration();
+        testLabelUniqueness();
+    </script>
+</body>
+</html>
