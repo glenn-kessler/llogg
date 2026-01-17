@@ -1695,35 +1695,63 @@ async function applyFilters() {
     const timespanValue = parseInt(document.getElementById('filter-timespan-value').value);
     const timespanUnit = document.getElementById('filter-timespan-unit').value;
 
-    // Calculate start time and end time
+    // Calculate start time and end time using UTC for consistency
     const now = new Date();
-    const startTime = new Date(now);
-    const endTime = new Date(now);
+    let startTime, endTime;
 
     switch (timespanUnit) {
       case 'hours':
-        startTime.setUTCHours(now.getUTCHours() - timespanValue);
+        // Go back timespanValue hours
+        startTime = new Date(now.getTime() - (timespanValue * 60 * 60 * 1000));
+        endTime = new Date(now);
         break;
       case 'days':
-        startTime.setUTCDate(now.getUTCDate() - timespanValue);
-        // Reset to start of day (midnight UTC) for daily aggregation
-        startTime.setUTCHours(0, 0, 0, 0);
-        // Reset endTime to end of current day (UTC) for proper daily aggregation
-        endTime.setUTCHours(23, 59, 59, 999);
+        // Start: timespanValue days ago at midnight UTC
+        startTime = new Date(Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate() - timespanValue,
+          0, 0, 0, 0
+        ));
+        // End: today at 23:59:59.999 UTC
+        endTime = new Date(Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          23, 59, 59, 999
+        ));
         break;
       case 'weeks':
-        startTime.setUTCDate(now.getUTCDate() - (timespanValue * 7));
-        // Reset to start of day (midnight UTC) for weekly aggregation
-        startTime.setUTCHours(0, 0, 0, 0);
-        // Reset endTime to end of current day (UTC) for proper weekly aggregation
-        endTime.setUTCHours(23, 59, 59, 999);
+        // Start: timespanValue weeks ago at midnight UTC
+        startTime = new Date(Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate() - (timespanValue * 7),
+          0, 0, 0, 0
+        ));
+        // End: today at 23:59:59.999 UTC
+        endTime = new Date(Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          23, 59, 59, 999
+        ));
         break;
       case 'months':
-        startTime.setUTCMonth(now.getUTCMonth() - timespanValue);
-        // Reset to start of day (midnight UTC) for monthly aggregation
-        startTime.setUTCHours(0, 0, 0, 0);
-        // Reset endTime to end of current day (UTC) for proper daily aggregation
-        endTime.setUTCHours(23, 59, 59, 999);
+        // Start: timespanValue months ago at midnight UTC
+        startTime = new Date(Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth() - timespanValue,
+          now.getUTCDate(),
+          0, 0, 0, 0
+        ));
+        // End: today at 23:59:59.999 UTC
+        endTime = new Date(Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          23, 59, 59, 999
+        ));
         break;
     }
 
