@@ -4,7 +4,7 @@
  * CSV Format: id;timestamp;type_name;detail_name;count;unit;latitude;longitude;accuracy
  */
 
-import { getEntries, getTypes, getDetails, createEntry, getType, getDetail } from './dataService.js';
+import { getEntries, getTypes, getDetails, createEntry, createEntryWithTimestamp, getType, getDetail } from './dataService.js';
 
 /**
  * Export all entries to CSV format (F-1.7, NF-1.7-1.9)
@@ -143,13 +143,13 @@ export async function importFromCSV(csvContent) {
       const lon = longitude && longitude.trim() ? parseFloat(longitude) : null;
       const acc = accuracy && accuracy.trim() ? parseFloat(accuracy) : null;
 
-      // Create entry with location data (F-2.2)
-      // Note: We override the automatic timestamp for import
-      const entryId = await createEntry({
+      // Create entry with location data and timestamp from CSV (F-2.2)
+      const entryId = await createEntryWithTimestamp({
         typeId: type.id,
         detailId: detail.id,
         count: countNum,
         unit: unit || '',
+        timestamp: timestamp, // Use timestamp from CSV
         latitude: lat,
         longitude: lon,
         accuracy: acc
