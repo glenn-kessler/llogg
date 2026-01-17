@@ -1588,7 +1588,7 @@ function setupViewPage() {
 
   // Auto step size toggle - apply instantly
   document.getElementById('auto-step-size').addEventListener('change', (e) => {
-    document.getElementById('manual-step-group').style.display = e.target.checked ? 'none' : 'block';
+    document.getElementById('manual-step-size').style.display = e.target.checked ? 'none' : 'block';
     applyFilters();
   });
 
@@ -2014,7 +2014,7 @@ function loadViewPreferences() {
     if (prefs.timespanValue) document.getElementById('filter-timespan-value').value = prefs.timespanValue;
 
     // Update UI
-    document.getElementById('manual-step-group').style.display = prefs.autoStepSize ? 'none' : 'block';
+    document.getElementById('manual-step-size').style.display = prefs.autoStepSize ? 'none' : 'block';
     toggleAggregationLevel();
   } catch (e) {
     console.error('Failed to load view preferences:', e);

@@ -298,6 +298,14 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.7.4 (2026-01-17)
+- UX: Step Size und Counter Axis jetzt auch im Grid-Layout mit Labels links
+- UX: Auto Step Size Checkbox zeigt "Auto" statt "Auto Step Size"
+- Design: Alle Controls nutzen konsistentes .control-row Layout
+- Design: Manual Step Size Select erscheint unter Auto-Checkbox wenn deaktiviert
+- JavaScript: Toggle-Logik aktualisiert von manual-step-group zu manual-step-size Element
+- Konsistenz: Alle 4 Haupt-Controls (Time Span, Chart Type, Step Size, Counter Axis) gleich formatiert
+
 ### Version 1.7.3 (2026-01-17)
 - UX: Labels "Time Span" und "Chart Type" jetzt links von den Buttons
 - UX: Buttons der einzelnen Settings vertikal ausgerichtet
@@ -490,5 +498,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-17
-**Version:** 1.7.3
+**Version:** 1.7.4
 **Status:** MVP Komplett & Produktionsbereit (mit bekannten Issues in Aggregation)

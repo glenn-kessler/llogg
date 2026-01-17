@@ -74,26 +74,27 @@
                     <input type="hidden" id="chart-type" value="bar">
                 </div>
 
-                <div class="control-group">
-                    <label>
-                        <input type="checkbox" id="auto-step-size" checked> Auto Step Size
-                    </label>
+                <div class="control-row">
+                    <label class="control-label">Step Size:</label>
+                    <div class="control-buttons">
+                        <label>
+                            <input type="checkbox" id="auto-step-size" checked> Auto
+                        </label>
+                        <select id="manual-step-size" style="display: none;">
+                            <option value="hour">1 Hour</option>
+                            <option value="6hours">6 Hours</option>
+                            <option value="day">1 Day</option>
+                            <option value="week">1 Week</option>
+                            <option value="month">1 Month</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="control-group">
-                    <label>Counter Axis:</label>
-                    <button id="btn-axis-toggle" class="btn-secondary" data-axis="y">Y-Axis (Time-based)</button>
-                </div>
-
-                <div class="control-group" id="manual-step-group" style="display: none;">
-                    <label>Step Size:</label>
-                    <select id="manual-step-size">
-                        <option value="hour">1 Hour</option>
-                        <option value="6hours">6 Hours</option>
-                        <option value="day">1 Day</option>
-                        <option value="week">1 Week</option>
-                        <option value="month">1 Month</option>
-                    </select>
+                <div class="control-row">
+                    <label class="control-label">Counter Axis:</label>
+                    <div class="control-buttons">
+                        <button id="btn-axis-toggle" class="btn-secondary" data-axis="y">Y-Axis (Time-based)</button>
+                    </div>
                 </div>
             </section>
 
