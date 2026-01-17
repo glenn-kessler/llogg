@@ -298,6 +298,18 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.6.9 (2026-01-17)
+- UX: Chart-Controls nach oben verschoben - direkt unter Diagramm statt in Filter-Sektion
+- UX: Time Span nutzt jetzt +/- Buttons statt Dropdowns (Unit und Value separat steuerbar)
+- UX: Chart Type nutzt jetzt ◀/▶ Buttons zum Durchschalten (Bar/Line/Pie)
+- UX: Verbesserte Touch-Bedienbarkeit mit großen Counter-Buttons (36px)
+- UX: Übersichtlichere Anordnung der wichtigsten Controls direkt am Chart
+- Design: Neue .chart-controls Sektion mit Flexbox-Layout
+- Design: .btn-counter und .counter-display Styles für einheitliches Look & Feel
+- Design: Visuelle Gruppierung durch .btn-counter-group Container
+- Funktion: Counter-Buttons mit Hover-Effekten und Scale-Animation
+- Wartbarkeit: Hidden inputs behalten Kompatibilität mit bestehender Filter-Logik
+
 ### Version 1.6.8 (2026-01-17)
 - Bugfix: CSV-Import ignorierte Timestamps - verwendete createEntry() statt createEntryWithTimestamp()
 - Bugfix: Importierte Einträge bekamen alle den aktuellen Zeitstempel statt den aus der CSV-Datei
@@ -446,5 +458,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-17
-**Version:** 1.6.8
+**Version:** 1.6.9
 **Status:** MVP Komplett & Produktionsbereit (mit bekannten Issues in Aggregation)

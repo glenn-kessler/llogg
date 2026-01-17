@@ -42,6 +42,57 @@
                 <svg id="chart-svg" width="100%" height="400"></svg>
             </section>
 
+            <!-- Chart Controls - directly under chart -->
+            <section class="chart-controls">
+                <div class="control-group">
+                    <label>Time Span:</label>
+                    <div class="btn-counter-group">
+                        <button id="btn-timespan-unit-prev" class="btn-counter">◀</button>
+                        <span id="timespan-unit-display" class="counter-display">Days</span>
+                        <button id="btn-timespan-unit-next" class="btn-counter">▶</button>
+                    </div>
+                    <div class="btn-counter-group">
+                        <button id="btn-timespan-value-dec" class="btn-counter">−</button>
+                        <span id="timespan-value-display" class="counter-display">7</span>
+                        <button id="btn-timespan-value-inc" class="btn-counter">+</button>
+                    </div>
+                    <input type="hidden" id="filter-timespan-unit" value="days">
+                    <input type="hidden" id="filter-timespan-value" value="7">
+                </div>
+
+                <div class="control-group">
+                    <label>Chart Type:</label>
+                    <div class="btn-counter-group">
+                        <button id="btn-chart-type-prev" class="btn-counter">◀</button>
+                        <span id="chart-type-display" class="counter-display">Bar</span>
+                        <button id="btn-chart-type-next" class="btn-counter">▶</button>
+                    </div>
+                    <input type="hidden" id="chart-type" value="bar">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="auto-step-size" checked> Auto Step Size
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <label>Counter Axis:</label>
+                    <button id="btn-axis-toggle" class="btn-secondary" data-axis="y">Y-Axis (Time-based)</button>
+                </div>
+
+                <div class="control-group" id="manual-step-group" style="display: none;">
+                    <label>Step Size:</label>
+                    <select id="manual-step-size">
+                        <option value="hour">1 Hour</option>
+                        <option value="6hours">6 Hours</option>
+                        <option value="day">1 Day</option>
+                        <option value="week">1 Week</option>
+                        <option value="month">1 Month</option>
+                    </select>
+                </div>
+            </section>
+
             <section class="filter-section">
                 <h2>Filters</h2>
 
@@ -69,48 +120,6 @@
                         <button id="btn-deselect-all-details" class="btn-secondary" style="padding: 5px 10px; font-size: 12px;">Deselect All</button>
                     </div>
                     <div id="filter-details" class="filter-checkboxes"></div>
-                </div>
-
-                <div class="filter-group">
-                    <label>Time Span:</label>
-                    <select id="filter-timespan-unit">
-                        <option value="hours">Hours</option>
-                        <option value="days" selected>Days</option>
-                        <option value="weeks">Weeks</option>
-                        <option value="months">Months</option>
-                    </select>
-                    <input type="number" id="filter-timespan-value" value="7" min="1">
-                </div>
-
-                <div class="filter-group">
-                    <label>Chart Type:</label>
-                    <select id="chart-type">
-                        <option value="bar" selected>Bar Chart</option>
-                        <option value="line">Line Chart</option>
-                        <option value="pie">Pie Chart</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label>
-                        <input type="checkbox" id="auto-step-size" checked> Auto Step Size
-                    </label>
-                </div>
-
-                <div class="filter-group" id="manual-step-group" style="display: none;">
-                    <label>Step Size:</label>
-                    <select id="manual-step-size">
-                        <option value="hour">1 Hour</option>
-                        <option value="6hours">6 Hours</option>
-                        <option value="day">1 Day</option>
-                        <option value="week">1 Week</option>
-                        <option value="month">1 Month</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label>Counter Axis:</label>
-                    <button id="btn-axis-toggle" class="btn-secondary" data-axis="y">Y-Axis (Time-based)</button>
                 </div>
             </section>
 

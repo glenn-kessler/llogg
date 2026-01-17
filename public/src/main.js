@@ -1518,10 +1518,71 @@ function setupViewPage() {
     });
   });
 
-  // Chart type change - apply instantly
+  // NEW: Timespan unit buttons (Hours/Days/Weeks/Months)
+  const timespanUnits = ['hours', 'days', 'weeks', 'months'];
+  let currentUnitIndex = 1; // Start with 'days'
+
+  document.getElementById('btn-timespan-unit-prev').addEventListener('click', () => {
+    currentUnitIndex = (currentUnitIndex - 1 + timespanUnits.length) % timespanUnits.length;
+    updateTimespanUnit(timespanUnits[currentUnitIndex]);
+  });
+
+  document.getElementById('btn-timespan-unit-next').addEventListener('click', () => {
+    currentUnitIndex = (currentUnitIndex + 1) % timespanUnits.length;
+    updateTimespanUnit(timespanUnits[currentUnitIndex]);
+  });
+
+  function updateTimespanUnit(unit) {
+    const unitLabels = { hours: 'Hours', days: 'Days', weeks: 'Weeks', months: 'Months' };
+    document.getElementById('timespan-unit-display').textContent = unitLabels[unit];
+    document.getElementById('filter-timespan-unit').value = unit;
+    applyFilters();
+  }
+
+  // NEW: Timespan value buttons (+/-)
+  document.getElementById('btn-timespan-value-inc').addEventListener('click', () => {
+    const input = document.getElementById('filter-timespan-value');
+    const current = parseInt(input.value) || 1;
+    input.value = current + 1;
+    document.getElementById('timespan-value-display').textContent = input.value;
+    applyFilters();
+  });
+
+  document.getElementById('btn-timespan-value-dec').addEventListener('click', () => {
+    const input = document.getElementById('filter-timespan-value');
+    const current = parseInt(input.value) || 1;
+    if (current > 1) {
+      input.value = current - 1;
+      document.getElementById('timespan-value-display').textContent = input.value;
+      applyFilters();
+    }
+  });
+
+  // NEW: Chart type buttons (Bar/Line/Pie)
+  const chartTypes = ['bar', 'line', 'pie'];
+  let currentChartIndex = 0; // Start with 'bar'
+
+  document.getElementById('btn-chart-type-prev').addEventListener('click', () => {
+    currentChartIndex = (currentChartIndex - 1 + chartTypes.length) % chartTypes.length;
+    updateChartType(chartTypes[currentChartIndex]);
+  });
+
+  document.getElementById('btn-chart-type-next').addEventListener('click', () => {
+    currentChartIndex = (currentChartIndex + 1) % chartTypes.length;
+    updateChartType(chartTypes[currentChartIndex]);
+  });
+
+  function updateChartType(type) {
+    const typeLabels = { bar: 'Bar', line: 'Line', pie: 'Pie' };
+    document.getElementById('chart-type-display').textContent = typeLabels[type];
+    document.getElementById('chart-type').value = type;
+    applyFilters();
+  }
+
+  // Legacy: Chart type change - apply instantly (for hidden input)
   document.getElementById('chart-type').addEventListener('change', applyFilters);
 
-  // Timespan changes - apply instantly
+  // Legacy: Timespan changes - apply instantly (for hidden inputs)
   document.getElementById('filter-timespan-unit').addEventListener('change', applyFilters);
   document.getElementById('filter-timespan-value').addEventListener('input', applyFilters);
 
