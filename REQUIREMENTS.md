@@ -298,6 +298,27 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.6.8 (2026-01-17)
+- Bugfix: CSV-Import ignorierte Timestamps - verwendete createEntry() statt createEntryWithTimestamp()
+- Bugfix: Importierte Einträge bekamen alle den aktuellen Zeitstempel statt den aus der CSV-Datei
+- Bugfix: Alle importierten Daten erschienen auf dem letzten Tag statt über Zeitbereich verteilt
+- Verbesserung: CSV-Import nutzt jetzt createEntryWithTimestamp() und übergibt timestamp-Parameter
+- Verbesserung: Importierte Test-Daten behalten jetzt ihre Original-Zeitstempel aus CSV
+- Known Issue: Mögliches Problem mit Import-Funktion oder Entry-Zählung - erfordert weitere Untersuchung
+- Known Issue: Nach Import zeigen sich möglicherweise nicht alle Einträge korrekt in Aggregation - Root Cause noch zu ermitteln
+
+### Version 1.6.7 (2026-01-17)
+- Bugfix: Behoben "Invalid Date" Fehler durch fehlerhafte setUTCDate() Mutation
+- Bugfix: Zeit-Berechnung nutzt jetzt Date.UTC() Konstruktor statt gefährlicher Mutationen
+- Bugfix: Vermeidet invalide Zwischenzustände bei Monatsüberschreitungen
+- Verbesserung: Robuste Datums-Berechnung für alle Edge Cases (Schaltjahre, Monatsgrenzen, Jahreswechsel)
+- Test: Neue umfassende Test-Suite TEST_time_calculations.html mit 30+ Tests
+- Test: Abdeckung aller Corner Cases: Schaltjahre (auch Jahrhundert-Regel), Monatsgrenzen, Jahreswechsel, DST, Null-Werte
+- Test: Validierung für Feb 29 in Schaltjahren (2024, 2000) und Nicht-Schaltjahren (2100)
+- Test: Grenzfälle wie Mitternacht UTC, End-of-Day, sehr große Zeitspannen (365 Tage)
+- Wartbarkeit: Date.UTC() garantiert valide Dates ohne RangeError Risiko
+- Qualität: Zero-Tolerance für "Invalid time value" Fehler durch systematische Tests
+
 ### Version 1.6.6 (2026-01-17)
 - Bugfix: F-4.13.1 - Behoben kritischer Timezone-Bug bei Zeit-Aggregation, der alle Daten auf dem letzten Tag aggregierte
 - Bugfix: Zeit-Schritte werden jetzt mit UTC-Methoden generiert statt lokaler Zeit (setUTCDate, setUTCHours, etc.)
@@ -425,5 +446,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-17
-**Version:** 1.6.6
-**Status:** MVP Komplett & Produktionsbereit
+**Version:** 1.6.8
+**Status:** MVP Komplett & Produktionsbereit (mit bekannten Issues in Aggregation)
