@@ -674,6 +674,19 @@ h3 {
     padding: 0 var(--spacing-sm);
 }
 
+/* Responsive: Stack controls vertically on mobile */
+@media (max-width: 768px) {
+    .chart-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .control-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
 /* Filters */
 .filter-section {
     background-color: var(--color-surface);

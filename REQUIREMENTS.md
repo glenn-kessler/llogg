@@ -298,6 +298,14 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.7.1 (2026-01-17)
+- Bugfix: Chart-Controls auf Mobilgeräten teilweise außerhalb des Viewports
+- Responsive: @media (max-width: 768px) für Chart-Controls hinzugefügt
+- Responsive: Controls stapeln sich vertikal auf schmalen Bildschirmen
+- Responsive: control-group nutzt width: 100% und justify-content: space-between
+- UX: Alle Buttons jetzt auf Smartphone sichtbar und erreichbar
+- Mobile: Verbesserte Touch-Bedienung durch vollbreite Control-Groups
+
 ### Version 1.7.0 (2026-01-17)
 - UX: Detail-Filter jetzt vertikal angeordnet mit ausgerichteten Checkboxen
 - UX: Verbesserte Lesbarkeit und Übersicht bei vielen Details
@@ -465,5 +473,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-17
-**Version:** 1.7.0
+**Version:** 1.7.1
 **Status:** MVP Komplett & Produktionsbereit (mit bekannten Issues in Aggregation)
