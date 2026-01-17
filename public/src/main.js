@@ -8,9 +8,10 @@ import * as dataService from './lib/dataService.js';
 import { exportToCSV, downloadCSV, importFromCSV } from './lib/csvService.js';
 import { exportConfig, downloadConfig, importConfig } from './lib/configService.js';
 import { renderBarChart, renderLineChart, renderPieChart, renderGroupedBarChart, renderMultiLineChart, renderHorizontalBarChart, calculateAutoStepSize, aggregateByTimeSteps } from './components/charts.js';
-import { APP_VERSION } from '../version.js';
 
-// Re-export version for other modules
+// APP_VERSION is loaded globally from version.js (loaded in index.html before this module)
+// We access it via self.APP_VERSION and re-export for other modules
+const APP_VERSION = self.APP_VERSION || '1.6.6';
 export { APP_VERSION };
 
 // ============================================================================

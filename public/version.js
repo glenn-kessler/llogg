@@ -1,15 +1,14 @@
 /**
  * Application Version - Single Source of Truth
- * Used by both main app and service worker
+ * Used by service worker via importScripts()
+ *
+ * NOTE: This file does NOT use ES6 export syntax because
+ * Service Worker's importScripts() doesn't support ES6 modules.
+ * Instead, it sets a global variable.
  */
 
 // Increment this version number when releasing updates
 const APP_VERSION = '1.6.6';
 
-// Export for ES6 modules (main app)
-export { APP_VERSION };
-
-// Also make available globally for service worker
-if (typeof self !== 'undefined') {
-  self.APP_VERSION = APP_VERSION;
-}
+// Make available globally for service worker
+self.APP_VERSION = APP_VERSION;
