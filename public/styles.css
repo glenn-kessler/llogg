@@ -611,7 +611,7 @@ h3 {
     margin-bottom: var(--spacing-lg);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
 }
 
 .control-row {
@@ -624,13 +624,13 @@ h3 {
 .control-label {
     color: var(--color-text-dim);
     font-weight: 600;
-    padding-top: 8px;
+    padding-top: 6px;
 }
 
 .control-buttons {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
     align-items: flex-start;
 }
 

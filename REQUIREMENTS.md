@@ -298,6 +298,14 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.7.5 (2026-01-17)
+- Design: Einheitliche Abstände zwischen allen Chart-Controls
+- Design: .chart-controls gap reduziert von var(--spacing-md) auf var(--spacing-sm)
+- Design: .control-buttons gap erhöht von var(--spacing-xs) auf var(--spacing-sm)
+- Design: .control-label padding-top angepasst von 8px auf 6px für bessere Ausrichtung
+- UX: Konsistente 16px (1rem) Abstände vertikal zwischen allen Elementen
+- UX: Kompaktere, aufgeräumtere Darstellung ohne sichtbare Unterschiede in den Gaps
+
 ### Version 1.7.4 (2026-01-17)
 - UX: Step Size und Counter Axis jetzt auch im Grid-Layout mit Labels links
 - UX: Auto Step Size Checkbox zeigt "Auto" statt "Auto Step Size"
@@ -498,5 +506,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-17
-**Version:** 1.7.4
+**Version:** 1.7.5
 **Status:** MVP Komplett & Produktionsbereit (mit bekannten Issues in Aggregation)
