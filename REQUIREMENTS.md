@@ -305,7 +305,13 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 - Bugfix: Schritt-Labels (formatStepLabel) verwenden UTC-Methoden für korrekte Datumsanzeige
 - Verbesserung: Diagramm-Aggregation funktioniert jetzt korrekt unabhängig von Browser-Timezone
 - Verbesserung: 14-Tage-Zeitspanne zeigt jetzt korrekt 14 separate Tages-Balken statt eines einzelnen Balkens
+- Verbesserung: Versionsnummer zentralisiert in version.js - nur eine Stelle für alle Updates
+- Funktion: setupAboutPage() injiziert Version dynamisch in About-Seite aus APP_VERSION Konstante
+- Funktion: Service Worker Cache-Name verwendet dynamische Versionsnummer (`life-logger-v${APP_VERSION}`)
 - Technisch: Alle Datum/Zeit-Operationen in Aggregations-Pipeline nutzen UTC für Konsistenz mit ISO 8601 Timestamps in IndexedDB
+- Technisch: Neue version.js als Single Source of Truth für APP_VERSION
+- Technisch: Service Worker nutzt importScripts() um version.js zu laden
+- Wartbarkeit: Version muss nur noch an einer Stelle (version.js) aktualisiert werden
 
 ### Version 1.6.5 (2026-01-16)
 - Bugfix: Zeitspannen-Aggregation startet jetzt konsistent bei Mitternacht (00:00:00) für Tages/Wochen/Monats-Zeiträume

@@ -5,6 +5,7 @@
  */
 
 import { getTypes, getDetails, createType, createDetail, updateType, updateDetail } from './dataService.js';
+import { APP_VERSION } from '../main.js';
 
 /**
  * Export configuration to human-readable text format
@@ -30,7 +31,7 @@ export async function exportConfig() {
   });
 
   let config = 'Life Logger Configuration\n';
-  config += 'Version: 1.6.6\n';
+  config += `Version: ${APP_VERSION}\n`;
   config += '\n';
 
   // Export Types section

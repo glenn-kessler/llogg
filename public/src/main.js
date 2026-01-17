@@ -8,6 +8,10 @@ import * as dataService from './lib/dataService.js';
 import { exportToCSV, downloadCSV, importFromCSV } from './lib/csvService.js';
 import { exportConfig, downloadConfig, importConfig } from './lib/configService.js';
 import { renderBarChart, renderLineChart, renderPieChart, renderGroupedBarChart, renderMultiLineChart, renderHorizontalBarChart, calculateAutoStepSize, aggregateByTimeSteps } from './components/charts.js';
+import { APP_VERSION } from '../version.js';
+
+// Re-export version for other modules
+export { APP_VERSION };
 
 // ============================================================================
 // App State
@@ -64,6 +68,9 @@ async function initApp() {
 
     // Setup Settings page
     setupSettingsPage();
+
+    // Setup About page (inject version)
+    setupAboutPage();
 
     // Render initial page
     showPage('log');
@@ -2258,6 +2265,18 @@ function populateTypeSelect() {
     option.textContent = type.name;
     select.appendChild(option);
   });
+}
+
+// ============================================================================
+// About Page Setup
+// ============================================================================
+
+function setupAboutPage() {
+  // Inject version number into About page
+  const versionHeader = document.querySelector('#page-about h2');
+  if (versionHeader) {
+    versionHeader.textContent = `Version ${APP_VERSION}`;
+  }
 }
 
 // ============================================================================
