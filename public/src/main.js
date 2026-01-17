@@ -1694,28 +1694,28 @@ async function applyFilters() {
 
     switch (timespanUnit) {
       case 'hours':
-        startTime.setHours(now.getHours() - timespanValue);
+        startTime.setUTCHours(now.getUTCHours() - timespanValue);
         break;
       case 'days':
-        startTime.setDate(now.getDate() - timespanValue);
-        // Reset to start of day (midnight) for daily aggregation
-        startTime.setHours(0, 0, 0, 0);
-        // Reset endTime to end of current day for proper daily aggregation
-        endTime.setHours(23, 59, 59, 999);
+        startTime.setUTCDate(now.getUTCDate() - timespanValue);
+        // Reset to start of day (midnight UTC) for daily aggregation
+        startTime.setUTCHours(0, 0, 0, 0);
+        // Reset endTime to end of current day (UTC) for proper daily aggregation
+        endTime.setUTCHours(23, 59, 59, 999);
         break;
       case 'weeks':
-        startTime.setDate(now.getDate() - (timespanValue * 7));
-        // Reset to start of day (midnight) for weekly aggregation
-        startTime.setHours(0, 0, 0, 0);
-        // Reset endTime to end of current day for proper weekly aggregation
-        endTime.setHours(23, 59, 59, 999);
+        startTime.setUTCDate(now.getUTCDate() - (timespanValue * 7));
+        // Reset to start of day (midnight UTC) for weekly aggregation
+        startTime.setUTCHours(0, 0, 0, 0);
+        // Reset endTime to end of current day (UTC) for proper weekly aggregation
+        endTime.setUTCHours(23, 59, 59, 999);
         break;
       case 'months':
-        startTime.setMonth(now.getMonth() - timespanValue);
-        // Reset to start of day (midnight) for monthly aggregation
-        startTime.setHours(0, 0, 0, 0);
-        // Reset endTime to end of current day for proper monthly aggregation
-        endTime.setHours(23, 59, 59, 999);
+        startTime.setUTCMonth(now.getUTCMonth() - timespanValue);
+        // Reset to start of day (midnight UTC) for monthly aggregation
+        startTime.setUTCHours(0, 0, 0, 0);
+        // Reset endTime to end of current day (UTC) for proper daily aggregation
+        endTime.setUTCHours(23, 59, 59, 999);
         break;
     }
 

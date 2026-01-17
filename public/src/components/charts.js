@@ -723,26 +723,26 @@ export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize
   const current = new Date(startTime);
   const end = new Date(endTime);
 
-  // Generate time steps
+  // Generate time steps using UTC to match ISO timestamp format in database
   while (current < end) {
     const stepStart = new Date(current);
     const stepEnd = new Date(stepStart);
 
     switch (stepSize) {
       case 'hour':
-        stepEnd.setHours(stepEnd.getHours() + 1);
+        stepEnd.setUTCHours(stepEnd.getUTCHours() + 1);
         break;
       case '6hours':
-        stepEnd.setHours(stepEnd.getHours() + 6);
+        stepEnd.setUTCHours(stepEnd.getUTCHours() + 6);
         break;
       case 'day':
-        stepEnd.setDate(stepEnd.getDate() + 1);
+        stepEnd.setUTCDate(stepEnd.getUTCDate() + 1);
         break;
       case 'week':
-        stepEnd.setDate(stepEnd.getDate() + 7);
+        stepEnd.setUTCDate(stepEnd.getUTCDate() + 7);
         break;
       case 'month':
-        stepEnd.setMonth(stepEnd.getMonth() + 1);
+        stepEnd.setUTCMonth(stepEnd.getUTCMonth() + 1);
         break;
     }
 
@@ -813,16 +813,16 @@ function formatStepLabel(date, stepSize) {
 
   switch (stepSize) {
     case 'hour':
-      return `${date.getHours()}:00`;
+      return `${date.getUTCHours()}:00`;
     case '6hours':
-      return `${date.getHours()}:00`;
+      return `${date.getUTCHours()}:00`;
     case 'day':
       // Show date and weekday for clarity (e.g., "Jan 2 Mon")
-      return `${months[date.getMonth()]} ${date.getDate()} ${days[date.getDay()]}`;
+      return `${months[date.getUTCMonth()]} ${date.getUTCDate()} ${days[date.getUTCDay()]}`;
     case 'week':
-      return `${months[date.getMonth()]} ${date.getDate()}`;
+      return `${months[date.getUTCMonth()]} ${date.getUTCDate()}`;
     case 'month':
-      return months[date.getMonth()];
+      return months[date.getUTCMonth()];
     default:
       return date.toLocaleDateString();
   }

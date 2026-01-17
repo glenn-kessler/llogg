@@ -298,6 +298,15 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.6.6 (2026-01-17)
+- Bugfix: F-4.13.1 - Behoben kritischer Timezone-Bug bei Zeit-Aggregation, der alle Daten auf dem letzten Tag aggregierte
+- Bugfix: Zeit-Schritte werden jetzt mit UTC-Methoden generiert statt lokaler Zeit (setUTCDate, setUTCHours, etc.)
+- Bugfix: Zeitspannen-Berechnung (startTime/endTime) verwendet jetzt UTC-Methoden für konsistente Aggregation
+- Bugfix: Schritt-Labels (formatStepLabel) verwenden UTC-Methoden für korrekte Datumsanzeige
+- Verbesserung: Diagramm-Aggregation funktioniert jetzt korrekt unabhängig von Browser-Timezone
+- Verbesserung: 14-Tage-Zeitspanne zeigt jetzt korrekt 14 separate Tages-Balken statt eines einzelnen Balkens
+- Technisch: Alle Datum/Zeit-Operationen in Aggregations-Pipeline nutzen UTC für Konsistenz mit ISO 8601 Timestamps in IndexedDB
+
 ### Version 1.6.5 (2026-01-16)
 - Bugfix: Zeitspannen-Aggregation startet jetzt konsistent bei Mitternacht (00:00:00) für Tages/Wochen/Monats-Zeiträume
 - Bugfix: Fixed endTime mutation problem in aggregateByTimeSteps durch lokale Date-Kopie
@@ -409,6 +418,6 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 ---
 
 **Gepflegt von:** Claude (Anthropic)
-**Zuletzt Aktualisiert:** 2026-01-16
-**Version:** 1.6.5
+**Zuletzt Aktualisiert:** 2026-01-17
+**Version:** 1.6.6
 **Status:** MVP Komplett & Produktionsbereit
