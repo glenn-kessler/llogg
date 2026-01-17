@@ -138,8 +138,12 @@ export async function importConfig(configContent) {
         currentDetail = null;
         continue;
       } else if (trimmed === 'Details:') {
+        // Save the last type from Types section before switching
+        if (currentType) {
+          typesToCreate.push(currentType);
+          currentType = null;
+        }
         currentSection = 'details';
-        currentType = null;
         currentDetail = null;
         continue;
       }

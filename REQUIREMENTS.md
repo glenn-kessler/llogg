@@ -298,6 +298,11 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.7.7 (2026-01-17)
+- Bugfix: Letzter Type in Types-Sektion wurde beim Import verloren
+- Bugfix: Beim Wechsel von "Types:" zu "Details:" Sektion wird currentType jetzt gespeichert
+- Fix: Configuration Import erstellt jetzt alle Types korrekt (Party Type wurde übersprungen)
+
 ### Version 1.7.6 (2026-01-17)
 - Debug: Umfassendes Console-Logging für Configuration Import hinzugefügt
 - Debug: Trackt Parsing von Types und Details, Creation/Update Prozesse
@@ -512,5 +517,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-17
-**Version:** 1.7.6
+**Version:** 1.7.7
 **Status:** MVP Komplett & Produktionsbereit (mit bekannten Issues in Aggregation)
