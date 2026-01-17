@@ -1,0 +1,155 @@
+Life Logger Configuration
+Version: 1.6
+
+Types:
+  Mood
+    Icon: 😊
+    Color: #3498db
+
+  Activity
+    Icon: 🏃
+    Color: #2ecc71
+
+  Food
+    Icon: 🍽️
+    Color: #e74c3c
+
+  Sleep
+    Icon: 😴
+    Color: #9b59b6
+
+  Party
+    Icon: 🪩
+    Color: #1f1f1f
+
+Details:
+  Mood
+    Happy
+      Icon: 😊
+      Color: #f1c40f
+      Unit: 
+    Sad
+      Icon: 😢
+      Color: #3498db
+      Unit: 
+    Neutral
+      Icon: 😐
+      Color: #95a5a6
+      Unit: 
+    Angry
+      Icon: 😠
+      Color: #e74c3c
+      Unit: 
+    Frightened
+      Icon: 😨
+      Color: #9b59b6
+      Unit: 
+    Energetic
+      Icon: ⚡
+      Color: #e67e22
+      Unit: 
+    Tired
+      Icon: 😴
+      Color: #7f8c8d
+      Unit: 
+
+  Activity
+    Running
+      Icon: 🏃
+      Color: #e74c3c
+      Unit: Minutes
+    Cycling
+      Icon: 🚴
+      Color: #3498db
+      Unit: km
+    Walking
+      Icon: 🚶
+      Color: #2ecc71
+      Unit: Minutes
+    Gym
+      Icon: 💪
+      Color: #e67e22
+      Unit: Minutes
+    Longboard
+      Icon: 🛹
+      Color: #c2b500
+      Unit: 
+    Bouldern
+      Icon: 🧗
+      Color: #424242
+      Unit: 
+
+  Food
+    Breakfast
+      Icon: 🥐
+      Color: #f39c12
+      Unit: 
+    Lunch
+      Icon: 🍱
+      Color: #e74c3c
+      Unit: 
+    Dinner
+      Icon: 🍝
+      Color: #c0392b
+      Unit: 
+    Snack
+      Icon: 🍪
+      Color: #f1c40f
+      Unit: 
+
+  Sleep
+    Night Sleep
+      Icon: 🌙
+      Color: #34495e
+      Unit: Hours
+    Nap
+      Icon: 💤
+      Color: #7f8c8d
+      Unit: Minutes
+
+  Party
+    Bier
+      Icon: 🍺
+      Color: #1f1f1f
+      Unit: 
+    Zigaretten
+      Icon: 🚬
+      Color: #1f1f1f
+      Unit: 
+    Emma
+      Icon: 💓
+      Color: #1f1f1f
+      Unit: 
+    Keta
+      Icon: 🐴
+      Color: #1f1f1f
+      Unit: 
+    Pepp
+      Icon: 👃
+      Color: #1f1f1f
+      Unit: 
+    Coke
+      Icon: ❄️
+      Color: #1f1f1f
+      Unit: 
+    Shrooms
+      Icon: 🍄
+      Color: #1f1f1f
+      Unit: 
+    LSD
+      Icon: 💎
+      Color: #1f1f1f
+      Unit: 
+    Mescalin
+      Icon: 🌵
+      Color: #1f1f1f
+      Unit: 
+    2cB
+      Icon: ✨
+      Color: #1f1f1f
+      Unit: 
+    3MMC
+      Icon: 🐱
+      Color: #1f1f1f
+      Unit: 
+

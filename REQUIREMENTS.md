@@ -298,6 +298,12 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.7.6 (2026-01-17)
+- Debug: Umfassendes Console-Logging für Configuration Import hinzugefügt
+- Debug: Trackt Parsing von Types und Details, Creation/Update Prozesse
+- Debug: Zeigt Fehler bei Type/Detail Lookup und Creation an
+- Bugfix: Diagnose-Tools für Configuration Import Probleme
+
 ### Version 1.7.5 (2026-01-17)
 - Design: Einheitliche Abstände zwischen allen Chart-Controls
 - Design: .chart-controls gap reduziert von var(--spacing-md) auf var(--spacing-sm)
@@ -506,5 +512,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-17
-**Version:** 1.7.5
+**Version:** 1.7.6
 **Status:** MVP Komplett & Produktionsbereit (mit bekannten Issues in Aggregation)

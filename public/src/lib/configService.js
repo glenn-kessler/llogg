@@ -100,6 +100,8 @@ export async function importConfig(configContent) {
   const typesToCreate = [];
   const detailsToCreate = [];
 
+  console.log('[CONFIG IMPORT] Starting import, total lines:', lines.length);
+
   // Existing types and details for matching
   const existingTypes = await getTypes();
   const existingDetails = await getDetails();
@@ -223,10 +225,15 @@ export async function importConfig(configContent) {
     detailsToCreate.push({ ...currentDetail, typeName: currentTypeName });
   }
 
+  console.log('[CONFIG IMPORT] Parsed types:', typesToCreate);
+  console.log('[CONFIG IMPORT] Parsed details:', detailsToCreate);
+
   // Import types
   let importedTypes = 0;
   let updatedTypes = 0;
   const typeIdMap = {}; // Map from name to ID for detail creation
+
+  console.log('[CONFIG IMPORT] Creating types, count:', typesToCreate.length);
 
   for (const type of typesToCreate) {
     try {
@@ -234,6 +241,7 @@ export async function importConfig(configContent) {
 
       if (existing) {
         // Update existing type
+        console.log('[CONFIG IMPORT] Updating existing type:', type.name);
         await updateType(existing.id, {
           charIcon: type.charIcon,
           color: type.color
@@ -242,11 +250,13 @@ export async function importConfig(configContent) {
         updatedTypes++;
       } else {
         // Create new type
+        console.log('[CONFIG IMPORT] Creating new type:', type.name);
         const id = await createType(type);
         typeIdMap[type.name] = id;
         importedTypes++;
       }
     } catch (error) {
+      console.error('[CONFIG IMPORT] Error creating type:', type.name, error);
       errors.push({ type: type.name, error: error.message });
     }
   }
@@ -255,11 +265,14 @@ export async function importConfig(configContent) {
   let importedDetails = 0;
   let updatedDetails = 0;
 
+  console.log('[CONFIG IMPORT] Creating details, count:', detailsToCreate.length);
+
   for (const detail of detailsToCreate) {
     try {
       const typeId = typeIdMap[detail.typeName];
 
       if (!typeId) {
+        console.error('[CONFIG IMPORT] Type not found for detail:', detail.name, 'type:', detail.typeName);
         errors.push({ detail: detail.name, error: `Type '${detail.typeName}' not found` });
         continue;
       }
@@ -268,6 +281,7 @@ export async function importConfig(configContent) {
 
       if (existing && existing.typeId === typeId) {
         // Update existing detail
+        console.log('[CONFIG IMPORT] Updating existing detail:', detail.name);
         await updateDetail(existing.id, {
           charIcon: detail.charIcon,
           color: detail.color,
@@ -276,6 +290,7 @@ export async function importConfig(configContent) {
         updatedDetails++;
       } else {
         // Create new detail
+        console.log('[CONFIG IMPORT] Creating new detail:', detail.name, 'for type:', detail.typeName);
         await createDetail({
           typeId: typeId,
           name: detail.name,
@@ -286,9 +301,12 @@ export async function importConfig(configContent) {
         importedDetails++;
       }
     } catch (error) {
+      console.error('[CONFIG IMPORT] Error creating detail:', detail.name, error);
       errors.push({ detail: detail.name, error: error.message });
     }
   }
+
+  console.log('[CONFIG IMPORT] Import complete. Types:', importedTypes, 'updated:', updatedTypes, 'Details:', importedDetails, 'updated:', updatedDetails);
 
   return {
     importedTypes,
