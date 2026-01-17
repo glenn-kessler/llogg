@@ -298,6 +298,15 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.7.3 (2026-01-17)
+- UX: Labels "Time Span" und "Chart Type" jetzt links von den Buttons
+- UX: Buttons der einzelnen Settings vertikal ausgerichtet
+- Design: Neues Grid-Layout mit .control-row für konsistente Ausrichtung
+- Design: grid-template-columns: 120px 1fr für Label + Buttons
+- Design: .control-label für Labels links, .control-buttons für Button-Container
+- Design: Vertikale Stapelung der Button-Gruppen innerhalb jedes Settings
+- Layout: Alle Button-Gruppen links-aligned für einheitliches Erscheinungsbild
+
 ### Version 1.7.2 (2026-01-17)
 - UX: Time Span Control jetzt auf zwei Zeilen aufgeteilt
 - UX: Erste Zeile: Unit-Selector (Hours/Days/Weeks/Months)
@@ -481,5 +490,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-17
-**Version:** 1.7.2
+**Version:** 1.7.3
 **Status:** MVP Komplett & Produktionsbereit (mit bekannten Issues in Aggregation)
