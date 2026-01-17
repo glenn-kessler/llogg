@@ -298,6 +298,13 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.7.0 (2026-01-17)
+- UX: Detail-Filter jetzt vertikal angeordnet mit ausgerichteten Checkboxen
+- UX: Verbesserte Lesbarkeit und Übersicht bei vielen Details
+- Design: #filter-details verwendet flex-direction: column für vertikales Layout
+- Design: Checkboxen links-aligned mit gap: var(--spacing-xs) für einheitlichen Abstand
+- Design: flex-shrink: 0 auf Checkboxen verhindert Größenänderung
+
 ### Version 1.6.9 (2026-01-17)
 - UX: Chart-Controls nach oben verschoben - direkt unter Diagramm statt in Filter-Sektion
 - UX: Time Span nutzt jetzt +/- Buttons statt Dropdowns (Unit und Value separat steuerbar)
@@ -458,5 +465,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-17
-**Version:** 1.6.9
+**Version:** 1.7.0
 **Status:** MVP Komplett & Produktionsbereit (mit bekannten Issues in Aggregation)
