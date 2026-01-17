@@ -3,7 +3,7 @@
  * Provides offline capability and caching
  */
 
-const CACHE_NAME = 'life-logger-v7';
+const CACHE_NAME = 'life-logger-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -13,12 +13,13 @@ const ASSETS = [
   './src/lib/db.js',
   './src/lib/dataService.js',
   './src/lib/csvService.js',
+  './src/lib/configService.js',
   './src/components/charts.js'
 ];
 
 // Install event - cache assets
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker v7...');
+  console.log('[SW] Installing service worker v8...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {

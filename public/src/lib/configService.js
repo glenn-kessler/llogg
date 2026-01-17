@@ -30,7 +30,7 @@ export async function exportConfig() {
   });
 
   let config = 'Life Logger Configuration\n';
-  config += 'Version: 1.6\n';
+  config += 'Version: 1.6.6\n';
   config += '\n';
 
   // Export Types section
