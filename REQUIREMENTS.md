@@ -298,6 +298,14 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.7.2 (2026-01-17)
+- UX: Time Span Control jetzt auf zwei Zeilen aufgeteilt
+- UX: Erste Zeile: Unit-Selector (Hours/Days/Weeks/Months)
+- UX: Zweite Zeile: Value-Counter (+/- für Anzahl)
+- Design: Neue .control-group-vertical CSS-Klasse für vertikales Layout
+- Design: flex-direction: column und align-items: flex-start für Time Span
+- Mobile: Bessere Übersicht durch vertikale Anordnung
+
 ### Version 1.7.1 (2026-01-17)
 - Bugfix: Chart-Controls auf Mobilgeräten teilweise außerhalb des Viewports
 - Responsive: @media (max-width: 768px) für Chart-Controls hinzugefügt
@@ -473,5 +481,5 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 **Gepflegt von:** Claude (Anthropic)
 **Zuletzt Aktualisiert:** 2026-01-17
-**Version:** 1.7.1
+**Version:** 1.7.2
 **Status:** MVP Komplett & Produktionsbereit (mit bekannten Issues in Aggregation)

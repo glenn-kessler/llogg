@@ -622,6 +622,11 @@ h3 {
     flex-wrap: nowrap;
 }
 
+.control-group-vertical {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
 .control-group label {
     color: var(--color-text-dim);
     font-weight: 600;
