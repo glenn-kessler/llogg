@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Calculation Tests - Life Logger</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #ecf0f1;
+        }
+        h1 { color: #3498db; }
+        h2 { color: #2ecc71; margin-top: 30px; }
+        .test { margin: 10px 0; padding: 10px; border-left: 3px solid #95a5a6; }
+        .pass { border-left-color: #2ecc71; background: #1a3a1a; }
+        .fail { border-left-color: #e74c3c; background: #3a1a1a; }
+        .test-name { font-weight: bold; }
+        .test-detail { margin-left: 20px; color: #bdc3c7; font-size: 0.9em; }
+        .summary {
+            margin: 20px 0;
+            padding: 15px;
+            background: #2c3e50;
+            border-radius: 5px;
+            font-size: 1.1em;
+        }
+        .error { color: #e74c3c; }
+        .success { color: #2ecc71; }
+    </style>
+</head>
+<body>
+    <h1>Time Calculation Test Suite</h1>
+    <p>Testing UTC date calculations for all edge cases...</p>
+    <div id="results"></div>
+    <div id="summary" class="summary"></div>
+
+    <script type="module">
+        // Import the time calculation logic (same as main.js)
+        function calculateTimeRange(timespanValue, timespanUnit, currentDate) {
+            const now = currentDate || new Date();
+            let startTime, endTime;
+
+            switch (timespanUnit) {
+                case 'hours':
+                    startTime = new Date(now.getTime() - (timespanValue * 60 * 60 * 1000));
+                    endTime = new Date(now);
+                    break;
+                case 'days':
+                    startTime = new Date(Date.UTC(
+                        now.getUTCFullYear(),
+                        now.getUTCMonth(),
+                        now.getUTCDate() - timespanValue,
+                        0, 0, 0, 0
+                    ));
+                    endTime = new Date(Date.UTC(
+                        now.getUTCFullYear(),
+                        now.getUTCMonth(),
+                        now.getUTCDate(),
+                        23, 59, 59, 999
+                    ));
+                    break;
+                case 'weeks':
+                    startTime = new Date(Date.UTC(
+                        now.getUTCFullYear(),
+                        now.getUTCMonth(),
+                        now.getUTCDate() - (timespanValue * 7),
+                        0, 0, 0, 0
+                    ));
+                    endTime = new Date(Date.UTC(
+                        now.getUTCFullYear(),
+                        now.getUTCMonth(),
+                        now.getUTCDate(),
+                        23, 59, 59, 999
+                    ));
+                    break;
+                case 'months':
+                    startTime = new Date(Date.UTC(
+                        now.getUTCFullYear(),
+                        now.getUTCMonth() - timespanValue,
+                        now.getUTCDate(),
+                        0, 0, 0, 0
+                    ));
+                    endTime = new Date(Date.UTC(
+                        now.getUTCFullYear(),
+                        now.getUTCMonth(),
+                        now.getUTCDate(),
+                        23, 59, 59, 999
+                    ));
+                    break;
+            }
+
+            return { startTime, endTime, now };
+        }
+
+        // Test helper
+        let testResults = [];
+        let passCount = 0;
+        let failCount = 0;
+
+        function test(name, testFn) {
+            try {
+                const result = testFn();
+                if (result.pass) {
+                    passCount++;
+                    testResults.push({ name, pass: true, details: result.details });
+                } else {
+                    failCount++;
+                    testResults.push({ name, pass: false, error: result.error, details: result.details });
+                }
+            } catch (error) {
+                failCount++;
+                testResults.push({ name, pass: false, error: error.message, stack: error.stack });
+            }
+        }
+
+        function assertValidDate(date, label) {
+            if (isNaN(date.getTime())) {
+                throw new Error(`${label} is an invalid date`);
+            }
+        }
+
+        function assertDateEquals(actual, expected, label) {
+            if (actual.getTime() !== expected.getTime()) {
+                throw new Error(`${label}: expected ${expected.toISOString()}, got ${actual.toISOString()}`);
+            }
+        }
+
+        function assertDateBefore(date1, date2, label) {
+            if (date1.getTime() >= date2.getTime()) {
+                throw new Error(`${label}: ${date1.toISOString()} should be before ${date2.toISOString()}`);
+            }
+        }
+
+        // =====================================================================
+        // TEST SUITE: Hours
+        // =====================================================================
+
+        test('Hours: 24 hours from now', () => {
+            const now = new Date('2026-01-17T12:30:45.123Z');
+            const { startTime, endTime } = calculateTimeRange(24, 'hours', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+            assertDateBefore(startTime, endTime, 'startTime < endTime');
+
+            const expected = new Date('2026-01-16T12:30:45.123Z');
+            assertDateEquals(startTime, expected, 'startTime');
+            assertDateEquals(endTime, now, 'endTime');
+
+            return { pass: true, details: `startTime: ${startTime.toISOString()}, endTime: ${endTime.toISOString()}` };
+        });
+
+        test('Hours: 1 hour from now', () => {
+            const now = new Date('2026-01-17T12:30:45.123Z');
+            const { startTime, endTime } = calculateTimeRange(1, 'hours', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+
+            const expected = new Date('2026-01-17T11:30:45.123Z');
+            assertDateEquals(startTime, expected, 'startTime');
+
+            return { pass: true, details: `1 hour ago: ${startTime.toISOString()}` };
+        });
+
+        // =====================================================================
+        // TEST SUITE: Days - Normal Cases
+        // =====================================================================
+
+        test('Days: 14 days from Jan 17, 2026', () => {
+            const now = new Date('2026-01-17T15:45:30.500Z');
+            const { startTime, endTime } = calculateTimeRange(14, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+            assertDateBefore(startTime, endTime, 'startTime < endTime');
+
+            const expectedStart = new Date('2026-01-03T00:00:00.000Z');
+            const expectedEnd = new Date('2026-01-17T23:59:59.999Z');
+
+            assertDateEquals(startTime, expectedStart, 'startTime');
+            assertDateEquals(endTime, expectedEnd, 'endTime');
+
+            return { pass: true, details: `Start: ${startTime.toISOString()}, End: ${endTime.toISOString()}` };
+        });
+
+        test('Days: 1 day from now', () => {
+            const now = new Date('2026-01-17T12:00:00.000Z');
+            const { startTime, endTime } = calculateTimeRange(1, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+
+            const expectedStart = new Date('2026-01-16T00:00:00.000Z');
+            const expectedEnd = new Date('2026-01-17T23:59:59.999Z');
+
+            assertDateEquals(startTime, expectedStart, 'startTime');
+            assertDateEquals(endTime, expectedEnd, 'endTime');
+
+            return { pass: true, details: `Yesterday midnight to today end-of-day` };
+        });
+
+        // =====================================================================
+        // TEST SUITE: Days - Month Boundaries
+        // =====================================================================
+
+        test('Days: Cross month boundary (Jan -> Dec)', () => {
+            const now = new Date('2026-01-05T10:00:00.000Z');
+            const { startTime, endTime } = calculateTimeRange(10, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+
+            // 10 days back from Jan 5 = Dec 26, 2025
+            const expectedStart = new Date('2025-12-26T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Dec 26, 2025');
+
+            return { pass: true, details: `Crossed year boundary: ${startTime.toISOString()}` };
+        });
+
+        test('Days: Cross month boundary (Mar -> Feb)', () => {
+            const now = new Date('2026-03-05T10:00:00.000Z');
+            const { startTime, endTime } = calculateTimeRange(10, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+
+            // 10 days back from Mar 5 = Feb 23
+            const expectedStart = new Date('2026-02-23T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Feb 23');
+
+            return { pass: true, details: `Crossed into Feb: ${startTime.toISOString()}` };
+        });
+
+        test('Days: From Jan 31 go back 31 days', () => {
+            const now = new Date('2026-01-31T10:00:00.000Z');
+            const { startTime, endTime } = calculateTimeRange(31, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+
+            // Should be Dec 31, 2025
+            const expectedStart = new Date('2025-12-31T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Dec 31, 2025');
+
+            return { pass: true, details: `New Year boundary: ${startTime.toISOString()}` };
+        });
+
+        // =====================================================================
+        // TEST SUITE: Leap Years
+        // =====================================================================
+
+        test('Leap Year: Feb 29, 2024 exists', () => {
+            const now = new Date('2024-03-01T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(1, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            // Should be Feb 29, 2024 (leap year)
+            const expectedStart = new Date('2024-02-29T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Feb 29, 2024');
+
+            return { pass: true, details: `Leap year date: ${startTime.toISOString()}` };
+        });
+
+        test('Leap Year: 30 days back from Mar 15, 2024 crosses leap day', () => {
+            const now = new Date('2024-03-15T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(30, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            // Should be Feb 14, 2024
+            const expectedStart = new Date('2024-02-14T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Feb 14, 2024');
+
+            return { pass: true, details: `Crossed leap day: ${startTime.toISOString()}` };
+        });
+
+        test('Non-Leap Year: Feb 28, 2025 -> Feb 27', () => {
+            const now = new Date('2025-02-28T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(1, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            const expectedStart = new Date('2025-02-27T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Feb 27, 2025');
+
+            return { pass: true, details: `Non-leap year: ${startTime.toISOString()}` };
+        });
+
+        test('Leap Year: Century rule - 2100 is NOT a leap year', () => {
+            const now = new Date('2100-03-01T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(1, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            // Should be Feb 28, 2100 (NOT Feb 29 - 2100 is not a leap year)
+            const expectedStart = new Date('2100-02-28T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Feb 28, 2100');
+
+            return { pass: true, details: `Century rule applied: ${startTime.toISOString()}` };
+        });
+
+        test('Leap Year: Century rule exception - 2000 IS a leap year', () => {
+            const now = new Date('2000-03-01T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(1, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            // Should be Feb 29, 2000 (IS a leap year - divisible by 400)
+            const expectedStart = new Date('2000-02-29T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Feb 29, 2000');
+
+            return { pass: true, details: `Century exception: ${startTime.toISOString()}` };
+        });
+
+        // =====================================================================
+        // TEST SUITE: Weeks
+        // =====================================================================
+
+        test('Weeks: 2 weeks from Jan 17, 2026', () => {
+            const now = new Date('2026-01-17T10:00:00.000Z');
+            const { startTime, endTime } = calculateTimeRange(2, 'weeks', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+
+            const expectedStart = new Date('2026-01-03T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be 14 days ago');
+
+            return { pass: true, details: `2 weeks ago: ${startTime.toISOString()}` };
+        });
+
+        test('Weeks: Cross year boundary', () => {
+            const now = new Date('2026-01-10T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(3, 'weeks', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            // 21 days back = Dec 20, 2025
+            const expectedStart = new Date('2025-12-20T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Dec 20, 2025');
+
+            return { pass: true, details: `Crossed year: ${startTime.toISOString()}` };
+        });
+
+        // =====================================================================
+        // TEST SUITE: Months
+        // =====================================================================
+
+        test('Months: 1 month back from Jan 17', () => {
+            const now = new Date('2026-01-17T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(1, 'months', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            const expectedStart = new Date('2025-12-17T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Dec 17, 2025');
+
+            return { pass: true, details: `1 month ago: ${startTime.toISOString()}` };
+        });
+
+        test('Months: 3 months back crossing year', () => {
+            const now = new Date('2026-02-15T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(3, 'months', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            const expectedStart = new Date('2025-11-15T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be Nov 15, 2025');
+
+            return { pass: true, details: `3 months ago: ${startTime.toISOString()}` };
+        });
+
+        test('Months: 12 months back (exactly 1 year)', () => {
+            const now = new Date('2026-06-15T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(12, 'months', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            const expectedStart = new Date('2025-06-15T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be 1 year ago');
+
+            return { pass: true, details: `1 year ago: ${startTime.toISOString()}` };
+        });
+
+        test('Months: Edge case - Jan 31 back 1 month (Feb has no day 31)', () => {
+            const now = new Date('2026-01-31T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(1, 'months', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            // JavaScript handles this as March 3 or Feb 28/29 depending on implementation
+            // We just verify it's valid and in the right ballpark
+            if (startTime.getUTCMonth() !== 11) { // Should be December (month 11)
+                throw new Error(`Expected December, got month ${startTime.getUTCMonth()}`);
+            }
+
+            return { pass: true, details: `Handled day overflow: ${startTime.toISOString()}` };
+        });
+
+        // =====================================================================
+        // TEST SUITE: Edge Cases
+        // =====================================================================
+
+        test('Edge: Very large timespan (365 days)', () => {
+            const now = new Date('2026-01-17T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(365, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            const expectedStart = new Date('2025-01-17T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'startTime should be 1 year ago');
+
+            return { pass: true, details: `365 days ago: ${startTime.toISOString()}` };
+        });
+
+        test('Edge: Zero timespan (0 days)', () => {
+            const now = new Date('2026-01-17T10:00:00.000Z');
+            const { startTime, endTime } = calculateTimeRange(0, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+
+            // 0 days back = today midnight to today end
+            const expectedStart = new Date('2026-01-17T00:00:00.000Z');
+            const expectedEnd = new Date('2026-01-17T23:59:59.999Z');
+
+            assertDateEquals(startTime, expectedStart, 'startTime');
+            assertDateEquals(endTime, expectedEnd, 'endTime');
+
+            return { pass: true, details: `Today only: ${startTime.toISOString()} to ${endTime.toISOString()}` };
+        });
+
+        test('Edge: Midnight UTC', () => {
+            const now = new Date('2026-01-17T00:00:00.000Z');
+            const { startTime, endTime } = calculateTimeRange(7, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+
+            const expectedStart = new Date('2026-01-10T00:00:00.000Z');
+            const expectedEnd = new Date('2026-01-17T23:59:59.999Z');
+
+            assertDateEquals(startTime, expectedStart, 'startTime');
+            assertDateEquals(endTime, expectedEnd, 'endTime');
+
+            return { pass: true, details: `Midnight handled correctly` };
+        });
+
+        test('Edge: End of day UTC (23:59:59.999)', () => {
+            const now = new Date('2026-01-17T23:59:59.999Z');
+            const { startTime, endTime } = calculateTimeRange(7, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+            assertValidDate(endTime, 'endTime');
+
+            const expectedStart = new Date('2026-01-10T00:00:00.000Z');
+            const expectedEnd = new Date('2026-01-17T23:59:59.999Z');
+
+            assertDateEquals(startTime, expectedStart, 'startTime');
+            assertDateEquals(endTime, expectedEnd, 'endTime');
+
+            return { pass: true, details: `End of day handled correctly` };
+        });
+
+        // =====================================================================
+        // TEST SUITE: DST (Daylight Saving Time) - UTC unaffected
+        // =====================================================================
+
+        test('DST: Spring forward date (UTC unaffected)', () => {
+            // In many timezones, DST starts in March
+            const now = new Date('2026-03-29T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(7, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            const expectedStart = new Date('2026-03-22T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'UTC should not be affected by DST');
+
+            return { pass: true, details: `DST spring - UTC unaffected: ${startTime.toISOString()}` };
+        });
+
+        test('DST: Fall back date (UTC unaffected)', () => {
+            // In many timezones, DST ends in October/November
+            const now = new Date('2026-10-25T10:00:00.000Z');
+            const { startTime } = calculateTimeRange(7, 'days', now);
+
+            assertValidDate(startTime, 'startTime');
+
+            const expectedStart = new Date('2026-10-18T00:00:00.000Z');
+            assertDateEquals(startTime, expectedStart, 'UTC should not be affected by DST');
+
+            return { pass: true, details: `DST fall - UTC unaffected: ${startTime.toISOString()}` };
+        });
+
+        // =====================================================================
+        // RUN TESTS AND DISPLAY RESULTS
+        // =====================================================================
+
+        const resultsDiv = document.getElementById('results');
+        const summaryDiv = document.getElementById('summary');
+
+        // Group tests by category
+        const categories = {
+            'Hours': [],
+            'Days - Normal Cases': [],
+            'Days - Month Boundaries': [],
+            'Leap Years': [],
+            'Weeks': [],
+            'Months': [],
+            'Edge Cases': [],
+            'DST': []
+        };
+
+        testResults.forEach(result => {
+            const name = result.name;
+            if (name.startsWith('Hours:')) categories['Hours'].push(result);
+            else if (name.startsWith('Days:') && !name.includes('Cross')) categories['Days - Normal Cases'].push(result);
+            else if (name.startsWith('Days:') && name.includes('Cross')) categories['Days - Month Boundaries'].push(result);
+            else if (name.startsWith('Leap Year:')) categories['Leap Years'].push(result);
+            else if (name.startsWith('Weeks:')) categories['Weeks'].push(result);
+            else if (name.startsWith('Months:')) categories['Months'].push(result);
+            else if (name.startsWith('Edge:')) categories['Edge Cases'].push(result);
+            else if (name.startsWith('DST:')) categories['DST'].push(result);
+        });
+
+        // Render results
+        for (const [category, tests] of Object.entries(categories)) {
+            if (tests.length === 0) continue;
+
+            const categoryHeader = document.createElement('h2');
+            categoryHeader.textContent = category;
+            resultsDiv.appendChild(categoryHeader);
+
+            tests.forEach(result => {
+                const testDiv = document.createElement('div');
+                testDiv.className = `test ${result.pass ? 'pass' : 'fail'}`;
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'test-name';
+                nameDiv.textContent = `${result.pass ? '✓' : '✗'} ${result.name}`;
+                testDiv.appendChild(nameDiv);
+
+                if (result.pass && result.details) {
+                    const detailDiv = document.createElement('div');
+                    detailDiv.className = 'test-detail';
+                    detailDiv.textContent = result.details;
+                    testDiv.appendChild(detailDiv);
+                }
+
+                if (!result.pass) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'test-detail error';
+                    errorDiv.textContent = `Error: ${result.error}`;
+                    testDiv.appendChild(errorDiv);
+
+                    if (result.stack) {
+                        const stackDiv = document.createElement('pre');
+                        stackDiv.className = 'test-detail';
+                        stackDiv.textContent = result.stack;
+                        testDiv.appendChild(stackDiv);
+                    }
+                }
+
+                resultsDiv.appendChild(testDiv);
+            });
+        }
+
+        // Summary
+        const total = passCount + failCount;
+        const passRate = ((passCount / total) * 100).toFixed(1);
+        summaryDiv.innerHTML = `
+            <strong>Test Summary:</strong><br>
+            Total: ${total} tests<br>
+            <span class="success">Passed: ${passCount}</span><br>
+            <span class="error">Failed: ${failCount}</span><br>
+            Pass Rate: ${passRate}%
+        `;
+
+        if (failCount === 0) {
+            summaryDiv.innerHTML += '<br><br><strong class="success">🎉 All tests passed!</strong>';
+        } else {
+            summaryDiv.innerHTML += '<br><br><strong class="error">⚠️ Some tests failed. Please review and fix.</strong>';
+        }
+    </script>
+</body>
+</html>
