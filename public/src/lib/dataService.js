@@ -335,6 +335,31 @@ export async function getEntries() {
 }
 
 /**
+ * Get last count value for a specific detail
+ * @param {number} detailId - The detail ID to query
+ * @returns {Promise<number>} - The last count value, or 0 if no entries exist
+ */
+export async function getLastCountForDetail(detailId) {
+  const store = await getStore(STORES.ENTRIES, 'readonly');
+  const request = store.getAll();
+
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => {
+      const allEntries = request.result;
+
+      // Filter entries for this detail and sort by timestamp descending
+      const detailEntries = allEntries
+        .filter(e => e.detailId === detailId)
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      // Return the count from the most recent entry, or 0 if no entries
+      resolve(detailEntries.length > 0 ? detailEntries[0].count : 0);
+    };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+/**
  * Get entries filtered by criteria (A-4.0 - optimized queries)
  * @param {Object} filters - { typeIds, startTime, endTime }
  * @returns {Promise<Array>}

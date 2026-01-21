@@ -231,6 +231,23 @@ function resetDetailCounts() {
   state.detailUnits = {};
 }
 
+/**
+ * Pre-fill detail counts with last used values from database
+ * @param {Array} details - Array of detail objects to pre-fill
+ */
+async function prefillDetailCounts(details) {
+  state.detailCounts = {};
+  state.detailUnits = {};
+
+  // Load last count for each detail
+  for (const detail of details) {
+    const lastCount = await dataService.getLastCountForDetail(detail.id);
+    if (lastCount > 0) {
+      state.detailCounts[detail.id] = lastCount;
+    }
+  }
+}
+
 function showSection(section) {
   document.querySelectorAll('.selection-section').forEach(s => s.classList.add('hidden'));
 
@@ -450,8 +467,8 @@ async function selectType(type) {
     state.details = orderedDetails;
   }
 
-  // Reset counts
-  resetDetailCounts();
+  // Pre-fill counts with last used values
+  await prefillDetailCounts(state.details);
 
   renderDetailList();
   showSection('detail');

@@ -28,6 +28,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-1.4.1.3 | Kerndateneingabe & Speicherung               | Editierbare Standard-Einheit im Konfigurationsmodus.                                                                                                                     |
 | Yes  | F-1.4.2   | Kerndateneingabe & Speicherung               | Abbrechen eines Eintrags via Zurück-Button, kehrt zur Typ-Ansicht zurück.                                                                                                |
 | Yes  | F-1.5     | Kerndateneingabe & Speicherung               | Count-Eigenschaft (positive ganze Zahl ≥1, Standard: 1) repräsentiert Häufigkeit/Dauer. Implementiert mit +/- Buttons (Start bei 0).                                     |
+| Yes  | F-1.5.1   | Kerndateneingabe & Speicherung               | Zähler-Felder werden beim Auswählen eines Typs mit dem zuletzt eingetragenen Wert für jedes Detail vorausgefüllt. Ermöglicht schnelleres Logging ähnlicher Werte.         |
 | Yes  | F-1.6     | Kerndateneingabe & Speicherung               | Datenspeicherung in IndexedDB mit hoher Browser-Interoperabilität (Chrome, Firefox, Safari). Native API ohne Wrapper.                                                    |
 | Yes  | F-1.6.1   | Kerndateneingabe & Speicherung               | Entry-Schema: `id`, `typeId`, `detailId`, `count`, `unit` (pro Eintrag), `timestamp` (ISO 8601).                                                                         |
 | Yes  | F-1.7     | Kerndateneingabe & Speicherung               | Download-UI für Datendatei (CSV) und Konfiguration (TXT) zum manuellen Backup.                                                                                          |
@@ -286,6 +287,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 - Test: Detail-basierte Diagramm-Aggregation
 - Test: Android Touch-Event-Optimierung (10px Bewegungs-Schwellwert)
 - Test: Intelligente X-Achsen-Label-Spacing mit 15 automatisierten Tests
+- Test: Zähler-Vorausfüllung mit letzten Werten pro Detail
 
 ### Ausstehende Tests ⏳
 - Test: Performance mit 10.000+ Einträgen
@@ -299,6 +301,19 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 ---
 
 ## Änderungsprotokoll
+
+### Version 1.7.9 (2026-01-21)
+- Funktion: F-1.5.1 - Zähler-Vorausfüllung mit letzten Werten implementiert
+- Funktion: Neue getLastCountForDetail() Funktion in dataService.js
+- Funktion: Neue prefillDetailCounts() Funktion in main.js
+- Verbesserung: Zähler werden beim Typ-Auswahl automatisch mit dem zuletzt verwendeten Wert vorausgefüllt
+- Verbesserung: Schnelleres Logging für wiederkehrende Werte - Benutzer muss nicht mehr bei 0 starten
+- UX: Jedes Detail behält seinen eigenen letzten Count-Wert unabhängig
+- UX: Werte können wie gewohnt mit +/- Buttons angepasst werden
+- Technisch: Asynchrone Abfrage der letzten Werte aus IndexedDB beim Typ-Wechsel
+- Technisch: resetDetailCounts() bleibt für Zurück-Button und Nach-Commit erhalten
+- Test: Manuelle Testanleitung in TEST_last_count_prefill.md dokumentiert
+- Beispiel: Wenn "Happy" zuletzt mit Wert 8 geloggt wurde, zeigt das Feld jetzt 8 statt 0
 
 ### Version 1.7.8 (2026-01-21)
 - Funktion: F-4.12.3 - Intelligente X-Achsen-Beschriftung implementiert
