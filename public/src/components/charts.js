@@ -161,15 +161,25 @@ export function renderGroupedBarChart(svg, data, options = {}) {
         svg.appendChild(valueText);
       }
     });
+  });
 
-    // X-axis label
+  // Calculate label interval to prevent crowding
+  const maxLabelLength = 10; // Same as truncation limit
+  const labelInterval = calculateLabelInterval(chartWidth, data.length, maxLabelLength, 11);
+
+  // X-axis labels (with intelligent spacing)
+  data.forEach((step, stepIndex) => {
+    // Only show labels at calculated intervals
+    if (stepIndex % labelInterval !== 0) return;
+
+    const groupX = padding.left + (stepIndex * groupWidth);
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('x', groupX + groupWidth / 2);
     label.setAttribute('y', height - padding.bottom + 20);
     label.setAttribute('text-anchor', 'middle');
     label.setAttribute('fill', '#bdc3c7');
     label.setAttribute('font-size', '11');
-    label.textContent = truncateLabel(step.label, 10);
+    label.textContent = truncateLabel(step.label, maxLabelLength);
     svg.appendChild(label);
   });
 
@@ -381,8 +391,15 @@ export function renderMultiLineChart(svg, data, options = {}) {
     });
   });
 
-  // X-axis labels
+  // Calculate label interval to prevent crowding
+  const maxLabelLength = 8; // Same as truncation limit
+  const labelInterval = calculateLabelInterval(chartWidth, data.length, maxLabelLength, 11);
+
+  // X-axis labels (with intelligent spacing)
   data.forEach((step, index) => {
+    // Only show labels at calculated intervals
+    if (index % labelInterval !== 0) return;
+
     const x = padding.left + (index / (data.length - 1 || 1)) * chartWidth;
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('x', x);
@@ -390,7 +407,7 @@ export function renderMultiLineChart(svg, data, options = {}) {
     label.setAttribute('text-anchor', 'middle');
     label.setAttribute('fill', '#bdc3c7');
     label.setAttribute('font-size', '11');
-    label.textContent = truncateLabel(step.label, 8);
+    label.textContent = truncateLabel(step.label, maxLabelLength);
     svg.appendChild(label);
   });
 
@@ -704,6 +721,36 @@ export function calculateAutoStepSize(timespanValue, timespanUnit) {
   if (totalHours <= 30 * 24) return 'day';        // Up to 30 days → 1 day steps
   if (totalHours <= 90 * 24) return 'week';       // Up to 3 months → 1 week steps
   return 'month';                                  // More than 3 months → 1 month steps
+}
+
+/**
+ * Calculate label interval to prevent X-axis label crowding
+ * @param {number} chartWidth - Available width for labels in pixels
+ * @param {number} labelCount - Total number of labels
+ * @param {number} maxLabelLength - Maximum length of labels (characters)
+ * @param {number} fontSize - Font size in pixels (default: 11)
+ * @returns {number} - Interval for showing labels (1 = show all, 2 = show every 2nd, etc.)
+ */
+export function calculateLabelInterval(chartWidth, labelCount, maxLabelLength, fontSize = 11) {
+  if (labelCount === 0) return 1;
+
+  // Estimate label width in pixels
+  // Approximate: each character takes ~0.6 * fontSize pixels in monospace/proportional fonts
+  const charWidthPixels = fontSize * 0.6;
+  const estimatedLabelWidth = maxLabelLength * charWidthPixels;
+
+  // Add minimum spacing between labels (pixels)
+  const minSpacing = 15;
+  const requiredSpacePerLabel = estimatedLabelWidth + minSpacing;
+
+  // Calculate available space per label
+  const availableSpacePerLabel = chartWidth / labelCount;
+
+  // Calculate how many labels we need to skip to fit comfortably
+  const interval = Math.ceil(requiredSpacePerLabel / availableSpacePerLabel);
+
+  // Ensure interval is at least 1
+  return Math.max(1, interval);
 }
 
 /**

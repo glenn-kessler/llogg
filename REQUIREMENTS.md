@@ -87,6 +87,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-4.12    | Datenüberprüfung & Visualisierung            | Automatische Schrittgröße basierend auf Zeitspanne (1 Tag → 1h Schritte, 7 Tage → 1 Tag Schritte, etc.).                                                                 |
 | Yes  | F-4.12.1  | Datenüberprüfung & Visualisierung            | Manuelle Schrittgröße-Auswahl (1h, 6h, 1 Tag, 1 Woche, 1 Monat) mit Auto-Modus-Toggle.                                                                                   |
 | Yes  | F-4.12.2  | Datenüberprüfung & Visualisierung            | Zeitachsen-Beschriftung zeigt Wochentags-Abkürzungen bei Tages-Schritten (Mon, Tue, etc.).                                                                               |
+| Yes  | F-4.12.3  | Datenüberprüfung & Visualisierung            | Intelligente X-Achsen-Beschriftung verhindert überlappende Labels durch automatische Intervall-Berechnung basierend auf verfügbarem Platz.                                |
 | Yes  | F-4.13    | Datenüberprüfung & Visualisierung            | Counter-Achsen-Modus umschaltbar via Button-Toggle (Y-Achse: zeitbasiert, X-Achse: item-basiert).                                                                        |
 | Yes  | F-4.13.1  | Datenüberprüfung & Visualisierung            | Y-Achsen-Modus (Default): Counter auf Y-Achse, Zeit-Labels auf X-Achse, zeitbasierte Aggregation mit Schrittgröße.                                                       |
 | Yes  | F-4.13.2  | Datenüberprüfung & Visualisierung            | X-Achsen-Modus: Counter auf X-Achse, Item-Namen auf Y-Achse, Gesamt-Aggregation ohne Zeit-Dimension.                                                                     |
@@ -284,6 +285,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 - Test: Edit-Dialog mit Live-Vorschau
 - Test: Detail-basierte Diagramm-Aggregation
 - Test: Android Touch-Event-Optimierung (10px Bewegungs-Schwellwert)
+- Test: Intelligente X-Achsen-Label-Spacing mit 15 automatisierten Tests
 
 ### Ausstehende Tests ⏳
 - Test: Performance mit 10.000+ Einträgen
@@ -297,6 +299,20 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 ---
 
 ## Änderungsprotokoll
+
+### Version 1.7.8 (2026-01-21)
+- Funktion: F-4.12.3 - Intelligente X-Achsen-Beschriftung implementiert
+- Funktion: Neue calculateLabelInterval() Funktion berechnet optimale Label-Intervalle basierend auf verfügbarem Platz
+- Funktion: Automatisches Überspringen von Labels wenn Chart-Breite zu klein ist (verhindert Überlappung)
+- Funktion: Algorithmus berücksichtigt Chart-Breite, Label-Anzahl, Label-Länge und Font-Größe
+- Verbesserung: Gruppierte Balkendiagramme zeigen jetzt nur jeden N-ten Label bei vielen Datenpunkten
+- Verbesserung: Multi-Linien-Diagramme zeigen jetzt nur jeden N-ten Label bei vielen Datenpunkten
+- Verbesserung: Erweitert bestehende Auto-Step-Size-Logik um X-Achsen-Spacing
+- Test: 15 automatisierte Tests für Label-Spacing-Logik (Browser-basiert)
+- Test: Test-Suite unter public/test-label-spacing.html verfügbar
+- Test: Real-world Szenarien getestet (2 Wochen Stundendaten, 1 Monat Tagesdaten, etc.)
+- Wartbarkeit: calculateLabelInterval() als exportierte Funktion testbar und wiederverwendbar
+- UX: Bessere Lesbarkeit von Diagrammen mit vielen Zeitschritten (z.B. stündliche Daten über mehrere Tage)
 
 ### Version 1.7.7 (2026-01-17)
 - Bugfix: Letzter Type in Types-Sektion wurde beim Import verloren

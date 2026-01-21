@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X-axis Label Spacing Tests</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: #1a1a1a;
+      color: #ecf0f1;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #3498db;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+    .test-result {
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .pass {
+      background-color: #27ae60;
+      color: white;
+    }
+    .fail {
+      background-color: #e74c3c;
+      color: white;
+    }
+    .summary {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #2c3e50;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .all-pass {
+      background-color: #27ae60;
+    }
+    .some-fail {
+      background-color: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+  <h1>X-axis Label Spacing Tests</h1>
+  <div id="results"></div>
+  <div id="summary" class="summary"></div>
+
+  <script type="module">
+    import { calculateLabelInterval } from './src/components/charts.js';
+
+    let testsPassed = 0;
+    let testsFailed = 0;
+    const resultsDiv = document.getElementById('results');
+    const summaryDiv = document.getElementById('summary');
+
+    function test(description, testFn) {
+      try {
+        testFn();
+        addResult(description, true);
+        testsPassed++;
+      } catch (error) {
+        addResult(description, false, error.message);
+        testsFailed++;
+      }
+    }
+
+    function addResult(description, passed, errorMsg = '') {
+      const div = document.createElement('div');
+      div.className = `test-result ${passed ? 'pass' : 'fail'}`;
+      div.textContent = `${passed ? '✓' : '✗'} ${description}`;
+      if (errorMsg) {
+        div.textContent += ` - ${errorMsg}`;
+      }
+      resultsDiv.appendChild(div);
+    }
+
+    function assertEqual(actual, expected, message) {
+      if (actual !== expected) {
+        throw new Error(message || `Expected ${expected}, got ${actual}`);
+      }
+    }
+
+    function assertGreaterThanOrEqual(actual, expected, message) {
+      if (actual < expected) {
+        throw new Error(message || `Expected ${actual} >= ${expected}`);
+      }
+    }
+
+    // Run tests
+    test('Should return 1 (show all labels) when there is plenty of space', () => {
+      const interval = calculateLabelInterval(1000, 10, 8, 11);
+      assertEqual(interval, 1, 'With 1000px width and 10 labels, all labels should fit');
+    });
+
+    test('Should return interval > 1 when labels are crowded', () => {
+      const interval = calculateLabelInterval(400, 50, 8, 11);
+      assertGreaterThanOrEqual(interval, 2, 'With 400px width and 50 labels, some labels should be skipped');
+    });
+
+    test('Should return higher interval for extreme crowding', () => {
+      const interval = calculateLabelInterval(300, 100, 10, 11);
+      assertGreaterThanOrEqual(interval, 4, 'With 300px width and 100 labels, many labels should be skipped');
+    });
+
+    test('Should return 1 for zero labels', () => {
+      const interval = calculateLabelInterval(600, 0, 8, 11);
+      assertEqual(interval, 1, 'Zero labels should return interval of 1');
+    });
+
+    test('Should return 1 for single label', () => {
+      const interval = calculateLabelInterval(600, 1, 8, 11);
+      assertEqual(interval, 1, 'Single label should always be shown');
+    });
+
+    test('Should return 1 for very wide chart with few labels', () => {
+      const interval = calculateLabelInterval(2000, 5, 10, 11);
+      assertEqual(interval, 1, 'Wide chart with few labels should show all');
+    });
+
+    test('Should return higher interval for longer labels', () => {
+      const shortLabelInterval = calculateLabelInterval(600, 30, 5, 11);
+      const longLabelInterval = calculateLabelInterval(600, 30, 15, 11);
+      assertGreaterThanOrEqual(longLabelInterval, shortLabelInterval,
+        'Longer labels should require higher interval');
+    });
+
+    test('Should return higher interval for larger font size', () => {
+      const smallFontInterval = calculateLabelInterval(600, 40, 8, 10);
+      const largeFontInterval = calculateLabelInterval(600, 40, 8, 14);
+      assertGreaterThanOrEqual(largeFontInterval, smallFontInterval,
+        'Larger font should require higher interval');
+    });
+
+    test('Real-world: 2 weeks of hourly data (336 labels)', () => {
+      const interval = calculateLabelInterval(800, 336, 6, 11);
+      assertGreaterThanOrEqual(interval, 10,
+        '2 weeks of hourly data should skip many labels');
+    });
+
+    test('Real-world: 1 month of daily data (30 labels)', () => {
+      const interval = calculateLabelInterval(800, 30, 10, 11);
+      assertGreaterThanOrEqual(interval, 1, 'Should have valid interval');
+      assertEqual(interval <= 3, true, 'Should not skip too many labels');
+    });
+
+    test('Real-world: 3 months of weekly data (12 labels)', () => {
+      const interval = calculateLabelInterval(800, 12, 8, 11);
+      assertEqual(interval, 1, '12 weekly labels should fit in 800px');
+    });
+
+    test('Should never return interval less than 1', () => {
+      const interval = calculateLabelInterval(5000, 2, 5, 11);
+      assertEqual(interval, 1, 'Interval should be at least 1');
+    });
+
+    test('Should handle very narrow chart width', () => {
+      const interval = calculateLabelInterval(100, 20, 8, 11);
+      assertGreaterThanOrEqual(interval, 5,
+        'Narrow chart should skip many labels');
+    });
+
+    test('Should ensure labels do not overlap (spacing validation)', () => {
+      const chartWidth = 600;
+      const labelCount = 50;
+      const maxLabelLength = 10;
+      const fontSize = 11;
+
+      const interval = calculateLabelInterval(chartWidth, labelCount, maxLabelLength, fontSize);
+
+      const visibleLabelCount = Math.ceil(labelCount / interval);
+      const spacePerVisibleLabel = chartWidth / visibleLabelCount;
+      const requiredSpace = (maxLabelLength * fontSize * 0.6) + 15;
+
+      assertGreaterThanOrEqual(spacePerVisibleLabel, requiredSpace * 0.9,
+        'Visible labels should have adequate spacing (with 10% tolerance)');
+    });
+
+    test('Should be consistent for similar inputs', () => {
+      const interval1 = calculateLabelInterval(600, 30, 8, 11);
+      const interval2 = calculateLabelInterval(600, 30, 8, 11);
+      assertEqual(interval1, interval2, 'Same inputs should produce same output');
+    });
+
+    // Display summary
+    const total = testsPassed + testsFailed;
+    summaryDiv.className = `summary ${testsFailed === 0 ? 'all-pass' : 'some-fail'}`;
+    summaryDiv.innerHTML = `
+      Tests passed: ${testsPassed}<br>
+      Tests failed: ${testsFailed}<br>
+      Total tests: ${total}<br><br>
+      ${testsFailed === 0 ? '✓ All tests passed!' : '✗ Some tests failed!'}
+    `;
+  </script>
+</body>
+</html>
