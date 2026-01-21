@@ -97,6 +97,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-4.16    | Datenüberprüfung & Visualisierung            | Gruppierte Balkendiagramme für mehrere Items pro Zeitschritt.                                                                                                            |
 | Yes  | F-4.17    | Datenüberprüfung & Visualisierung            | Multi-Linien-Diagramme mit farblich distinkten Linien pro Item.                                                                                                          |
 | Yes  | F-4.18    | Datenüberprüfung & Visualisierung            | View-Einstellungen in LocalStorage gespeichert (Chart-Typ, Schrittgröße, Achsen-Modus, Aggregation, Zeitspanne).                                                         |
+| Yes  | F-4.19    | Datenüberprüfung & Visualisierung            | Zeitbereichs-Navigation mit Pfeil-Buttons (← →) ermöglicht Verschiebung des Datenbereichs um jeweils 1 Zeitspannen-Inkrement vor/zurück.                                 |
 | ---  | ---       | ---                                          | ---                                                                                                                                                                      |
 | Yes  | NF-1.1    | Nicht-funktionale & technische Anforderungen | Volle Funktionsfähigkeit in Chrome, Firefox, Safari (Desktop + Mobil, jeweils neueste 2 Versionen). Vanilla JS, native IndexedDB.                                        |
 | Yes  | NF-1.1.1  | Nicht-funktionale & technische Anforderungen | Vanilla JavaScript ES6 Module ohne Build-Tools. Code läuft direkt im Browser.                                                                                            |
@@ -288,6 +289,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 - Test: Android Touch-Event-Optimierung (10px Bewegungs-Schwellwert)
 - Test: Intelligente X-Achsen-Label-Spacing mit 15 automatisierten Tests
 - Test: Zähler-Vorausfüllung mit letzten Werten pro Detail
+- Test: Zeitbereichs-Navigation mit ← → Buttons
 
 ### Ausstehende Tests ⏳
 - Test: Performance mit 10.000+ Einträgen
@@ -301,6 +303,20 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 ---
 
 ## Änderungsprotokoll
+
+### Version 1.7.10 (2026-01-21)
+- Funktion: F-4.19 - Zeitbereichs-Navigation implementiert
+- Funktion: Neue ← → Pfeil-Buttons zwischen - und + im Time Span Wert-Control
+- Funktion: Navigation verschiebt Datenbereich um 1 Zeitspannen-Inkrement vor/zurück
+- Funktion: Neue state.timeRangeOffset Variable trackt aktuelle Navigation-Position
+- Verbesserung: Linker Pfeil (←) navigiert rückwärts in der Zeit (zeigt ältere Daten)
+- Verbesserung: Rechter Pfeil (→) navigiert vorwärts in der Zeit (begrenzt auf "heute")
+- Verbesserung: Offset wird automatisch auf 0 zurückgesetzt beim Ändern von Unit oder Value
+- UX: Ermöglicht Durchblättern historischer Daten ohne Zeitspanne zu ändern
+- Beispiel: Bei "7 Days" und Februar-Anzeige verschiebt ← den Bereich zu Januar
+- Beispiel: Bei "2 Weeks" verschiebt ← den Bereich um 2 Wochen zurück
+- Technisch: Time range calculation in applyFilters() erweitert um Offset-Anwendung
+- Technisch: Offset multipliziert mit timespanValue für alle Units (hours, days, weeks, months)
 
 ### Version 1.7.9 (2026-01-21)
 - Funktion: F-1.5.1 - Zähler-Vorausfüllung mit letzten Werten implementiert

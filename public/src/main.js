@@ -37,7 +37,8 @@ const state = {
   timestampSign: -1, // Current sign: -1 for subtract, 1 for add
   markedForDeletion: new Set(), // Track detail IDs marked for deletion
   checkedDetails: new Set(), // Track detail IDs checked for bulk actions
-  editingDetail: null // Track which detail is being edited for icon/color
+  editingDetail: null, // Track which detail is being edited for icon/color
+  timeRangeOffset: 0 // Track time range navigation offset (number of time-span units to shift)
 };
 
 // ============================================================================
@@ -1553,6 +1554,7 @@ function setupViewPage() {
     const unitLabels = { hours: 'Hours', days: 'Days', weeks: 'Weeks', months: 'Months' };
     document.getElementById('timespan-unit-display').textContent = unitLabels[unit];
     document.getElementById('filter-timespan-unit').value = unit;
+    state.timeRangeOffset = 0; // Reset navigation when changing time unit
     applyFilters();
   }
 
@@ -1562,6 +1564,7 @@ function setupViewPage() {
     const current = parseInt(input.value) || 1;
     input.value = current + 1;
     document.getElementById('timespan-value-display').textContent = input.value;
+    state.timeRangeOffset = 0; // Reset navigation when changing time span
     applyFilters();
   });
 
@@ -1571,6 +1574,22 @@ function setupViewPage() {
     if (current > 1) {
       input.value = current - 1;
       document.getElementById('timespan-value-display').textContent = input.value;
+      state.timeRangeOffset = 0; // Reset navigation when changing time span
+      applyFilters();
+    }
+  });
+
+  // Time range navigation buttons (← →)
+  document.getElementById('btn-time-navigate-prev').addEventListener('click', () => {
+    // Navigate backward in time (increase offset)
+    state.timeRangeOffset++;
+    applyFilters();
+  });
+
+  document.getElementById('btn-time-navigate-next').addEventListener('click', () => {
+    // Navigate forward in time (decrease offset, but not into the future)
+    if (state.timeRangeOffset > 0) {
+      state.timeRangeOffset--;
       applyFilters();
     }
   });
@@ -1774,59 +1793,64 @@ async function applyFilters() {
     const timespanUnit = document.getElementById('filter-timespan-unit').value;
 
     // Calculate start time and end time using UTC for consistency
+    // Apply time range offset for navigation (state.timeRangeOffset)
     const now = new Date();
     let startTime, endTime;
 
     switch (timespanUnit) {
       case 'hours':
-        // Go back timespanValue hours
-        startTime = new Date(now.getTime() - (timespanValue * 60 * 60 * 1000));
-        endTime = new Date(now);
+        // Go back timespanValue hours, then apply offset
+        const hoursOffset = state.timeRangeOffset * timespanValue;
+        startTime = new Date(now.getTime() - (timespanValue * 60 * 60 * 1000) - (hoursOffset * 60 * 60 * 1000));
+        endTime = new Date(now.getTime() - (hoursOffset * 60 * 60 * 1000));
         break;
       case 'days':
-        // Start: timespanValue days ago at midnight UTC
+        // Start: timespanValue days ago at midnight UTC, then apply offset
+        const daysOffset = state.timeRangeOffset * timespanValue;
         startTime = new Date(Date.UTC(
           now.getUTCFullYear(),
           now.getUTCMonth(),
-          now.getUTCDate() - timespanValue,
+          now.getUTCDate() - timespanValue - daysOffset,
           0, 0, 0, 0
         ));
-        // End: today at 23:59:59.999 UTC
+        // End: today at 23:59:59.999 UTC, then apply offset
         endTime = new Date(Date.UTC(
           now.getUTCFullYear(),
           now.getUTCMonth(),
-          now.getUTCDate(),
+          now.getUTCDate() - daysOffset,
           23, 59, 59, 999
         ));
         break;
       case 'weeks':
-        // Start: timespanValue weeks ago at midnight UTC
+        // Start: timespanValue weeks ago at midnight UTC, then apply offset
+        const weeksOffset = state.timeRangeOffset * timespanValue * 7;
         startTime = new Date(Date.UTC(
           now.getUTCFullYear(),
           now.getUTCMonth(),
-          now.getUTCDate() - (timespanValue * 7),
+          now.getUTCDate() - (timespanValue * 7) - weeksOffset,
           0, 0, 0, 0
         ));
-        // End: today at 23:59:59.999 UTC
+        // End: today at 23:59:59.999 UTC, then apply offset
         endTime = new Date(Date.UTC(
           now.getUTCFullYear(),
           now.getUTCMonth(),
-          now.getUTCDate(),
+          now.getUTCDate() - weeksOffset,
           23, 59, 59, 999
         ));
         break;
       case 'months':
-        // Start: timespanValue months ago at midnight UTC
+        // Start: timespanValue months ago at midnight UTC, then apply offset
+        const monthsOffset = state.timeRangeOffset * timespanValue;
         startTime = new Date(Date.UTC(
           now.getUTCFullYear(),
-          now.getUTCMonth() - timespanValue,
+          now.getUTCMonth() - timespanValue - monthsOffset,
           now.getUTCDate(),
           0, 0, 0, 0
         ));
-        // End: today at 23:59:59.999 UTC
+        // End: today at 23:59:59.999 UTC, then apply offset
         endTime = new Date(Date.UTC(
           now.getUTCFullYear(),
-          now.getUTCMonth(),
+          now.getUTCMonth() - monthsOffset,
           now.getUTCDate(),
           23, 59, 59, 999
         ));
