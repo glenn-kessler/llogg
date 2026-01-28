@@ -75,7 +75,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-4.0.2   | Datenüberprüfung & Visualisierung            | Bei Detail-Aggregation: Checkboxen-Liste aller Details gruppiert nach Typ.                                                                                               |
 | Yes  | F-4.0.3   | Datenüberprüfung & Visualisierung            | "Select All" und "Deselect All" Buttons für Detail-Auswahl.                                                                                                              |
 | Yes  | F-4.0.4   | Datenüberprüfung & Visualisierung            | Typ-Header in Detail-Filterung anklickbar zum Umschalten aller Details eines Typs (Select/Deselect by Type).                                                            |
-| Yes  | F-4.0.5   | Datenüberprüfung & Visualisierung            | Gespeicherte Filter-Presets (Aliase): Detail-Auswahl UND Darstellungseinstellungen unter einem Namen speichern/laden. Erweiterbar für zukünftige Einstellungen. Dropdown versteckt wenn leer. |
+| Yes  | F-4.0.5   | Datenüberprüfung & Visualisierung            | Gespeicherte Filter-Presets (Aliase): Detail-Auswahl UND Darstellungseinstellungen unter einem Namen speichern/laden. Dropdown sichtbar in beider Aggregationsmodus (By Type/By Detail). Erweiterbar. Versteckt wenn leer. |
 | ---  | ---       | ---                                          | ---                                                                                                                                                                      |
 |      | F-4.1     | Datenüberprüfung & Visualisierung            | Zusammenfassungsvorschau vor Finalisierung. Entfernt nach Benutzerpräferenz.                                                                                             |
 | Yes  | F-4.2     | Datenüberprüfung & Visualisierung            | "View" Navigations-Tab zur Datenüberprüfungsseite.                                                                                                                       |
@@ -306,6 +306,13 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 ---
 
 ## Änderungsprotokoll
+
+### Version 1.7.14 (2026-01-28)
+- Funktion: F-4.0.5 Erweiterung - Preset-Dropdown in beiden Aggregationsmodi sichtbar
+- Verbesserung: Dropdown verschoben aus Detail-Gruppe in eigenständige Filter-Gruppe oberhalb Type/Detail-Auswahl
+- Verbesserung: Preset kann jetzt auch wenn "By Type" aktiv ist geladen werden
+- Verbesserung: Laden eines Presets wechselt automatisch auf "By Detail" und wendet Auswahl an
+- UX: "Save Preset" Button bleibt in Detail-Gruppe (nur dort relevanz), Dropdown ist global
 
 ### Version 1.7.13 (2026-01-28)
 - Funktion: F-4.0.5 Erweiterung - Presets speichern jetzt auch Darstellungseinstellungen
