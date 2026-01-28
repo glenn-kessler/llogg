@@ -2060,9 +2060,78 @@ async function aggregateByItems(entries, aggLevel, selectedIds, types, getDetail
 
 function getPresets() {
   try {
-    return JSON.parse(localStorage.getItem('llogg-view-presets')) || {};
+    const raw = JSON.parse(localStorage.getItem('llogg-view-presets')) || {};
+    // Migrate legacy format: plain array → { detailIds, settings }
+    const migrated = {};
+    let dirty = false;
+    for (const [key, value] of Object.entries(raw)) {
+      if (Array.isArray(value)) {
+        migrated[key] = { detailIds: value, settings: {} };
+        dirty = true;
+      } else {
+        migrated[key] = value;
+      }
+    }
+    if (dirty) {
+      localStorage.setItem('llogg-view-presets', JSON.stringify(migrated));
+    }
+    return migrated;
   } catch (e) {
     return {};
+  }
+}
+
+function capturePresetSettings() {
+  return {
+    chartType: document.getElementById('chart-type').value,
+    axisMode: document.getElementById('btn-axis-toggle').getAttribute('data-axis'),
+    aggLevel: document.querySelector('input[name="agg-level"]:checked').value,
+    timespanUnit: document.getElementById('filter-timespan-unit').value,
+    timespanValue: document.getElementById('filter-timespan-value').value,
+    autoStepSize: document.getElementById('auto-step-size').checked,
+    manualStepSize: document.getElementById('manual-step-size').value
+  };
+}
+
+function applyPresetSettings(settings) {
+  if (!settings) return;
+
+  if (settings.chartType) {
+    document.getElementById('chart-type').value = settings.chartType;
+    const typeLabels = { bar: 'Bar', line: 'Line', pie: 'Pie' };
+    document.getElementById('chart-type-display').textContent = typeLabels[settings.chartType] || settings.chartType;
+  }
+
+  if (settings.axisMode) {
+    const axisBtn = document.getElementById('btn-axis-toggle');
+    axisBtn.setAttribute('data-axis', settings.axisMode);
+    axisBtn.textContent = settings.axisMode === 'x' ? 'X-Axis (Item-based)' : 'Y-Axis (Time-based)';
+  }
+
+  if (settings.aggLevel) {
+    const radio = document.querySelector(`input[name="agg-level"][value="${settings.aggLevel}"]`);
+    if (radio) radio.checked = true;
+    toggleAggregationLevel();
+  }
+
+  if (settings.timespanUnit) {
+    document.getElementById('filter-timespan-unit').value = settings.timespanUnit;
+    const unitLabels = { hours: 'Hours', days: 'Days', weeks: 'Weeks', months: 'Months' };
+    document.getElementById('timespan-unit-display').textContent = unitLabels[settings.timespanUnit] || settings.timespanUnit;
+  }
+
+  if (settings.timespanValue) {
+    document.getElementById('filter-timespan-value').value = settings.timespanValue;
+    document.getElementById('timespan-value-display').textContent = settings.timespanValue;
+  }
+
+  if (settings.autoStepSize !== undefined) {
+    document.getElementById('auto-step-size').checked = settings.autoStepSize;
+    document.getElementById('manual-step-size').style.display = settings.autoStepSize ? 'none' : 'block';
+  }
+
+  if (settings.manualStepSize) {
+    document.getElementById('manual-step-size').value = settings.manualStepSize;
   }
 }
 
@@ -2080,26 +2149,32 @@ function saveCurrentPreset() {
   if (!name || !name.trim()) return;
 
   const presets = getPresets();
-  presets[name.trim()] = checkedIds;
+  presets[name.trim()] = {
+    detailIds: checkedIds,
+    settings: capturePresetSettings()
+  };
   localStorage.setItem('llogg-view-presets', JSON.stringify(presets));
   updatePresetDropdown();
 }
 
 function loadPreset(name) {
   const presets = getPresets();
-  const detailIds = presets[name];
-  if (!detailIds) return;
+  const preset = presets[name];
+  if (!preset) return;
 
-  // Switch to detail aggregation mode
+  // Apply representation settings first (sets aggLevel, chart type, etc.)
+  applyPresetSettings(preset.settings);
+
+  // Ensure detail aggregation mode is active for the detail checkboxes
   const detailRadio = document.querySelector('input[name="agg-level"][value="detail"]');
   if (detailRadio) {
     detailRadio.checked = true;
     toggleAggregationLevel();
   }
 
-  // Uncheck all first, then check saved IDs
+  // Apply detail selection
   document.querySelectorAll('#filter-details input[type="checkbox"]').forEach(cb => {
-    cb.checked = detailIds.includes(parseInt(cb.value));
+    cb.checked = preset.detailIds.includes(parseInt(cb.value));
   });
 
   // Reset dropdown to placeholder so the same preset can be re-selected

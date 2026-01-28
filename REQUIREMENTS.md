@@ -75,7 +75,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-4.0.2   | Datenüberprüfung & Visualisierung            | Bei Detail-Aggregation: Checkboxen-Liste aller Details gruppiert nach Typ.                                                                                               |
 | Yes  | F-4.0.3   | Datenüberprüfung & Visualisierung            | "Select All" und "Deselect All" Buttons für Detail-Auswahl.                                                                                                              |
 | Yes  | F-4.0.4   | Datenüberprüfung & Visualisierung            | Typ-Header in Detail-Filterung anklickbar zum Umschalten aller Details eines Typs (Select/Deselect by Type).                                                            |
-| Yes  | F-4.0.5   | Datenüberprüfung & Visualisierung            | Gespeicherte Filter-Presets (Aliase): Aktuelle Detail-Auswahl unter einem Namen speichern und per Dropdown laden. Dropdown versteckt wenn keine Presets vorhanden.        |
+| Yes  | F-4.0.5   | Datenüberprüfung & Visualisierung            | Gespeicherte Filter-Presets (Aliase): Detail-Auswahl UND Darstellungseinstellungen unter einem Namen speichern/laden. Erweiterbar für zukünftige Einstellungen. Dropdown versteckt wenn leer. |
 | ---  | ---       | ---                                          | ---                                                                                                                                                                      |
 |      | F-4.1     | Datenüberprüfung & Visualisierung            | Zusammenfassungsvorschau vor Finalisierung. Entfernt nach Benutzerpräferenz.                                                                                             |
 | Yes  | F-4.2     | Datenüberprüfung & Visualisierung            | "View" Navigations-Tab zur Datenüberprüfungsseite.                                                                                                                       |
@@ -307,6 +307,18 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.7.13 (2026-01-28)
+- Funktion: F-4.0.5 Erweiterung - Presets speichern jetzt auch Darstellungseinstellungen
+- Funktion: Gespeicherte Einstellungen: Chart-Typ, Achsen-Modus, Zeitspanne, Schrittgröße, Aggregationslevel
+- Funktion: Neue capturePresetSettings() sammelt alle aktuellen Darstellungseinstellungen
+- Funktion: Neue applyPresetSettings() setzt alle Einstellungen aus einem Preset ohne Fehlschlag bei fehlenden Schlüsseln
+- Funktion: Automatische Migration alter Presets (Plain-Array-Format → neues Objekt-Format)
+- Verbesserung: Preset-Format erweiterbar - neue Einstellungen werden zukünftig einfach zum settings-Objekt hinzugefügt
+- Verbesserung: Beim Laden eines Presets werden Chart-Typ-Display, Zeitspannen-Display und Achsen-Button aktualisiert
+- Technisch: Neues Preset-Schema: { detailIds: [...], settings: { chartType, axisMode, ... } }
+- Technisch: getPresets() migriert automatisch Legacy-Presets beim ersten Zugriff
+- Technisch: Unbekannte zukünftige settings-Schlüssel werden beim Laden einfach ignoriert
+
 ### Version 1.7.12 (2026-01-28)
 - Funktion: F-4.0.5 - Gespeicherte Filter-Presets (Aliase) im View implementiert
 - Funktion: "Save Preset" Button in Detail-Filterbereich speichert aktuelle Checkbox-Auswahl unter Alias
@@ -316,7 +328,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 - Verbesserung: Presets ermöglichen schnellen Wechsel zwischen häufig verwendeten Detail-Kombinationen
 - UX: Dropdown zeigt "Load preset..." Platzhalter, wird nach Auswahl auf Platzhalter zurückgesetzt
 - UX: Fehlermeldung wenn "Save Preset" ohne Auswahl gedrückt wird
-- Technisch: Presets im localStorage unter 'llogg-view-presets' gespeichert als { name: [detailId, ...] }
+- Technisch: Presets im localStorage unter 'llogg-view-presets' gespeichert
 - Technisch: Neue Funktionen getPresets(), saveCurrentPreset(), loadPreset(), updatePresetDropdown() in main.js
 - Technisch: updatePresetDropdown() wird in loadViewPage() nach Befüllung der Detail-Filter aufgerufen
 
