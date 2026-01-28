@@ -122,9 +122,15 @@
 
                 <div class="filter-group" id="filter-details-group" style="display: none;">
                     <label>Details:</label>
-                    <div style="margin-bottom: 10px;">
+                    <div id="preset-dropdown-container" style="margin-bottom: 8px; display: none;">
+                        <select id="preset-select" style="width: 100%; padding: 6px 8px; background: #2a2a2a; color: #ecf0f1; border: 1px solid #444; border-radius: 4px; font-size: 13px;">
+                            <option value="">Load preset...</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 10px; display: flex; gap: 6px; flex-wrap: wrap;">
                         <button id="btn-select-all-details" class="btn-secondary" style="padding: 5px 10px; font-size: 12px;">Select All</button>
                         <button id="btn-deselect-all-details" class="btn-secondary" style="padding: 5px 10px; font-size: 12px;">Deselect All</button>
+                        <button id="btn-save-preset" class="btn-secondary" style="padding: 5px 10px; font-size: 12px; margin-left: auto;">Save Preset</button>
                     </div>
                     <div id="filter-details" class="filter-checkboxes"></div>
                 </div>

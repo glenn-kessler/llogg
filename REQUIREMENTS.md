@@ -75,6 +75,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-4.0.2   | Datenüberprüfung & Visualisierung            | Bei Detail-Aggregation: Checkboxen-Liste aller Details gruppiert nach Typ.                                                                                               |
 | Yes  | F-4.0.3   | Datenüberprüfung & Visualisierung            | "Select All" und "Deselect All" Buttons für Detail-Auswahl.                                                                                                              |
 | Yes  | F-4.0.4   | Datenüberprüfung & Visualisierung            | Typ-Header in Detail-Filterung anklickbar zum Umschalten aller Details eines Typs (Select/Deselect by Type).                                                            |
+| Yes  | F-4.0.5   | Datenüberprüfung & Visualisierung            | Gespeicherte Filter-Presets (Aliase): Aktuelle Detail-Auswahl unter einem Namen speichern und per Dropdown laden. Dropdown versteckt wenn keine Presets vorhanden.        |
 | ---  | ---       | ---                                          | ---                                                                                                                                                                      |
 |      | F-4.1     | Datenüberprüfung & Visualisierung            | Zusammenfassungsvorschau vor Finalisierung. Entfernt nach Benutzerpräferenz.                                                                                             |
 | Yes  | F-4.2     | Datenüberprüfung & Visualisierung            | "View" Navigations-Tab zur Datenüberprüfungsseite.                                                                                                                       |
@@ -305,6 +306,19 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 ---
 
 ## Änderungsprotokoll
+
+### Version 1.7.12 (2026-01-28)
+- Funktion: F-4.0.5 - Gespeicherte Filter-Presets (Aliase) im View implementiert
+- Funktion: "Save Preset" Button in Detail-Filterbereich speichert aktuelle Checkbox-Auswahl unter Alias
+- Funktion: Dropdown für Preset-Auswahl erscheint automatisch wenn Presets vorhanden
+- Funktion: Dropdown verschwindet automatisch wenn keine Presets gespeichert sind
+- Funktion: Laden eines Presets wechselt automatisch auf "By Detail" Aggregationsmodus
+- Verbesserung: Presets ermöglichen schnellen Wechsel zwischen häufig verwendeten Detail-Kombinationen
+- UX: Dropdown zeigt "Load preset..." Platzhalter, wird nach Auswahl auf Platzhalter zurückgesetzt
+- UX: Fehlermeldung wenn "Save Preset" ohne Auswahl gedrückt wird
+- Technisch: Presets im localStorage unter 'llogg-view-presets' gespeichert als { name: [detailId, ...] }
+- Technisch: Neue Funktionen getPresets(), saveCurrentPreset(), loadPreset(), updatePresetDropdown() in main.js
+- Technisch: updatePresetDropdown() wird in loadViewPage() nach Befüllung der Detail-Filter aufgerufen
 
 ### Version 1.7.11 (2026-01-28)
 - Funktion: F-2.1.7 - "Commit Log" Button im Zeitstempel-Dialog implementiert

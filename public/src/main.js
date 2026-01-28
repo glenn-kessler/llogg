@@ -1663,6 +1663,16 @@ function setupViewPage() {
     applyFilters();
   });
 
+  // Save preset button
+  document.getElementById('btn-save-preset').addEventListener('click', saveCurrentPreset);
+
+  // Preset dropdown selection
+  document.getElementById('preset-select').addEventListener('change', (e) => {
+    if (e.target.value) {
+      loadPreset(e.target.value);
+    }
+  });
+
   // Load saved view preferences from localStorage
   loadViewPreferences();
 }
@@ -1725,6 +1735,9 @@ async function loadViewPage() {
 
   // Populate detail filter checkboxes
   await populateDetailFilters();
+
+  // Update preset dropdown (show if any presets exist)
+  updatePresetDropdown();
 
   // Apply initial filters
   await applyFilters();
@@ -2039,6 +2052,81 @@ async function aggregateByItems(entries, aggLevel, selectedIds, types, getDetail
     label: 'Total',
     items: Object.values(items)
   }];
+}
+
+// ============================================================================
+// View Filter Presets
+// ============================================================================
+
+function getPresets() {
+  try {
+    return JSON.parse(localStorage.getItem('llogg-view-presets')) || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveCurrentPreset() {
+  const checkedIds = Array.from(
+    document.querySelectorAll('#filter-details input[type="checkbox"]:checked')
+  ).map(cb => parseInt(cb.value));
+
+  if (checkedIds.length === 0) {
+    alert('Please select at least one detail before saving a preset.');
+    return;
+  }
+
+  const name = prompt('Enter a name for this preset:');
+  if (!name || !name.trim()) return;
+
+  const presets = getPresets();
+  presets[name.trim()] = checkedIds;
+  localStorage.setItem('llogg-view-presets', JSON.stringify(presets));
+  updatePresetDropdown();
+}
+
+function loadPreset(name) {
+  const presets = getPresets();
+  const detailIds = presets[name];
+  if (!detailIds) return;
+
+  // Switch to detail aggregation mode
+  const detailRadio = document.querySelector('input[name="agg-level"][value="detail"]');
+  if (detailRadio) {
+    detailRadio.checked = true;
+    toggleAggregationLevel();
+  }
+
+  // Uncheck all first, then check saved IDs
+  document.querySelectorAll('#filter-details input[type="checkbox"]').forEach(cb => {
+    cb.checked = detailIds.includes(parseInt(cb.value));
+  });
+
+  // Reset dropdown to placeholder so the same preset can be re-selected
+  document.getElementById('preset-select').value = '';
+
+  applyFilters();
+}
+
+function updatePresetDropdown() {
+  const presets = getPresets();
+  const container = document.getElementById('preset-dropdown-container');
+  const select = document.getElementById('preset-select');
+
+  const names = Object.keys(presets);
+  if (names.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'block';
+  select.innerHTML = '<option value="">Load preset...</option>';
+  names.sort().forEach(name => {
+    const option = document.createElement('option');
+    option.value = name;
+    option.textContent = name;
+    select.appendChild(option);
+  });
 }
 
 function saveViewPreferences() {
