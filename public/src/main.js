@@ -164,6 +164,7 @@ function setupLogPage() {
   // Timestamp Dialog buttons
   document.getElementById('btn-timestamp-cancel').addEventListener('click', hideTimestampDialog);
   document.getElementById('btn-timestamp-apply').addEventListener('click', applyTimestampOffset);
+  document.getElementById('btn-timestamp-commit').addEventListener('click', applyTimestampAndCommit);
 
   // Sign toggle button
   document.getElementById('btn-timestamp-sign').addEventListener('click', toggleTimestampSign);
@@ -1332,6 +1333,11 @@ function updateTimestampPreview() {
   } else {
     preview.innerHTML = `<div>Timestamp: <strong>${timeStr}</strong> (${offsetStr})</div>`;
   }
+
+  // Show "Commit Log" button if there are any counts to commit
+  const commitBtn = document.getElementById('btn-timestamp-commit');
+  const hasAnyCounts = Object.values(state.detailCounts).some(count => count > 0);
+  commitBtn.classList.toggle('hidden', !hasAnyCounts);
 }
 
 function formatOffset(ms) {
@@ -1374,6 +1380,18 @@ function applyTimestampOffset() {
       btn.classList.remove('glowing');
     }
   });
+}
+
+function applyTimestampAndCommit() {
+  // Auto-set count to 1 if the triggered detail is still at 0
+  const detailId = state.timestampAdjustDetailId;
+  if (detailId && (!state.detailCounts[detailId] || state.detailCounts[detailId] === 0)) {
+    state.detailCounts[detailId] = 1;
+    updateDetailCount(detailId);
+  }
+
+  hideTimestampDialog();
+  handleCommitLog();
 }
 
 // ============================================================================
@@ -1733,13 +1751,21 @@ async function populateDetailFilters() {
     const details = detailsByType[type.id] || [];
     if (details.length === 0) return;
 
-    // Type header
+    // Details for this type (wrapped in a group div for selector targeting)
+    const groupDiv = document.createElement('div');
+
+    // Type header (clickable to toggle all details of this type)
     const typeHeader = document.createElement('div');
-    typeHeader.style.cssText = 'font-weight: bold; margin-top: 10px; margin-bottom: 5px; color: ' + type.color;
+    typeHeader.style.cssText = 'font-weight: bold; margin-top: 10px; margin-bottom: 5px; color: ' + type.color + '; cursor: pointer; user-select: none;';
     typeHeader.textContent = type.name;
+    typeHeader.addEventListener('click', () => {
+      const checkboxes = groupDiv.querySelectorAll('input[type="checkbox"]');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+      checkboxes.forEach(cb => { cb.checked = !allChecked; });
+      applyFilters();
+    });
     filterContainer.appendChild(typeHeader);
 
-    // Details for this type
     details.forEach(detail => {
       const wrapper = document.createElement('div');
       wrapper.className = 'filter-checkbox';
@@ -1759,8 +1785,10 @@ async function populateDetailFilters() {
 
       wrapper.appendChild(checkbox);
       wrapper.appendChild(label);
-      filterContainer.appendChild(wrapper);
+      groupDiv.appendChild(wrapper);
     });
+
+    filterContainer.appendChild(groupDiv);
   });
 }
 

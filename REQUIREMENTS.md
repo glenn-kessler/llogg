@@ -42,6 +42,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-2.1.4   | Automatischer Kontext & Anreicherung         | Inkrementelle Zeitanpassung bei mehrfachem Klick (z.B. 2x "-5 min" = -10 min).                                                                                           |
 | Yes  | F-2.1.5   | Automatischer Kontext & Anreicherung         | Glow-Effekt am Uhr-Icon bei angepasstem Zeitstempel bis Commit/Reset.                                                                                                    |
 | Yes  | F-2.1.6   | Automatischer Kontext & Anreicherung         | "Reset to Now" Button im Zeitstempel-Dialog.                                                                                                                             |
+| Yes  | F-2.1.7   | Automatischer Kontext & Anreicherung         | "Commit Log" Button im Zeitstempel-Dialog bei vorhandenem Counter >0. Kombiniert Zeitanpassung und Commit in einem Schritt.                                              |
 | Yes  | F-2.2     | Automatischer Kontext & Anreicherung         | Automatische GPS-Erfassung (Latitude, Longitude, Accuracy) bei Entry-Erstellung mit 5s Timeout und 1min Cache. Speicherung in Entry-Objekt und CSV-Export.             |
 |      | F-2.3     | Automatischer Kontext & Anreicherung         | Wetterdaten-Abruf vom DWD via Bright Sky API bei erfolgreicher GPS-Erfassung. MVP ausgeschlossen.                                                                        |
 |      | F-2.4     | Automatischer Kontext & Anreicherung         | Wetterdaten aufgeschlüsselt (Temperatur °C, Wind m/s, Luftdruck hPa) mit konfigurierbaren Einheiten. MVP ausgeschlossen.                                                 |
@@ -73,6 +74,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-4.0.1   | Datenüberprüfung & Visualisierung            | Wahl zwischen Typ- und Detail-basierter Aggregation in Diagrammen.                                                                                                       |
 | Yes  | F-4.0.2   | Datenüberprüfung & Visualisierung            | Bei Detail-Aggregation: Checkboxen-Liste aller Details gruppiert nach Typ.                                                                                               |
 | Yes  | F-4.0.3   | Datenüberprüfung & Visualisierung            | "Select All" und "Deselect All" Buttons für Detail-Auswahl.                                                                                                              |
+| Yes  | F-4.0.4   | Datenüberprüfung & Visualisierung            | Typ-Header in Detail-Filterung anklickbar zum Umschalten aller Details eines Typs (Select/Deselect by Type).                                                            |
 | ---  | ---       | ---                                          | ---                                                                                                                                                                      |
 |      | F-4.1     | Datenüberprüfung & Visualisierung            | Zusammenfassungsvorschau vor Finalisierung. Entfernt nach Benutzerpräferenz.                                                                                             |
 | Yes  | F-4.2     | Datenüberprüfung & Visualisierung            | "View" Navigations-Tab zur Datenüberprüfungsseite.                                                                                                                       |
@@ -303,6 +305,19 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 ---
 
 ## Änderungsprotokoll
+
+### Version 1.7.11 (2026-01-28)
+- Funktion: F-2.1.7 - "Commit Log" Button im Zeitstempel-Dialog implementiert
+- Funktion: Bei vorhandenem Counter >0 erscheint grüner "Commit Log" Button im Zeitstempel-Dialog
+- Funktion: Button kombiniert Zeitanpassung und Commit in einem Schritt ohne Rückkehr zur Detail-Liste
+- Funktion: F-4.0.4 - Typ-Header in Detail-Filterung (View) anklickbar zum Umschalten aller Details eines Typs
+- Verbesserung: Zeitstempel-Dialog bietet direkten Commit-Workflow für schnelles Loggen mit Zeitanpassung
+- Verbesserung: Counter wird automatisch auf 1 gesetzt wenn bei 0 beim Commit-Klick im Dialog
+- UX: Typ-Header im Detail-Filter-Bereich zeigt Cursor-Pointer zur Hinweis auf Klickbarkeit
+- UX: Klick auf Typ-Header togglet alle Details dieses Typs (alle an wenn nicht alle an, sonst alle aus)
+- Technisch: Neue applyTimestampAndCommit() Funktion in main.js
+- Technisch: updateTimestampPreview() zeigt/versteckt Commit-Button basierend auf detailCounts
+- Technisch: Detail-Checkboxes in populateDetailFilters() in Gruppen-Divs pro Typ gesammelt
 
 ### Version 1.7.10 (2026-01-21)
 - Funktion: F-4.19 - Zeitbereichs-Navigation implementiert
