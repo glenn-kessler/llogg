@@ -33,6 +33,9 @@ coverage/
 tmp/
 temp/
 
+# Claude Code personal settings
+.claude/settings.local.json
+
 # descriptive file for next task
 current_task.md
 # Test commit to verify auto-version increment
