@@ -119,9 +119,9 @@ function showPage(pageName) {
 
 function setupLogPage() {
   // Back button
-  document.getElementById('btn-back-to-type').addEventListener('click', async () => {
+  document.getElementById('btn-back-to-type').addEventListener('click', () => {
     if (state.configMode) {
-      await exitConfigMode();
+      exitConfigMode();
     }
     resetDetailCounts();
     showSection('type');
@@ -231,23 +231,6 @@ function resetLogPage() {
 function resetDetailCounts() {
   state.detailCounts = {};
   state.detailUnits = {};
-}
-
-/**
- * Pre-fill detail counts with last used values from database
- * @param {Array} details - Array of detail objects to pre-fill
- */
-async function prefillDetailCounts(details) {
-  state.detailCounts = {};
-  state.detailUnits = {};
-
-  // Load last count for each detail
-  for (const detail of details) {
-    const lastCount = await dataService.getLastCountForDetail(detail.id);
-    if (lastCount > 0) {
-      state.detailCounts[detail.id] = lastCount;
-    }
-  }
 }
 
 function showSection(section) {
@@ -469,12 +452,8 @@ async function selectType(type) {
     state.details = orderedDetails;
   }
 
-  // Pre-fill counts with last used values (only in logging mode, not config mode)
-  if (!state.configMode) {
-    await prefillDetailCounts(state.details);
-  } else {
-    resetDetailCounts();
-  }
+  // Always reset counts to 0 when selecting a type
+  resetDetailCounts();
 
   renderDetailList();
   showSection('detail');
@@ -489,7 +468,7 @@ function renderDetailList() {
   if (state.configMode) {
     actionBtn.className = 'btn-leave-config-mode';
     actionBtn.textContent = '← Leave Config Mode';
-    actionBtn.addEventListener('click', async () => await exitConfigMode());
+    actionBtn.addEventListener('click', exitConfigMode);
     container.appendChild(actionBtn);
 
     // Add "Move [Type]" button in config mode
@@ -1405,19 +1384,16 @@ function applyTimestampAndCommit() {
 function enterConfigMode() {
   state.configMode = true;
   state.markedForDeletion.clear(); // Clear any previous marks
-  resetDetailCounts(); // Clear prefilled counters when entering config mode
+  resetDetailCounts(); // Clear counters when entering config mode
   renderDetailList();
 }
 
-async function exitConfigMode() {
+function exitConfigMode() {
   state.configMode = false;
   state.detailUnitChanges = {}; // Clear any unsaved unit changes
   state.markedForDeletion.clear(); // Clear deletion marks
   state.checkedDetails.clear(); // Clear checked items
-
-  // Restore prefilled counters when exiting config mode
-  await prefillDetailCounts(state.details);
-
+  resetDetailCounts(); // Clear counters when exiting config mode
   renderDetailList();
 }
 
@@ -1539,7 +1515,7 @@ async function handleStoreConfig() {
     state.details = newOrder.map(id => detailsById[id]).filter(d => d);
 
     // Exit config mode
-    await exitConfigMode();
+    exitConfigMode();
 
     alert('Configuration saved!');
 

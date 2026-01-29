@@ -28,7 +28,7 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 | Yes  | F-1.4.1.3 | Kerndateneingabe & Speicherung               | Editierbare Standard-Einheit im Konfigurationsmodus.                                                                                                                     |
 | Yes  | F-1.4.2   | Kerndateneingabe & Speicherung               | Abbrechen eines Eintrags via Zurück-Button, kehrt zur Typ-Ansicht zurück.                                                                                                |
 | Yes  | F-1.5     | Kerndateneingabe & Speicherung               | Count-Eigenschaft (positive ganze Zahl ≥1, Standard: 1) repräsentiert Häufigkeit/Dauer. Implementiert mit +/- Buttons (Start bei 0).                                     |
-| Yes  | F-1.5.1   | Kerndateneingabe & Speicherung               | Zähler-Felder werden beim Auswählen eines Typs mit dem zuletzt eingetragenen Wert für jedes Detail vorausgefüllt. Ermöglicht schnelleres Logging ähnlicher Werte.         |
+| No   | F-1.5.1   | Kerndateneingabe & Speicherung               | **ENTFERNT:** Zähler-Felder starten IMMER bei 0 beim Auswählen eines Typs. Werte werden NICHT vorausgefüllt. Änderungen gehen verloren bei Zurück-Button oder Verlassen der Log-Ansicht. Nur "Commit Log" überträgt Werte in die Datenbank. |
 | Yes  | F-1.6     | Kerndateneingabe & Speicherung               | Datenspeicherung in IndexedDB mit hoher Browser-Interoperabilität (Chrome, Firefox, Safari). Native API ohne Wrapper.                                                    |
 | Yes  | F-1.6.1   | Kerndateneingabe & Speicherung               | Entry-Schema: `id`, `typeId`, `detailId`, `count`, `unit` (pro Eintrag), `timestamp` (ISO 8601).                                                                         |
 | Yes  | F-1.7     | Kerndateneingabe & Speicherung               | Download-UI für Datendatei (CSV) und Konfiguration (TXT) zum manuellen Backup.                                                                                          |
@@ -307,6 +307,22 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 
 ## Änderungsprotokoll
 
+### Version 1.7.19 (2026-01-29)
+- **BREAKING:** F-1.5.1 Zähler-Vorausfüllung komplett entfernt
+- Bugfix: Zähler zeigten vorausgefüllte Werte auch im Konfigurationsmodus
+- Änderung: Zähler starten IMMER bei 0 beim Auswählen eines Typs
+- Änderung: Zähler-Werte werden NICHT mehr vorausgefüllt mit letzten Werten
+- Änderung: Geänderte Zähler gehen verloren bei Zurück-Button oder Verlassen der Log-Ansicht
+- Änderung: Nur "Commit Log" überträgt Zähler-Werte in die Datenbank
+- Verbesserung: Klarere Trennung zwischen temporärem UI-Zustand und persistierten Daten
+- Verbesserung: Kein unerwartetes Verhalten mehr beim Editieren von Detail-Eigenschaften
+- Entfernt: prefillDetailCounts() Funktion aus main.js
+- Entfernt: getLastCountForDetail() wird nicht mehr verwendet (bleibt in dataService.js für spätere Verwendung)
+- Vereinfacht: selectType() ruft nur noch resetDetailCounts() auf
+- Vereinfacht: enterConfigMode() und exitConfigMode() nicht mehr async
+- Technisch: Konsistente Counter-Initialisierung auf 0 in allen Modi
+- UX: Weniger verwirrend - Zähler verhalten sich vorhersehbar
+
 ### Version 1.7.14 (2026-01-28)
 - Funktion: F-4.0.5 Erweiterung - Preset-Dropdown in beiden Aggregationsmodi sichtbar
 - Verbesserung: Dropdown verschoben aus Detail-Gruppe in eigenständige Filter-Gruppe oberhalb Type/Detail-Auswahl
@@ -366,18 +382,11 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 - Technisch: Time range calculation in applyFilters() erweitert um Offset-Anwendung
 - Technisch: Offset multipliziert mit timespanValue für alle Units (hours, days, weeks, months)
 
-### Version 1.7.9 (2026-01-21)
-- Funktion: F-1.5.1 - Zähler-Vorausfüllung mit letzten Werten implementiert
-- Funktion: Neue getLastCountForDetail() Funktion in dataService.js
-- Funktion: Neue prefillDetailCounts() Funktion in main.js
-- Verbesserung: Zähler werden beim Typ-Auswahl automatisch mit dem zuletzt verwendeten Wert vorausgefüllt
-- Verbesserung: Schnelleres Logging für wiederkehrende Werte - Benutzer muss nicht mehr bei 0 starten
-- UX: Jedes Detail behält seinen eigenen letzten Count-Wert unabhängig
-- UX: Werte können wie gewohnt mit +/- Buttons angepasst werden
-- Technisch: Asynchrone Abfrage der letzten Werte aus IndexedDB beim Typ-Wechsel
-- Technisch: resetDetailCounts() bleibt für Zurück-Button und Nach-Commit erhalten
-- Test: Manuelle Testanleitung in TEST_last_count_prefill.md dokumentiert
-- Beispiel: Wenn "Happy" zuletzt mit Wert 8 geloggt wurde, zeigt das Feld jetzt 8 statt 0
+### Version 1.7.9 (2026-01-21) - ENTFERNT in 1.7.19
+- **ZURÜCKGEZOGEN:** F-1.5.1 - Zähler-Vorausfüllung wurde komplett entfernt
+- Funktion wurde als störend empfunden - Vorausfüllung war verwirrend
+- Neue Verhaltensweise (ab 1.7.19): Zähler starten IMMER bei 0
+- Siehe Version 1.7.19 für Details zur Entfernung
 
 ### Version 1.7.8 (2026-01-21)
 - Funktion: F-4.12.3 - Intelligente X-Achsen-Beschriftung implementiert
