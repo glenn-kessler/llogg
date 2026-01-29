@@ -2320,7 +2320,16 @@ async function handleImportCSV(event) {
     const content = await file.text();
     const result = await importFromCSV(content);
 
-    alert(`Import completed!\nImported: ${result.imported} entries\nErrors: ${result.errors.length}`);
+    let message = `Import completed!\nImported: ${result.imported} entries\nErrors: ${result.errors.length}`;
+
+    if (result.warnings && result.warnings.length > 0) {
+      message += `\nWarnings: ${result.warnings.length}`;
+      result.warnings.forEach(warning => {
+        console.warn('Import warning:', warning.message);
+      });
+    }
+
+    alert(message);
 
     if (result.errors.length > 0) {
       console.log('Import errors:', result.errors);

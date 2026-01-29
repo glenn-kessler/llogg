@@ -68,7 +68,7 @@ export function downloadCSV(csv, filename = 'life-logger-export.csv') {
 /**
  * Parse CSV string and import entries (NF-1.12)
  * @param {string} csvContent
- * @returns {Promise<Object>} - { imported: number, errors: Array }
+ * @returns {Promise<Object>} - { imported: number, errors: Array, warnings: Array }
  */
 export async function importFromCSV(csvContent) {
   const types = await getTypes();
@@ -95,6 +95,21 @@ export async function importFromCSV(csvContent) {
 
   const imported = [];
   const errors = [];
+  const warnings = [];
+
+  // Detect legacy GPS columns (backward compatibility)
+  if (header.includes('latitude') || header.includes('longitude') || header.includes('accuracy')) {
+    const gpsColumns = [];
+    if (header.includes('latitude')) gpsColumns.push('latitude');
+    if (header.includes('longitude')) gpsColumns.push('longitude');
+    if (header.includes('accuracy')) gpsColumns.push('accuracy');
+
+    warnings.push({
+      type: 'legacy_gps_data',
+      message: `Legacy GPS columns detected (${gpsColumns.join(', ')}). GPS data will be ignored during import.`
+    });
+    console.warn('CSV Import: Legacy GPS columns detected and will be ignored:', gpsColumns);
+  }
 
   // Process data rows (skip header)
   for (let i = 1; i < lines.length; i++) {
@@ -153,7 +168,8 @@ export async function importFromCSV(csvContent) {
 
   return {
     imported: imported.length,
-    errors
+    errors,
+    warnings
   };
 }
 
