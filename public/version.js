@@ -8,7 +8,7 @@
  */
 
 // Increment this version number when releasing updates
-const APP_VERSION = '1.7.20';
+const APP_VERSION = '1.7.21';
 
 // Make available globally for service worker
 self.APP_VERSION = APP_VERSION;

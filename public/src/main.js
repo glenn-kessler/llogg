@@ -779,35 +779,6 @@ async function handleCommitLog() {
     const adjustedTime = new Date(Date.now() + state.timestampOffset);
     const timestamp = adjustedTime.toISOString();
 
-    // Capture GPS location (F-2.2)
-    let gpsData = null;
-    if (navigator.geolocation) {
-      try {
-        gpsData = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              resolve({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                accuracy: position.coords.accuracy
-              });
-            },
-            (error) => {
-              console.warn('GPS unavailable:', error.message);
-              resolve(null); // Continue without GPS
-            },
-            {
-              timeout: 5000, // 5 second timeout
-              maximumAge: 60000, // Accept cached position up to 1 minute old
-              enableHighAccuracy: false // Faster, uses network location
-            }
-          );
-        });
-      } catch (error) {
-        console.warn('GPS capture failed:', error);
-      }
-    }
-
     // Create an entry for each detail with count > 0
     for (const [detailId, count] of Object.entries(state.detailCounts)) {
       if (count > 0) {
@@ -817,10 +788,7 @@ async function handleCommitLog() {
           detailId: parseInt(detailId),
           count: count,
           unit: unit,
-          timestamp: timestamp,
-          latitude: gpsData?.latitude,
-          longitude: gpsData?.longitude,
-          accuracy: gpsData?.accuracy
+          timestamp: timestamp
         });
       }
     }
