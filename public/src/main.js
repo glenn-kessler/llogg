@@ -119,9 +119,9 @@ function showPage(pageName) {
 
 function setupLogPage() {
   // Back button
-  document.getElementById('btn-back-to-type').addEventListener('click', () => {
+  document.getElementById('btn-back-to-type').addEventListener('click', async () => {
     if (state.configMode) {
-      exitConfigMode();
+      await exitConfigMode();
     }
     resetDetailCounts();
     showSection('type');
@@ -469,8 +469,12 @@ async function selectType(type) {
     state.details = orderedDetails;
   }
 
-  // Pre-fill counts with last used values
-  await prefillDetailCounts(state.details);
+  // Pre-fill counts with last used values (only in logging mode, not config mode)
+  if (!state.configMode) {
+    await prefillDetailCounts(state.details);
+  } else {
+    resetDetailCounts();
+  }
 
   renderDetailList();
   showSection('detail');
@@ -485,7 +489,7 @@ function renderDetailList() {
   if (state.configMode) {
     actionBtn.className = 'btn-leave-config-mode';
     actionBtn.textContent = '← Leave Config Mode';
-    actionBtn.addEventListener('click', exitConfigMode);
+    actionBtn.addEventListener('click', async () => await exitConfigMode());
     container.appendChild(actionBtn);
 
     // Add "Move [Type]" button in config mode
@@ -1401,14 +1405,19 @@ function applyTimestampAndCommit() {
 function enterConfigMode() {
   state.configMode = true;
   state.markedForDeletion.clear(); // Clear any previous marks
+  resetDetailCounts(); // Clear prefilled counters when entering config mode
   renderDetailList();
 }
 
-function exitConfigMode() {
+async function exitConfigMode() {
   state.configMode = false;
   state.detailUnitChanges = {}; // Clear any unsaved unit changes
   state.markedForDeletion.clear(); // Clear deletion marks
   state.checkedDetails.clear(); // Clear checked items
+
+  // Restore prefilled counters when exiting config mode
+  await prefillDetailCounts(state.details);
+
   renderDetailList();
 }
 
@@ -1530,7 +1539,7 @@ async function handleStoreConfig() {
     state.details = newOrder.map(id => detailsById[id]).filter(d => d);
 
     // Exit config mode
-    exitConfigMode();
+    await exitConfigMode();
 
     alert('Configuration saved!');
 
