@@ -4,6 +4,9 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokument
 
 ---
 
+## Version 1.7.29 (2026-01-30)
+- Dokumentation: CHANGELOG.md aktualisiert mit Version 1.7.28 Eintrag
+
 ## Version 1.7.28 (2026-01-30)
 - Dokumentation: CHANGELOG.md aktualisiert mit Version 1.7.27 Eintrag
 
