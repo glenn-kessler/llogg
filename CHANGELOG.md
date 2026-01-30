@@ -4,6 +4,18 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokument
 
 ---
 
+## Version 1.7.27 (2026-01-30)
+- Dokumentation: REQUIREMENTS.md aufgeteilt in REQUIREMENTS.md und CHANGELOG.md
+- Verbesserung: Anforderungen und Versionshistorie sind jetzt getrennte Dokumente
+- Verbesserung: REQUIREMENTS.md fokussiert sich auf funktionale/nicht-funktionale Anforderungen
+- Verbesserung: CHANGELOG.md enthält vollständige Versionshistorie (1.0 bis 1.7.27)
+- Wartbarkeit: Versionsupdates ändern nur CHANGELOG.md
+- Wartbarkeit: REQUIREMENTS.md bleibt stabil und lesbar
+- Struktur: REQUIREMENTS.md verweist auf CHANGELOG.md für Versionshistorie
+
+## Version 1.7.26 (2026-01-30)
+- Technisch: Automatische Versionsinkrementierung durch pre-commit hook
+
 ## Version 1.7.25 (2026-01-30)
 - Funktion: F-4.19 - Aufgeteilte Steuerung: "Time Span" und "Time Range" getrennt
 - Funktion: "Time Span" zeigt [Wert][Einheit] in einer Zeile (z.B. [7][Days])
