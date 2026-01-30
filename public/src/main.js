@@ -1507,50 +1507,17 @@ function setupViewPage() {
     });
   });
 
-  // NEW: Timespan unit buttons (Hours/Days/Weeks/Months/Years) - F-4.5
-  const timespanUnits = ['hours', 'days', 'weeks', 'months', 'years'];
-  let currentUnitIndex = 1; // Start with 'days'
-
-  document.getElementById('btn-timespan-unit-prev').addEventListener('click', () => {
-    currentUnitIndex = (currentUnitIndex - 1 + timespanUnits.length) % timespanUnits.length;
-    updateTimespanUnit(timespanUnits[currentUnitIndex]);
-  });
-
-  document.getElementById('btn-timespan-unit-next').addEventListener('click', () => {
-    currentUnitIndex = (currentUnitIndex + 1) % timespanUnits.length;
-    updateTimespanUnit(timespanUnits[currentUnitIndex]);
-  });
-
-  function updateTimespanUnit(unit) {
-    const unitLabels = { hours: 'Hours', days: 'Days', weeks: 'Weeks', months: 'Months', years: 'Years' };
-    document.getElementById('timespan-unit-display').textContent = unitLabels[unit];
-    document.getElementById('filter-timespan-unit').value = unit;
-    state.timeRangeOffset = 0; // Reset navigation when changing time unit
-    document.getElementById('time-range-offset-display').textContent = '0';
-    applyFilters();
-  }
-
-  // NEW: Timespan value buttons (+/-)
-  document.getElementById('btn-timespan-value-inc').addEventListener('click', () => {
-    const input = document.getElementById('filter-timespan-value');
-    const current = parseInt(input.value) || 1;
-    input.value = current + 1;
-    document.getElementById('timespan-value-display').textContent = input.value;
-    state.timeRangeOffset = 0; // Reset navigation when changing time span
+  // Time Span dropdown change handlers - reset time range offset when changing span
+  document.getElementById('filter-timespan-unit').addEventListener('change', () => {
+    state.timeRangeOffset = 0;
     document.getElementById('time-range-offset-display').textContent = '0';
     applyFilters();
   });
 
-  document.getElementById('btn-timespan-value-dec').addEventListener('click', () => {
-    const input = document.getElementById('filter-timespan-value');
-    const current = parseInt(input.value) || 1;
-    if (current > 1) {
-      input.value = current - 1;
-      document.getElementById('timespan-value-display').textContent = input.value;
-      state.timeRangeOffset = 0; // Reset navigation when changing time span
-      document.getElementById('time-range-offset-display').textContent = '0';
-      applyFilters();
-    }
+  document.getElementById('filter-timespan-value').addEventListener('change', () => {
+    state.timeRangeOffset = 0;
+    document.getElementById('time-range-offset-display').textContent = '0';
+    applyFilters();
   });
 
   // Time range navigation buttons (← →) - F-4.19
@@ -1593,10 +1560,6 @@ function setupViewPage() {
 
   // Legacy: Chart type change - apply instantly (for hidden input)
   document.getElementById('chart-type').addEventListener('change', applyFilters);
-
-  // Legacy: Timespan changes - apply instantly (for hidden inputs)
-  document.getElementById('filter-timespan-unit').addEventListener('change', applyFilters);
-  document.getElementById('filter-timespan-value').addEventListener('input', applyFilters);
 
   // Auto step size toggle - apply instantly
   document.getElementById('auto-step-size').addEventListener('change', (e) => {

@@ -768,6 +768,22 @@ input[type="text"] {
     border-radius: var(--border-radius);
 }
 
+/* Time Span dropdowns */
+.timespan-dropdown-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.timespan-select {
+    width: auto;
+    min-width: 80px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
 input[type="color"] {
     height: var(--touch-target);
     border: none;

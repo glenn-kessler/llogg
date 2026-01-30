@@ -167,19 +167,37 @@ export function renderGroupedBarChart(svg, data, options = {}) {
   const maxLabelLength = 10; // Same as truncation limit
   const labelInterval = calculateLabelInterval(chartWidth, data.length, maxLabelLength, 11);
 
-  // X-axis labels (with intelligent spacing)
+  // X-axis labels (with intelligent spacing and multi-line support)
   data.forEach((step, stepIndex) => {
     // Only show labels at calculated intervals
     if (stepIndex % labelInterval !== 0) return;
 
     const groupX = padding.left + (stepIndex * groupWidth);
+    const labelObj = typeof step.label === 'object' ? step.label : { line1: step.label, line2: '', showMonthLine2: false };
+
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('x', groupX + groupWidth / 2);
-    label.setAttribute('y', height - padding.bottom + 20);
+    label.setAttribute('y', height - padding.bottom + 15);
     label.setAttribute('text-anchor', 'middle');
     label.setAttribute('fill', '#bdc3c7');
     label.setAttribute('font-size', '11');
-    label.textContent = truncateLabel(step.label, maxLabelLength);
+
+    // Line 1 (day/week/hour)
+    const tspan1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan1.setAttribute('x', groupX + groupWidth / 2);
+    tspan1.setAttribute('dy', '0');
+    tspan1.textContent = truncateLabel(labelObj.line1, maxLabelLength);
+    label.appendChild(tspan1);
+
+    // Line 2 (month) - only if provided
+    if (labelObj.showMonthLine2 && labelObj.line2) {
+      const tspan2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+      tspan2.setAttribute('x', groupX + groupWidth / 2);
+      tspan2.setAttribute('dy', '12');
+      tspan2.textContent = labelObj.line2;
+      label.appendChild(tspan2);
+    }
+
     svg.appendChild(label);
   });
 
@@ -395,19 +413,37 @@ export function renderMultiLineChart(svg, data, options = {}) {
   const maxLabelLength = 8; // Same as truncation limit
   const labelInterval = calculateLabelInterval(chartWidth, data.length, maxLabelLength, 11);
 
-  // X-axis labels (with intelligent spacing)
+  // X-axis labels (with intelligent spacing and multi-line support)
   data.forEach((step, index) => {
     // Only show labels at calculated intervals
     if (index % labelInterval !== 0) return;
 
     const x = padding.left + (index / (data.length - 1 || 1)) * chartWidth;
+    const labelObj = typeof step.label === 'object' ? step.label : { line1: step.label, line2: '', showMonthLine2: false };
+
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('x', x);
-    label.setAttribute('y', height - padding.bottom + 20);
+    label.setAttribute('y', height - padding.bottom + 15);
     label.setAttribute('text-anchor', 'middle');
     label.setAttribute('fill', '#bdc3c7');
     label.setAttribute('font-size', '11');
-    label.textContent = truncateLabel(step.label, maxLabelLength);
+
+    // Line 1 (day/week/hour)
+    const tspan1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan1.setAttribute('x', x);
+    tspan1.setAttribute('dy', '0');
+    tspan1.textContent = truncateLabel(labelObj.line1, maxLabelLength);
+    label.appendChild(tspan1);
+
+    // Line 2 (month) - only if provided
+    if (labelObj.showMonthLine2 && labelObj.line2) {
+      const tspan2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+      tspan2.setAttribute('x', x);
+      tspan2.setAttribute('dy', '12');
+      tspan2.textContent = labelObj.line2;
+      label.appendChild(tspan2);
+    }
+
     svg.appendChild(label);
   });
 
@@ -785,7 +821,6 @@ export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize
   const end = new Date(endTime);
 
   // Generate time steps using UTC to match ISO timestamp format in database
-  let prevStepStart = null;
   while (current < end) {
     const stepStart = new Date(current);
     const stepEnd = new Date(stepStart);
@@ -808,11 +843,17 @@ export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize
     steps.push({
       start: new Date(stepStart),
       end: new Date(stepEnd),
-      label: formatStepLabel(stepStart, stepSize, prevStepStart)
+      label: null // Will be set below after all steps are generated
     });
 
-    prevStepStart = new Date(stepStart);
     current.setTime(stepEnd.getTime());
+  }
+
+  // Now calculate labels with prev/next context
+  for (let i = 0; i < steps.length; i++) {
+    const prevDate = i > 0 ? steps[i - 1].start : null;
+    const nextDate = i < steps.length - 1 ? steps[i + 1].start : null;
+    steps[i].label = formatStepLabel(steps[i].start, stepSize, prevDate, nextDate);
   }
 
   // Aggregate entries into steps
@@ -866,45 +907,61 @@ export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize
  * @param {Date} date - Current date
  * @param {string} stepSize - Step size
  * @param {Date} prevDate - Previous date (for month change detection)
- * @returns {string}
+ * @param {Date} nextDate - Next date (for month change detection)
+ * @returns {Object} - { line1, line2, showMonthLine2 }
  */
-function formatStepLabel(date, stepSize, prevDate = null) {
+function formatStepLabel(date, stepSize, prevDate = null, nextDate = null) {
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   const currentMonth = date.getUTCMonth();
   const currentDay = date.getUTCDate();
   const prevMonth = prevDate ? prevDate.getUTCMonth() : null;
-  const monthChanged = prevDate && prevMonth !== currentMonth;
+  const nextMonth = nextDate ? nextDate.getUTCMonth() : null;
+  const prevDay = prevDate ? prevDate.getUTCDate() : null;
 
   switch (stepSize) {
     case '3hours':
-      // Show time + date.month (e.g., "15:00\n1.Jan")
-      return `${String(date.getUTCHours()).padStart(2, '0')}:00\n${currentDay}.${months[currentMonth]}`;
+      // Show time on line 1, date.month on line 2 only when day changes
+      const hour = String(date.getUTCHours()).padStart(2, '0');
+      const dayChanged = prevDate && prevDay !== currentDay;
+      return {
+        line1: `${hour}`,
+        line2: dayChanged || !prevDate ? `${currentDay}.${months[currentMonth]}` : '',
+        showMonthLine2: dayChanged || !prevDate
+      };
     case 'day':
-      // Show weekday + month(s) - detect month changes
-      // Example1: "Mon\n   Jan"
-      // Example2 (month change): "Mon\nJan  Feb"
-      if (monthChanged) {
-        // Show both months with spacing
-        return `${days[date.getUTCDay()]}\n${months[prevMonth]}  ${months[currentMonth]}`;
-      } else {
-        // Show single month centered
-        return `${days[date.getUTCDay()]}\n   ${months[currentMonth]}`;
-      }
+      // Show weekday on line 1, month on line 2 only at last day of each month
+      const isLastDayOfMonth = !nextDate || nextMonth !== currentMonth;
+      return {
+        line1: days[date.getUTCDay()],
+        line2: isLastDayOfMonth ? months[currentMonth] : '',
+        showMonthLine2: isLastDayOfMonth,
+        monthValue: currentMonth
+      };
     case 'week':
-      // Show calendar week + month(s) - detect month changes
+      // Show calendar week on line 1, month on line 2 only at last week of each month
       const weekNumber = getISOWeek(date);
-      if (monthChanged) {
-        return `KW${weekNumber}\n${months[prevMonth]}  ${months[currentMonth]}`;
-      } else {
-        return `KW${weekNumber}\n   ${months[currentMonth]}`;
-      }
+      const isLastWeekOfMonth = !nextDate || nextMonth !== currentMonth;
+      return {
+        line1: `KW${weekNumber}`,
+        line2: isLastWeekOfMonth ? months[currentMonth] : '',
+        showMonthLine2: isLastWeekOfMonth,
+        monthValue: currentMonth
+      };
     case 'month':
-      // Show month abbreviation (e.g., "Jan")
-      return months[currentMonth];
+      // Show month abbreviation only
+      return {
+        line1: months[currentMonth],
+        line2: '',
+        showMonthLine2: false
+      };
     default:
-      return date.toLocaleDateString();
+      return {
+        line1: date.toLocaleDateString(),
+        line2: '',
+        showMonthLine2: false
+      };
   }
 }
 
