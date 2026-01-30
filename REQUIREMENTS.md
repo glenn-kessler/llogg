@@ -230,32 +230,6 @@ Hier ist die endgültige Liste der freigegebenen Anforderungen mit Implementieru
 │       └── components/
 │           └── charts.js      # SVG Chart Rendering
 ```
-
----
-
-## Bekannte Einschränkungen & Zukünftige Arbeit
-
-### MVP-Einschränkungen
-1. Einschränkung: Keine Web-Worker-Implementierung (direkter IndexedDB-Zugriff)
-2. Einschränkung: Kein Eintrags-Edit/Delete in UI (möglich über IndexedDB direkt)
-3. Einschränkung: Keine CSV-Import-Konfliktauflösung (Sprint 2)
-4. Einschränkung: Keine benutzerdefinierte Datumsbereichs-Auswahl in Diagrammen
-5. Einschränkung: Keine PWA-Icons (192x192, 512x512 PNG benötigt)
-6. Einschränkung: Keine Sortierung/Filterung in Typ/Detail-Listen
-7. Einschränkung: Keine Undo-Funktionalität
-8. Einschränkung: Keine Datenvalidierung (Min/Max Counts, Unit-Format)
-
-### Zukünftige Features (Nicht im MVP-Umfang)
-- Feature: GPS-Standort-Tracking (F-2.2)
-- Feature: Wetterdaten-Integration (F-2.3)
-- Feature: Gesundheitsdaten-Sync (F-2.7)
-- Feature: Cloud-Sync (F-3.5)
-- Feature: Erweiterte Visualisierungen (F-4.10)
-- Feature: Mehrsprachige Unterstützung
-- Feature: Dark/Light-Mode-Umschaltung
-- Feature: Datenverschlüsselung
-- Feature: Multi-Device-Sync
-
 ---
 
 ## Test-Status
