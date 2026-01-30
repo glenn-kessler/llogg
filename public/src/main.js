@@ -1526,6 +1526,7 @@ function setupViewPage() {
     document.getElementById('timespan-unit-display').textContent = unitLabels[unit];
     document.getElementById('filter-timespan-unit').value = unit;
     state.timeRangeOffset = 0; // Reset navigation when changing time unit
+    document.getElementById('time-range-offset-display').textContent = '0';
     applyFilters();
   }
 
@@ -1536,6 +1537,7 @@ function setupViewPage() {
     input.value = current + 1;
     document.getElementById('timespan-value-display').textContent = input.value;
     state.timeRangeOffset = 0; // Reset navigation when changing time span
+    document.getElementById('time-range-offset-display').textContent = '0';
     applyFilters();
   });
 
@@ -1546,14 +1548,16 @@ function setupViewPage() {
       input.value = current - 1;
       document.getElementById('timespan-value-display').textContent = input.value;
       state.timeRangeOffset = 0; // Reset navigation when changing time span
+      document.getElementById('time-range-offset-display').textContent = '0';
       applyFilters();
     }
   });
 
-  // Time range navigation buttons (← →)
+  // Time range navigation buttons (← →) - F-4.19
   document.getElementById('btn-time-navigate-prev').addEventListener('click', () => {
     // Navigate backward in time (increase offset)
     state.timeRangeOffset++;
+    document.getElementById('time-range-offset-display').textContent = state.timeRangeOffset;
     applyFilters();
   });
 
@@ -1561,6 +1565,7 @@ function setupViewPage() {
     // Navigate forward in time (decrease offset, but not into the future)
     if (state.timeRangeOffset > 0) {
       state.timeRangeOffset--;
+      document.getElementById('time-range-offset-display').textContent = state.timeRangeOffset;
       applyFilters();
     }
   });

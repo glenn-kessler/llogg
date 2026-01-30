@@ -785,6 +785,7 @@ export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize
   const end = new Date(endTime);
 
   // Generate time steps using UTC to match ISO timestamp format in database
+  let prevStepStart = null;
   while (current < end) {
     const stepStart = new Date(current);
     const stepEnd = new Date(stepStart);
@@ -807,9 +808,10 @@ export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize
     steps.push({
       start: new Date(stepStart),
       end: new Date(stepEnd),
-      label: formatStepLabel(stepStart, stepSize)
+      label: formatStepLabel(stepStart, stepSize, prevStepStart)
     });
 
+    prevStepStart = new Date(stepStart);
     current.setTime(stepEnd.getTime());
   }
 
@@ -861,28 +863,46 @@ export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize
 
 /**
  * Format step label based on step size (F-4.12)
- * @param {Date} date
- * @param {string} stepSize
+ * @param {Date} date - Current date
+ * @param {string} stepSize - Step size
+ * @param {Date} prevDate - Previous date (for month change detection)
  * @returns {string}
  */
-function formatStepLabel(date, stepSize) {
+function formatStepLabel(date, stepSize, prevDate = null) {
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+  const currentMonth = date.getUTCMonth();
+  const currentDay = date.getUTCDate();
+  const prevMonth = prevDate ? prevDate.getUTCMonth() : null;
+  const monthChanged = prevDate && prevMonth !== currentMonth;
+
   switch (stepSize) {
     case '3hours':
-      // Show time + month (e.g., "15:00 Jan")
-      return `${String(date.getUTCHours()).padStart(2, '0')}:00\n${months[date.getUTCMonth()]}`;
+      // Show time + date.month (e.g., "15:00\n1.Jan")
+      return `${String(date.getUTCHours()).padStart(2, '0')}:00\n${currentDay}.${months[currentMonth]}`;
     case 'day':
-      // Show weekday abbreviation + month (e.g., "Mon\nJan")
-      return `${days[date.getUTCDay()]}\n${months[date.getUTCMonth()]}`;
+      // Show weekday + month(s) - detect month changes
+      // Example1: "Mon\n   Jan"
+      // Example2 (month change): "Mon\nJan  Feb"
+      if (monthChanged) {
+        // Show both months with spacing
+        return `${days[date.getUTCDay()]}\n${months[prevMonth]}  ${months[currentMonth]}`;
+      } else {
+        // Show single month centered
+        return `${days[date.getUTCDay()]}\n   ${months[currentMonth]}`;
+      }
     case 'week':
-      // Show calendar week + month (e.g., "KW1\nJan")
+      // Show calendar week + month(s) - detect month changes
       const weekNumber = getISOWeek(date);
-      return `KW${weekNumber}\n${months[date.getUTCMonth()]}`;
+      if (monthChanged) {
+        return `KW${weekNumber}\n${months[prevMonth]}  ${months[currentMonth]}`;
+      } else {
+        return `KW${weekNumber}\n   ${months[currentMonth]}`;
+      }
     case 'month':
       // Show month abbreviation (e.g., "Jan")
-      return months[date.getUTCMonth()];
+      return months[currentMonth];
     default:
       return date.toLocaleDateString();
   }
