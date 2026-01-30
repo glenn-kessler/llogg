@@ -4,6 +4,9 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei dokument
 
 ---
 
+## Version 1.7.28 (2026-01-30)
+- Dokumentation: CHANGELOG.md aktualisiert mit Version 1.7.27 Eintrag
+
 ## Version 1.7.27 (2026-01-30)
 - Dokumentation: REQUIREMENTS.md aufgeteilt in REQUIREMENTS.md und CHANGELOG.md
 - Verbesserung: Anforderungen und Versionshistorie sind jetzt getrennte Dokumente
