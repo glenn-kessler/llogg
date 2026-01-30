@@ -1236,8 +1236,8 @@ function hideTimestampDialog() {
   const dialog = document.getElementById('timestamp-dialog');
   dialog.classList.add('hidden');
   state.timestampAdjustDetailId = null;
-  state.timestampOffset = 0;
-  state.timestampSign = -1;
+  // Note: timestampOffset is NOT reset here - it persists until commit
+  // It will be reset by handleCommitLog() after the entry is created
 }
 
 function toggleTimestampSign() {
