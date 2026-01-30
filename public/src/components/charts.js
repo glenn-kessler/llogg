@@ -692,35 +692,49 @@ function truncateLabel(label, maxLength) {
 }
 
 /**
- * Calculate automatic step size based on timespan
+ * Calculate automatic step size based on timespan (F-4.12)
  * @param {number} timespanValue
  * @param {string} timespanUnit
- * @returns {string} - 'hour'|'6hours'|'day'|'week'|'month'
+ * @returns {string} - '3hours'|'day'|'week'|'month'
  */
 export function calculateAutoStepSize(timespanValue, timespanUnit) {
-  // Convert to hours for comparison
-  let totalHours = 0;
+  // Convert to days for easier comparison
+  let totalDays = 0;
   switch (timespanUnit) {
     case 'hours':
-      totalHours = timespanValue;
+      totalDays = timespanValue / 24;
       break;
     case 'days':
-      totalHours = timespanValue * 24;
+      totalDays = timespanValue;
       break;
     case 'weeks':
-      totalHours = timespanValue * 24 * 7;
+      totalDays = timespanValue * 7;
       break;
     case 'months':
-      totalHours = timespanValue * 24 * 30; // approximate
+      totalDays = timespanValue * 30; // approximate
+      break;
+    case 'years':
+      totalDays = timespanValue * 365; // approximate
       break;
   }
 
-  // Decide step size
-  if (totalHours <= 24) return 'hour';           // 1 day or less → 1h steps
-  if (totalHours <= 72) return '6hours';          // 2-3 days → 6h steps
-  if (totalHours <= 30 * 24) return 'day';        // Up to 30 days → 1 day steps
-  if (totalHours <= 90 * 24) return 'week';       // Up to 3 months → 1 week steps
-  return 'month';                                  // More than 3 months → 1 month steps
+  // F-4.12: New step size logic
+  // 1 Day → 3h steps
+  if (totalDays <= 1) return '3hours';
+
+  // 2-7 Days → 1 Day steps
+  // 1 Week (7 days) → 1 Day steps
+  if (totalDays <= 7) return 'day';
+
+  // 2-4 Weeks → Calendar weeks (KW1 KW2...)
+  // 1 Month (30 days) → Calendar weeks
+  if (totalDays <= 30) return 'week';
+
+  // 2-6 Months → Months (Jan Feb Mar...)
+  if (totalDays <= 180) return 'month';
+
+  // More than 6 months → Months
+  return 'month';
 }
 
 /**
@@ -758,7 +772,7 @@ export function calculateLabelInterval(chartWidth, labelCount, maxLabelLength, f
  * @param {Array} entries
  * @param {Date} startTime
  * @param {Date} endTime
- * @param {string} stepSize - 'hour'|'6hours'|'day'|'week'|'month'
+ * @param {string} stepSize - '3hours'|'day'|'week'|'month'
  * @param {string} aggLevel - 'type'|'detail'
  * @param {Array} selectedIds
  * @param {Array} types
@@ -776,11 +790,8 @@ export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize
     const stepEnd = new Date(stepStart);
 
     switch (stepSize) {
-      case 'hour':
-        stepEnd.setUTCHours(stepEnd.getUTCHours() + 1);
-        break;
-      case '6hours':
-        stepEnd.setUTCHours(stepEnd.getUTCHours() + 6);
+      case '3hours':
+        stepEnd.setUTCHours(stepEnd.getUTCHours() + 3);
         break;
       case 'day':
         stepEnd.setUTCDate(stepEnd.getUTCDate() + 1);
@@ -849,7 +860,7 @@ export async function aggregateByTimeSteps(entries, startTime, endTime, stepSize
 }
 
 /**
- * Format step label based on step size
+ * Format step label based on step size (F-4.12)
  * @param {Date} date
  * @param {string} stepSize
  * @returns {string}
@@ -859,18 +870,34 @@ function formatStepLabel(date, stepSize) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   switch (stepSize) {
-    case 'hour':
-      return `${date.getUTCHours()}:00`;
-    case '6hours':
-      return `${date.getUTCHours()}:00`;
+    case '3hours':
+      // Show time + month (e.g., "15:00 Jan")
+      return `${String(date.getUTCHours()).padStart(2, '0')}:00\n${months[date.getUTCMonth()]}`;
     case 'day':
-      // Show date and weekday for clarity (e.g., "Jan 2 Mon")
-      return `${months[date.getUTCMonth()]} ${date.getUTCDate()} ${days[date.getUTCDay()]}`;
+      // Show weekday abbreviation + month (e.g., "Mon\nJan")
+      return `${days[date.getUTCDay()]}\n${months[date.getUTCMonth()]}`;
     case 'week':
-      return `${months[date.getUTCMonth()]} ${date.getUTCDate()}`;
+      // Show calendar week + month (e.g., "KW1\nJan")
+      const weekNumber = getISOWeek(date);
+      return `KW${weekNumber}\n${months[date.getUTCMonth()]}`;
     case 'month':
+      // Show month abbreviation (e.g., "Jan")
       return months[date.getUTCMonth()];
     default:
       return date.toLocaleDateString();
   }
+}
+
+/**
+ * Get ISO week number for a date
+ * @param {Date} date
+ * @returns {number}
+ */
+function getISOWeek(date) {
+  const target = new Date(date.valueOf());
+  const dayNr = (date.getUTCDay() + 6) % 7;
+  target.setUTCDate(target.getUTCDate() - dayNr + 3);
+  const jan4 = new Date(Date.UTC(target.getUTCFullYear(), 0, 4));
+  const dayDiff = (target - jan4) / 86400000;
+  return 1 + Math.ceil(dayDiff / 7);
 }

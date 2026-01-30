@@ -1507,8 +1507,8 @@ function setupViewPage() {
     });
   });
 
-  // NEW: Timespan unit buttons (Hours/Days/Weeks/Months)
-  const timespanUnits = ['hours', 'days', 'weeks', 'months'];
+  // NEW: Timespan unit buttons (Hours/Days/Weeks/Months/Years) - F-4.5
+  const timespanUnits = ['hours', 'days', 'weeks', 'months', 'years'];
   let currentUnitIndex = 1; // Start with 'days'
 
   document.getElementById('btn-timespan-unit-prev').addEventListener('click', () => {
@@ -1522,7 +1522,7 @@ function setupViewPage() {
   });
 
   function updateTimespanUnit(unit) {
-    const unitLabels = { hours: 'Hours', days: 'Days', weeks: 'Weeks', months: 'Months' };
+    const unitLabels = { hours: 'Hours', days: 'Days', weeks: 'Weeks', months: 'Months', years: 'Years' };
     document.getElementById('timespan-unit-display').textContent = unitLabels[unit];
     document.getElementById('filter-timespan-unit').value = unit;
     state.timeRangeOffset = 0; // Reset navigation when changing time unit
@@ -1845,6 +1845,23 @@ async function applyFilters() {
         endTime = new Date(Date.UTC(
           now.getUTCFullYear(),
           now.getUTCMonth() - monthsOffset,
+          now.getUTCDate(),
+          23, 59, 59, 999
+        ));
+        break;
+      case 'years':
+        // Start: timespanValue years ago at midnight UTC, then apply offset (F-4.5)
+        const yearsOffset = state.timeRangeOffset * timespanValue;
+        startTime = new Date(Date.UTC(
+          now.getUTCFullYear() - timespanValue - yearsOffset,
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          0, 0, 0, 0
+        ));
+        // End: today at 23:59:59.999 UTC, then apply offset
+        endTime = new Date(Date.UTC(
+          now.getUTCFullYear() - yearsOffset,
+          now.getUTCMonth(),
           now.getUTCDate(),
           23, 59, 59, 999
         ));
