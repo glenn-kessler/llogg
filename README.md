@@ -128,18 +128,18 @@ The project follows a zero-dependency, browser-native approach:
 
 ## Features
 
-✅ Type → Details → Count logging flow
-✅ CSV export/import with human-readable format
-✅ Interactive charts (Bar, Line, Pie, Horizontal Bar)
-✅ Advanced time-based chart aggregation (Hours/Days/Weeks/Months/Years)
-✅ Intelligent X-axis label spacing
-✅ Time range navigation with arrow buttons
-✅ View filter presets (save/load configurations)
-✅ PWA support (installable, offline)
-✅ Touch-optimized mobile UI
-✅ Timestamp adjustment with commit workflow
-✅ Dual-axis chart modes (Time/Item-based)
-✅ Bulk operations (move/delete details)
+- Type → Details → Count logging flow
+- CSV export/import with human-readable format
+- Interactive charts (Bar, Line, Pie, Horizontal Bar)
+- Advanced time-based chart aggregation (Hours/Days/Weeks/Months/Years)
+- Intelligent X-axis label spacing
+- Time range navigation with arrow buttons
+- View filter presets (save/load configurations)
+- PWA support (installable, offline)
+- Touch-optimized mobile UI
+- Timestamp adjustment with commit workflow
+- Dual-axis chart modes (Time/Item-based)
+- Bulk operations (move/delete details)
 
 ## Testing
 
